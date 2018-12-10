@@ -23,7 +23,7 @@ if __name__ == '__main__':
                              action_space=env.action_space,
                              alpha=0.5,
                              gamma=0.95,
-                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.99))
+                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.999))
                  for ts in env.ts_ids}
 
     done = False

@@ -12,11 +12,12 @@ class EpsilonGreedy:
 
     def choose(self, q_table, state, action_space):
         if np.random.rand() < self.epsilon:
-            action = action_space.sample()
+            action = int(action_space.sample())
         else:
-            action = np.argmax(q_table[state,])
+            action = np.argmax(q_table[state])
 
         self.epsilon = max(self.epsilon*self.decay, self.min_epsilon)
+        print(self.epsilon)
         return action
 
     def reset(self):

@@ -1,12 +1,17 @@
 <configuration>
     <input>
         <net-file value="4x4.net.xml"/>
-        <route-files value="4x4routes.rou.xml"/>
+        <route-files value="3-3-6-2.rou.xml"/>
     </input>
     <time>
         <begin value="0"/>
         <end value="100000"/>
     </time>
     <max-depart-delay value="0"/>
+
 </configuration>
 
+<!-- 
+ <output>
+        <summary-output value="output_sumo.xml"/>
+ </output> -->

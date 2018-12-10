@@ -112,7 +112,7 @@ class SumoEnvironment(Env):
 
     def step(self, actions):
 
-        for ts, action in actions:
+        for ts, action in actions.items():
             if action == self.KEEP:
                 self.traffic_signals[ts].keep(self.delta_time)
             elif action == self.CHANGE:
@@ -133,7 +133,7 @@ class SumoEnvironment(Env):
         for i in range(len(self.radix_factors)):
             res = res * self.radix_factors[i] + values[i]
 
-        return res
+        return int(res)
 
     def _compute_observations(self):
         observations = {}
@@ -157,8 +157,8 @@ class SumoEnvironment(Env):
     def _compute_rewards(self):
         rewards = {}
         for ts in self.ts_ids:
-            old_average = ((self.traffic_signals[ts].nw_stopped[1] + self.traffic_signals[ts].ew_stopped[1]) / 2)
-            new_average = ((self.traffic_signals[ts].nw_stopped[0] + self.traffic_signals[ts].ew_stopped[0]) / 2)
+            old_average = ((self.traffic_signals[ts].ns_stopped[1] + self.traffic_signals[ts].ew_stopped[1]) / 2)
+            new_average = ((self.traffic_signals[ts].ns_stopped[0] + self.traffic_signals[ts].ew_stopped[0]) / 2)
             rewards[ts] = old_average - new_average
         return rewards
 
