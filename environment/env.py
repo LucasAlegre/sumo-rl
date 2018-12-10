@@ -79,6 +79,7 @@ class SumoEnvironment(Env):
             spaces.Discrete(4))  # EW stopped cars
         )
         self.action_space = spaces.Discrete(2)  # Keep or change
+
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
@@ -90,9 +91,9 @@ class SumoEnvironment(Env):
 
         # Load vehicles
         for _ in range(300):
-            traci.simulationStep
+            traci.simulationStep()
 
-        return
+        return self._compute_observation()
 
     @property
     def sim_step(self):
@@ -110,8 +111,8 @@ class SumoEnvironment(Env):
         for _ in range(self.delta_time):
             traci.simulationStep()
 
-        observation = dict()
-        reward = dict()
+        observation = self._compute_observations()
+        reward = self._compute_rewards()
         for ts in self.ts_ids:
             observation[ts] = 1
         done = self.sim_step > self.sim_max_time
@@ -120,6 +121,9 @@ class SumoEnvironment(Env):
 
     def _radix_encode(self):
 
+    def _compute_observation(self):
+
+    def _compute_rewards(self):
 
     def close(self):
         traci.close()
