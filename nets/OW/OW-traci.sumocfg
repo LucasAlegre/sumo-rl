@@ -1,0 +1,12 @@
+<configuration>
+    <input>
+        <net-file value="OW.net.xml"/>
+		<route-files value="OW-nowait.rou.xml"/>
+    </input>
+	<time>
+        <begin value="0"/>
+        <end value="20000"/>
+    </time>
+    <time-to-teleport value="300"/>
+    <remote-port value="8813"/>
+</configuration>

@@ -1,0 +1,54 @@
+##################################################
+#                                                #
+# Network file automatically generated in        #
+# compliance with the KSP.py script.             #
+#                                                #
+# WARNING! This file is compatible with the      #
+# Maslab's network file specification but is not #
+# complete. It is intended for the specific      #
+# purpose of the present framework.              #
+#                                                #
+# Generated on 18-Jan-2018                       #
+#                                                #
+##################################################
+function simple_function (f) fftt+f-f
+node 1
+node 10
+node 11
+node 12
+node 13
+node 14
+node 15
+node 16
+node 17
+node 2
+node 3
+node 4
+node 5
+node 6
+node 7
+node 8
+node 9
+dedge 10to11 10 11 simple_function 1.177998
+dedge 10to14 10 14 simple_function 1.187650
+dedge 11to15 11 15 simple_function 1.187650
+dedge 12to13 12 13 simple_function 1.179820
+dedge 12to16 12 16 simple_function 1.682878
+dedge 13to14 13 14 simple_function 1.187590
+dedge 14to15 14 15 simple_function 1.187650
+dedge 14to17 14 17 simple_function 1.187590
+dedge 15to3 15 3 simple_function 2.396283
+dedge 16to17 16 17 simple_function 1.189412
+dedge 17to4 17 4 simple_function 2.388429
+dedge 1to5 1 5 simple_function 2.396283
+dedge 2to7 2 7 simple_function 2.393034
+dedge 5to6 5 6 simple_function 1.187650
+dedge 5to8 5 8 simple_function 1.187650
+dedge 6to11 6 11 simple_function 2.658106
+dedge 6to9 6 9 simple_function 1.186751
+dedge 7to12 7 12 simple_function 1.670012
+dedge 7to8 7 8 simple_function 1.179820
+dedge 8to12 8 12 simple_function 1.179820
+dedge 8to9 8 9 simple_function 1.187650
+dedge 9to10 9 10 simple_function 1.187650
+dedge 9to13 9 13 simple_function 1.187650

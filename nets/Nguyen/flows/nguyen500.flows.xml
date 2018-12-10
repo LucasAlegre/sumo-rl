@@ -1,0 +1,6 @@
+<flows>
+    <flow id="0" from="1to5" to="15to3" begin="0" end="3600" number="100"/>
+    <flow id="1" from="1to5" to="17to4" begin="0" end="3600" number="200"/>
+    <flow id="2" from="2to7" to="15to3" begin="0" end="3600" number="150"/>
+    <flow id="3" from="2to7" to="17to4" begin="0" end="3600" number="50"/>
+</flows>
