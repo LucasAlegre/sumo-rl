@@ -21,8 +21,10 @@ class TrafficSignal:
 
     def __init__(self, id):
         self.id = id
-        self.timeOnPhase = 0
+        self.time_on_phase = 0
         self.edges = self._compute_edges()
+        self.ns_stopped = [0, 0]
+        self.ew_stopped = [0, 0]
         phases = [
             traci.trafficlight.Phase(35000, 35000, 35000, "GGGrrr"),   # norte-sul - 0
             traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
@@ -39,20 +41,25 @@ class TrafficSignal:
         return traci.trafficlight.getPhase(self.id)
 
     def keep(self, time_keep):
-        self.timeOnPhase += time_keep
+        self.time_on_phase += time_keep
         traci.trafficlight.setPhaseDuration(self.id, time_keep)
 
     def change(self):
-        self.timeOnPhase = 0
+        self.time_on_phase = 0
         traci.trafficlight.setPhaseDuration(self.id, 0)
 
     def _compute_edges(self):
         """
         :return: Dict green phase to edge id
         """
-
         lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))
         return {0: lanes[:2], 3: lanes[2:]}
+
+    def compute_stopped_vehicles_edge(self):
+        self.ns_stopped[1], self.ew_stopped[1] = self.ns_stopped[0], self.ew_stopped[0]
+        self.ns_stopped[0] = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[0]])
+        self.ew_stopped[0] = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[3]])
+        return self.ns_stopped[0], self.ew_stopped[0]
 
 
 class SumoEnvironment(Env):
@@ -80,6 +87,8 @@ class SumoEnvironment(Env):
         )
         self.action_space = spaces.Discrete(2)  # Keep or change
 
+        self.actual_observation = None
+
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
@@ -93,7 +102,8 @@ class SumoEnvironment(Env):
         for _ in range(300):
             traci.simulationStep()
 
-        return self._compute_observation()
+        self.actual_observation = self._compute_observations()
+        return self.actual_observation
 
     @property
     def sim_step(self):
@@ -113,17 +123,44 @@ class SumoEnvironment(Env):
 
         observation = self._compute_observations()
         reward = self._compute_rewards()
-        for ts in self.ts_ids:
-            observation[ts] = 1
         done = self.sim_step > self.sim_max_time
 
-        return done
+        return observation, reward, done, None
 
-    def _radix_encode(self):
+    def _radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
+        values = [phase_id, duration, ns_stopped, ew_stopped]
+        res = 0
+        for i in range(len(self.radix_factors)):
+            res = res * self.radix_factors[i] + values[i]
 
-    def _compute_observation(self):
+        return res
+
+    def _compute_observations(self):
+        observations = {}
+        for ts in self.ts_ids:
+            phase_id = self.traffic_signals[ts].phase
+            duration = self.traffic_signals[ts].time_on_phase / 5
+            ns_stopped, ew_stopped = self.traffic_signals[ts].compute_stopped_vehicles_edge()
+
+            ns_stopped = ns_stopped / 40
+            ns_class = math.ceil(ns_stopped / 25)
+            if ns_stopped >= 75:
+                ns_class = 3
+            ew_stopped = ew_stopped / 40
+            ew_class = math.ceil(ew_stopped / 25)
+            if ew_stopped >= 75:
+                ew_class = 3
+
+            observations[ts] = self._radix_encode(phase_id, duration, int(ns_class), int(ew_class))
+        return observations
 
     def _compute_rewards(self):
+        rewards = {}
+        for ts in self.ts_ids:
+            old_average = ((self.traffic_signals[ts].nw_stopped[1] + self.traffic_signals[ts].ew_stopped[1]) / 2)
+            new_average = ((self.traffic_signals[ts].nw_stopped[0] + self.traffic_signals[ts].ew_stopped[0]) / 2)
+            rewards[ts] = old_average - new_average
+        return rewards
 
     def close(self):
         traci.close()
