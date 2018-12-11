@@ -62,6 +62,8 @@ class TrafficSignal:
         self.ns_stopped[1], self.ew_stopped[1] = self.ns_stopped[0], self.ew_stopped[0]
         self.ns_stopped[0] = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[0]])
         self.ew_stopped[0] = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[3]])
+        if(self.id == 0):
+            print(self.ns_stopped[0], self.ew_stopped[0])
         return self.ns_stopped[0], self.ew_stopped[0]
 
 
@@ -102,7 +104,7 @@ class SumoEnvironment(Env):
             self.traffic_signals[ts] = TrafficSignal(ts)
 
         # Load vehicles
-        for _ in range(30):
+        for _ in range(300):
             traci.simulationStep()
 
         self.actual_observation = self._compute_observations()
@@ -126,7 +128,7 @@ class SumoEnvironment(Env):
         reward = self._compute_rewards()
         done = self.sim_step > self.sim_max_time
 
-        info = {'step': self.sim_step, 'total_stopped': sum([self.radix_decode(observation[ts])[2] + self.radix_decode(observation[ts])[3] for ts in self.ts_ids])}
+        info = {'step': self.sim_step, 'total_stopped': sum([self.traffic_signals[ts].ns_stopped[0] + self.traffic_signals[ts].ew_stopped[0] for ts in self.ts_ids])}
 
         return observation, reward, done, info
 
@@ -140,8 +142,8 @@ class SumoEnvironment(Env):
     def _compute_observations(self):
         observations = {}
         for ts in self.ts_ids:
-            phase_id = self.traffic_signals[ts].phase
-            duration = self.traffic_signals[ts].time_on_phase / 5
+            phase_id = self.traffic_signals[ts].phase / 3
+            duration = self._discretize_duration(self.traffic_signals[ts].time_on_phase)
             ns_stopped, ew_stopped = self.traffic_signals[ts].compute_stopped_vehicles_edge()
 
             ns_stopped = ns_stopped / 40
@@ -163,6 +165,18 @@ class SumoEnvironment(Env):
             new_average = ((self.traffic_signals[ts].ns_stopped[0] + self.traffic_signals[ts].ew_stopped[0]) / 2)
             rewards[ts] = old_average - new_average
         return rewards
+
+    def _discretize_duration(self, duration):
+        if duration <= 10:
+            return 0
+        elif duration < 15:
+            return 1
+        elif duration < 20:
+            return 2
+        elif duration < 25:
+            return 3
+        else:
+            return 4
 
     def radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
         values = [phase_id, duration, ns_stopped, ew_stopped]
