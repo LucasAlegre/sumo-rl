@@ -17,7 +17,7 @@ class EpsilonGreedy:
             action = np.argmax(q_table[state])
 
         self.epsilon = max(self.epsilon*self.decay, self.min_epsilon)
-        print(self.epsilon)
+        #print(self.epsilon)
         return action
 
     def reset(self):

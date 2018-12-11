@@ -10,10 +10,11 @@ class QLAgent(Agent):
     def __init__(self, starting_state, state_space, action_space, alpha=0.5, gamma=0.95, exploration_strategy=EpsilonGreedy()):
         super(QLAgent, self).__init__(state_space, action_space)
         self.state = starting_state
+        self.action_space = action_space
         self.action = None
         self.alpha = alpha
         self.gamma = gamma
-        self.q_table = {self.state: [0, 0]}
+        self.q_table = {self.state: [0 for _ in range(action_space.n)]}
         self.exploration = exploration_strategy
         self.acc_reward = 0
 
@@ -30,7 +31,7 @@ class QLAgent(Agent):
 
     def learn(self, new_state, reward, done=False):
         if new_state not in self.q_table:
-            self.q_table[new_state] = [0, 0]
+            self.q_table[new_state] = [0 for _ in range(self.action_space.n)]
 
         s = self.state
         s1 = new_state

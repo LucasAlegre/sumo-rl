@@ -42,10 +42,13 @@ class TrafficSignal:
 
     def keep(self, time_keep):
         self.time_on_phase += time_keep
-        traci.trafficlight.setPhaseDuration(self.id, time_keep)
+        traci.trafficlight.setPhaseDuration(self.id, time_keep*100)
 
     def change(self):
-        self.time_on_phase = 0
+        if self.time_on_phase < 10:
+            self.time_on_phase += 5
+            return
+        self.time_on_phase = 3  # delta time - yellow time
         traci.trafficlight.setPhaseDuration(self.id, 0)
 
     def _compute_edges(self):
@@ -99,7 +102,7 @@ class SumoEnvironment(Env):
             self.traffic_signals[ts] = TrafficSignal(ts)
 
         # Load vehicles
-        for _ in range(300):
+        for _ in range(30):
             traci.simulationStep()
 
         self.actual_observation = self._compute_observations()
@@ -111,29 +114,28 @@ class SumoEnvironment(Env):
         return traci.simulation.getCurrentTime()/1000
 
     def step(self, actions):
+        # act
+        self.apply_actions(actions)
 
+        # run simulation for delta time
+        for _ in range(self.delta_time):
+            traci.simulationStep()
+
+        # observe new state and reward
+        observation = self._compute_observations()
+        reward = self._compute_rewards()
+        done = self.sim_step > self.sim_max_time
+
+        info = {'step': self.sim_step, 'total_stopped': sum([self.radix_decode(observation[ts])[2] + self.radix_decode(observation[ts])[3] for ts in self.ts_ids])}
+
+        return observation, reward, done, info
+
+    def apply_actions(self, actions):
         for ts, action in actions.items():
             if action == self.KEEP:
                 self.traffic_signals[ts].keep(self.delta_time)
             elif action == self.CHANGE:
                 self.traffic_signals[ts].change()
-
-        for _ in range(self.delta_time):
-            traci.simulationStep()
-
-        observation = self._compute_observations()
-        reward = self._compute_rewards()
-        done = self.sim_step > self.sim_max_time
-
-        return observation, reward, done, None
-
-    def _radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
-        values = [phase_id, duration, ns_stopped, ew_stopped]
-        res = 0
-        for i in range(len(self.radix_factors)):
-            res = res * self.radix_factors[i] + values[i]
-
-        return int(res)
 
     def _compute_observations(self):
         observations = {}
@@ -151,7 +153,7 @@ class SumoEnvironment(Env):
             if ew_stopped >= 75:
                 ew_class = 3
 
-            observations[ts] = self._radix_encode(phase_id, duration, int(ns_class), int(ew_class))
+            observations[ts] = self.radix_encode(phase_id, duration, int(ns_class), int(ew_class))
         return observations
 
     def _compute_rewards(self):
@@ -161,6 +163,21 @@ class SumoEnvironment(Env):
             new_average = ((self.traffic_signals[ts].ns_stopped[0] + self.traffic_signals[ts].ew_stopped[0]) / 2)
             rewards[ts] = old_average - new_average
         return rewards
+
+    def radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
+        values = [phase_id, duration, ns_stopped, ew_stopped]
+        res = 0
+        for i in range(len(self.radix_factors)):
+            res = res * self.radix_factors[i] + values[i]
+
+        return int(res)
+
+    def radix_decode(self, value):
+        res = [0 for _ in range(len(self.radix_factors))]
+        for i in reversed(range(4)):
+            res[i] = value % self.radix_factors[i]
+            value = value / self.radix_factors[i]
+        return res
 
     def close(self):
         traci.close()

@@ -1,7 +1,7 @@
 <configuration>
     <input>
         <net-file value="4x4.net.xml"/>
-        <route-files value="3-3-6-2.rou.xml"/>
+        <route-files value="3-3-20k.rou.xml"/>
     </input>
     <time>
         <begin value="0"/>
