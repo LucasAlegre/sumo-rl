@@ -91,7 +91,7 @@ class SumoEnvironment(Env):
     def _compute_observations(self):
         observations = {}
         for ts in self.ts_ids:
-            phase_id = self.traffic_signals[ts].phase / 3  # 0 -> 0 and 3 -> 1
+            phase_id = self.traffic_signals[ts].phase / 2  # 0 -> 0 and 2 -> 1
             duration = self._discretize_duration(self.traffic_signals[ts].time_on_phase)
             ns_occupancy, ew_occupancy = self.traffic_signals[ts].get_occupancy()
             ns_occupancy, ew_occupancy = self._discretize_occupancy(ns_occupancy), self._discretize_occupancy(ew_occupancy)

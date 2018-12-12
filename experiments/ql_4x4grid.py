@@ -17,7 +17,7 @@ from exploration.epsilon_greedy import EpsilonGreedy
 
 if __name__ == '__main__':
 
-    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg', use_gui=False, num_seconds=20000)
+    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg', use_gui=True, num_seconds=20000)
 
     initial_states = env.reset()
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
@@ -40,6 +40,6 @@ if __name__ == '__main__':
             ql_agents[agent_id].learn(new_state=s[agent_id], reward=r[agent_id])
 
     df = pd.DataFrame(infos)
-    df.to_csv('outputs/result2.csv')
+    df.to_csv('outputs/resultc1.csv')
 
     env.close()

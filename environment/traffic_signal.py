@@ -4,7 +4,7 @@ import traci
 class TrafficSignal:
 
     NS = 0
-    EW = 3
+    EW = 2
     min_green = 10
 
     def __init__(self, ts_id):
@@ -16,10 +16,8 @@ class TrafficSignal:
         phases = [
             traci.trafficlight.Phase(35000, 35000, 35000, "GGGrrr"),   # north-south -> 0
             traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
-            traci.trafficlight.Phase(1, 1, 1, "rrrrrr"),
-            traci.trafficlight.Phase(35000, 35000, 35000, "rrrGGG"),   # east-west -> 3
+            traci.trafficlight.Phase(35000, 35000, 35000, "rrrGGG"),   # east-west -> 2
             traci.trafficlight.Phase(2000, 2000, 2000, "rrryyy"),
-            traci.trafficlight.Phase(1, 1, 1, "rrrrrr")
         ]
         logic = traci.trafficlight.Logic("new-program", 0, 0, 0, phases)
         traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
@@ -34,7 +32,7 @@ class TrafficSignal:
 
     def change(self):
         if self.time_on_phase < self.min_green:  # min green time => do not change
-            self.time_on_phase += 5
+            self.keep(5)
         else:
             self.time_on_phase = 3  # delta time - yellow time
             traci.trafficlight.setPhaseDuration(self.id, 0)

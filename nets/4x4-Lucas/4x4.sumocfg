@@ -1,7 +1,7 @@
 <configuration>
     <input>
         <net-file value="4x4.net.xml"/>
-        <route-files value="4x4.rou.xml"/>
+        <route-files value="4x4c1.rou.xml"/>
     </input>
     <time>
         <begin value="0"/>
@@ -14,4 +14,5 @@
 <!-- 
  <output>
         <summary-output value="output_sumo.xml"/>
- </output> -->
+ </output>
+ -->
