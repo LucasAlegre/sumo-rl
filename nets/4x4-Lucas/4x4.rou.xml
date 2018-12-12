@@ -1,4 +1,4 @@
-<flows>
+<routes>
 
     <flow id="0" from="16to0" to="12to24" begin="0" end="10000" period="3" departSpeed="0" departPos="base" departLane="best"/>
     <flow id="1" from="17to1" to="13to25" begin="0" end="10000" period="3" departSpeed="0" departPos="base" departLane="best"/>
@@ -20,5 +20,4 @@
     <flow id="14" from="22to8" to="11to30" begin="10000" end="20000" period="2" departSpeed="0" departPos="base" departLane="best"/>
     <flow id="15" from="23to12" to="15to31" begin="10000" end="20000" period="2" departSpeed="0" departPos="base" departLane="best"/> 
 
-
-</flows>
+</routes>
