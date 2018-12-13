@@ -25,7 +25,7 @@ class SumoEnvironment(Env):
     KEEP = 0
     CHANGE = 1
 
-    def __init__(self, conf_file, use_gui=False, num_seconds=20000):
+    def __init__(self, conf_file, use_gui=False, num_seconds=20000, time_to_load_vehicles=0, delta_time=5):
         self._conf = conf_file
         if use_gui:
             self._sumo_binary = sumolib.checkBinary('sumo-gui')
@@ -35,11 +35,12 @@ class SumoEnvironment(Env):
         self.ts_ids = list()
         self.traffic_signals = dict()
         self.sim_max_time = num_seconds
-        self.delta_time = 5  # seconds on sumo at each step
+        self.time_to_load_vehicles = time_to_load_vehicles
+        self.delta_time = delta_time  # seconds on sumo at each step
 
         self.observation_space = spaces.Tuple((
             spaces.Discrete(2),  # Phase NS or EW
-            spaces.Discrete(5),  # Duration of phase
+            spaces.Discrete(9),  # Duration of phase
             spaces.Discrete(4),  # NS stopped cars
             spaces.Discrete(4))  # EW stopped cars
         )
@@ -52,10 +53,10 @@ class SumoEnvironment(Env):
         traci.start(sumo_cmd)
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
-            self.traffic_signals[ts] = TrafficSignal(ts)
+            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time)
 
         # Load vehicles
-        for _ in range(300):
+        for _ in range(self.time_to_load_vehicles):
             traci.simulationStep()
 
         return self._compute_observations()
@@ -84,7 +85,7 @@ class SumoEnvironment(Env):
     def apply_actions(self, actions):
         for ts, action in actions.items():
             if action == self.KEEP:
-                self.traffic_signals[ts].keep(self.delta_time)
+                self.traffic_signals[ts].keep()
             elif action == self.CHANGE:
                 self.traffic_signals[ts].change()
 
@@ -123,8 +124,16 @@ class SumoEnvironment(Env):
             return 2
         elif duration < 25:
             return 3
-        else:
+        elif duration < 30:
             return 4
+        elif duration < 35:
+            return 5
+        elif duration < 40:
+            return 6
+        elif duration < 45:
+            return 7
+        else:
+            return 8
 
     def radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
         values = [phase_id, duration, ns_stopped, ew_stopped]
