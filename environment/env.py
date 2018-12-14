@@ -39,10 +39,10 @@ class SumoEnvironment(Env):
         self.delta_time = delta_time  # seconds on sumo at each step
 
         self.observation_space = spaces.Tuple((
-            spaces.Discrete(2),  # Phase NS or EW
-            spaces.Discrete(9),  # Duration of phase
-            spaces.Discrete(4),  # NS stopped cars
-            spaces.Discrete(4))  # EW stopped cars
+            spaces.Discrete(2),   # Phase NS or EW
+            spaces.Discrete(9),   # Duration of phase
+            spaces.Discrete(10),  # NS stopped cars
+            spaces.Discrete(10))  # EW stopped cars
         )
         self.action_space = spaces.Discrete(2)  # Keep or change
 
@@ -110,10 +110,26 @@ class SumoEnvironment(Env):
         return rewards
 
     def _discretize_occupancy(self, occupancy):
-        discrete = math.ceil(occupancy*100 / 25)
-        if occupancy*100 >= 75:
-            discrete = 3
-        return int(discrete)
+        if occupancy < 0.1:
+            return 0
+        elif occupancy < 0.2:
+            return 1
+        elif occupancy < 0.3:
+            return 2
+        elif occupancy < 0.4:
+            return 3
+        elif occupancy < 0.5:
+            return 4
+        elif occupancy < 0.6:
+            return 5
+        elif occupancy < 0.7:
+            return 6
+        elif occupancy < 0.8:
+            return 7
+        elif occupancy < 0.9:
+            return 8
+        else:
+            return 9
 
     def _discretize_duration(self, duration):
         if duration <= 10:

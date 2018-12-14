@@ -17,13 +17,15 @@ from exploration.epsilon_greedy import EpsilonGreedy
 
 if __name__ == '__main__':
 
-    env = SumoEnvironment('nets/single-intersection/single-intersection.sumocfg', use_gui=True, num_seconds=20000)
+    env = SumoEnvironment(conf_file='nets/single-intersection/single-intersection.sumocfg',
+                          use_gui=True,
+                          num_seconds=20000)
 
     initial_states = env.reset()
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
                              state_space=env.observation_space,
                              action_space=env.action_space,
-                             alpha=0.01,
+                             alpha=0.1,
                              gamma=0.8,
                              exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.999)) for ts in env.ts_ids}
 

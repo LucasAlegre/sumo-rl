@@ -6,12 +6,13 @@ class TrafficSignal:
     NS = 0
     EW = 2
 
-    def __init__(self, ts_id, delta_time):
+    def __init__(self, ts_id, delta_time, phases):
         self.id = ts_id
         self.time_on_phase = 0
         self.delta_time = delta_time
         self.min_green = 10
         self.edges = self._compute_edges()
+        self.edges_capacity = self._compute_edges_capacity()
         self.ns_stopped = [0, 0]
         self.ew_stopped = [0, 0]
         phases = [
@@ -45,9 +46,16 @@ class TrafficSignal:
         lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # remove duplicates and keep order
         return {self.NS: lanes[:2], self.EW: lanes[2:]}  # two lanes per edge
 
+    def _compute_edges_capacity(self):
+        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
+        return {
+            self.NS: sum([traci.lane.getLength(lane) for lane in self.edges[self.NS]]) / vehicle_size_min_gap,
+            self.EW: sum([traci.lane.getLength(lane) for lane in self.edges[self.EW]]) / vehicle_size_min_gap
+        }
+
     def get_occupancy(self):
-        ns_occupancy = sum([traci.lane.getLastStepOccupancy(lane) for lane in self.edges[self.NS]]) / len(self.edges[self.NS])
-        ew_occupancy = sum([traci.lane.getLastStepOccupancy(lane) for lane in self.edges[self.EW]]) / len(self.edges[self.EW])
+        ns_occupancy = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.NS]]) / self.edges_capacity[self.NS]
+        ew_occupancy = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.EW]]) / self.edges_capacity[self.EW]
         return ns_occupancy, ew_occupancy
 
     def get_stopped_vehicles_num(self):

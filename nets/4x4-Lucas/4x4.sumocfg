@@ -7,7 +7,7 @@
         <begin value="0"/>
         <end value="100000"/>
     </time>
-    <max-depart-delay value="0"/>
+    <max-depart-delay value="100"/>
 
 </configuration>
 
