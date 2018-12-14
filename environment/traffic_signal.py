@@ -6,7 +6,7 @@ class TrafficSignal:
     NS = 0
     EW = 2
 
-    def __init__(self, ts_id, delta_time, phases):
+    def __init__(self, ts_id, delta_time):
         self.id = ts_id
         self.time_on_phase = 0
         self.delta_time = delta_time
