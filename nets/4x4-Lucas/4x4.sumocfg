@@ -1,13 +1,13 @@
 <configuration>
     <input>
         <net-file value="4x4.net.xml"/>
-        <route-files value="4x4c2c1.rou.xml"/>
+        <route-files value="4x4c1.rou.xml"/>
     </input>
     <time>
         <begin value="0"/>
         <end value="100000"/>
     </time>
-    <max-depart-delay value="100"/>
+    <max-depart-delay value="0"/>
 
 </configuration>
 

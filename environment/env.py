@@ -34,6 +34,7 @@ class SumoEnvironment(Env):
 
         self.ts_ids = list()
         self.traffic_signals = dict()
+        self.last_measure = dict()  # used to reward function remember last measure
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles
         self.delta_time = delta_time  # seconds on sumo at each step
@@ -54,6 +55,7 @@ class SumoEnvironment(Env):
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
             self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time)
+            self.last_measure[ts] = 0.0
 
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):
@@ -78,7 +80,7 @@ class SumoEnvironment(Env):
         reward = self._compute_rewards()
         done = self.sim_step > self.sim_max_time
 
-        info = {'step': self.sim_step, 'total_stopped': sum([self.traffic_signals[ts].ns_stopped[0] + self.traffic_signals[ts].ew_stopped[0] for ts in self.ts_ids])}
+        info = {'step': self.sim_step, 'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids])}
 
         return observation, reward, done, info
 
@@ -88,6 +90,8 @@ class SumoEnvironment(Env):
                 self.traffic_signals[ts].keep()
             elif action == self.CHANGE:
                 self.traffic_signals[ts].change()
+            else:
+                exit('Invalid action!')
 
     def _compute_observations(self):
         observations = {}
@@ -104,9 +108,9 @@ class SumoEnvironment(Env):
         rewards = {}
         for ts in self.ts_ids:
             ns_stopped, ew_stopped = self.traffic_signals[ts].get_stopped_vehicles_num()
-            old_average = ((self.traffic_signals[ts].ns_stopped[1] + self.traffic_signals[ts].ew_stopped[1]) / 2)
             new_average = ((ns_stopped + ew_stopped) / 2)
-            rewards[ts] = old_average - new_average
+            rewards[ts] = self.last_measure[ts] - new_average
+            self.last_measure[ts] = new_average
         return rewards
 
     def _discretize_occupancy(self, occupancy):

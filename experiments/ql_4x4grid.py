@@ -17,15 +17,15 @@ from exploration.epsilon_greedy import EpsilonGreedy
 
 if __name__ == '__main__':
 
-    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg', use_gui=True, num_seconds=20000, time_to_load_vehicles=300)
+    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg', use_gui=False, num_seconds=20000, time_to_load_vehicles=300)
 
     initial_states = env.reset()
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
                              state_space=env.observation_space,
                              action_space=env.action_space,
-                             alpha=0.01,
+                             alpha=0.1,
                              gamma=0.8,
-                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.998)) for ts in env.ts_ids}
+                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.001, decay=0.999)) for ts in env.ts_ids}
 
     infos = []
     done = False
@@ -41,5 +41,5 @@ if __name__ == '__main__':
     env.close()
 
     df = pd.DataFrame(infos)
-    df.to_csv('outputs/c2c1.csv')
+    df.to_csv('outputs/c1.csv')
 

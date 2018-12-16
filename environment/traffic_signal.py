@@ -13,8 +13,6 @@ class TrafficSignal:
         self.min_green = 10
         self.edges = self._compute_edges()
         self.edges_capacity = self._compute_edges_capacity()
-        self.ns_stopped = [0, 0]
-        self.ew_stopped = [0, 0]
         phases = [
             traci.trafficlight.Phase(42000, 42000, 42000, "GGGrrr"),   # north-south -> 0
             traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
@@ -59,8 +57,19 @@ class TrafficSignal:
         return ns_occupancy, ew_occupancy
 
     def get_stopped_vehicles_num(self):
-        self.ns_stopped[1], self.ew_stopped[1] = self.ns_stopped[0], self.ew_stopped[0]
-        self.ns_stopped[0] = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
-        self.ew_stopped[0] = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]])
+        ns_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
+        ew_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]])
+        #print(ns_stopped, ew_stopped)
+        return ns_stopped, ew_stopped
 
-        return self.ns_stopped[0], self.ew_stopped[0]
+    def get_mean_waiting_time(self):
+        ns_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.NS]])
+        ew_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.EW]])
+        n = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
+        e = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]])
+        if n != 0:
+            ns_wait /= n
+        if e != 0:
+            ew_wait /= e
+        #print(ns_stopped, ew_stopped)
+        return ns_wait, ew_wait
