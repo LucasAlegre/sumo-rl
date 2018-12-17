@@ -79,6 +79,7 @@ class SumoEnvironment(Env):
         observation = self._compute_observations()
         reward = self._compute_rewards()
         done = self.sim_step > self.sim_max_time
+        #print('s=',observation['t'], 'r=', reward['t'], 'a=', actions['t'])
 
         info = {'step': self.sim_step, 'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids])}
 
@@ -101,7 +102,8 @@ class SumoEnvironment(Env):
             ns_occupancy, ew_occupancy = self.traffic_signals[ts].get_occupancy()
             ns_occupancy, ew_occupancy = self._discretize_occupancy(ns_occupancy), self._discretize_occupancy(ew_occupancy)
 
-            observations[ts] = self.radix_encode(phase_id, duration, ns_occupancy, ew_occupancy)
+            #observations[ts] = self.radix_encode(phase_id, duration, ns_occupancy, ew_occupancy)
+            observations[ts] = self._state_to_int([phase_id, duration, ns_occupancy, ew_occupancy])
         return observations
 
     def _compute_rewards(self):
@@ -136,7 +138,7 @@ class SumoEnvironment(Env):
             return 9
 
     def _discretize_duration(self, duration):
-        if duration <= 10:
+        if duration < 10:
             return 0
         elif duration < 15:
             return 1
@@ -154,6 +156,10 @@ class SumoEnvironment(Env):
             return 7
         else:
             return 8
+
+    def _state_to_int(self, state):
+        x = int("".join([str(int(i)) for i in state]))
+        return x
 
     def radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
         values = [phase_id, duration, ns_stopped, ew_stopped]
