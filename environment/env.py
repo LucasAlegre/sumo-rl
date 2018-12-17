@@ -25,7 +25,14 @@ class SumoEnvironment(Env):
     KEEP = 0
     CHANGE = 1
 
-    def __init__(self, conf_file, use_gui=False, num_seconds=20000, time_to_load_vehicles=0, delta_time=5):
+    def __init__(self, conf_file,
+                 use_gui=False,
+                 num_seconds=20000,
+                 time_to_load_vehicles=0,
+                 delta_time=5,
+                 min_green=10,
+                 custom_phases=None):
+
         self._conf = conf_file
         if use_gui:
             self._sumo_binary = sumolib.checkBinary('sumo-gui')
@@ -34,14 +41,16 @@ class SumoEnvironment(Env):
 
         self.ts_ids = list()
         self.traffic_signals = dict()
-        self.last_measure = dict()  # used to reward function remember last measure
+        self.custom_phases = custom_phases
+        self.last_measure = dict()    # used to reward function remember last measure
         self.sim_max_time = num_seconds
-        self.time_to_load_vehicles = time_to_load_vehicles
+        self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
         self.delta_time = delta_time  # seconds on sumo at each step
+        self.min_green = min_green
 
         self.observation_space = spaces.Tuple((
             spaces.Discrete(2),   # Phase NS or EW
-            spaces.Discrete(9),   # Duration of phase
+            spaces.Discrete(10),  # Duration of phase
             spaces.Discrete(10),  # NS stopped cars
             spaces.Discrete(10))  # EW stopped cars
         )
@@ -54,7 +63,7 @@ class SumoEnvironment(Env):
         traci.start(sumo_cmd)
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
-            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time)
+            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.custom_phases)
             self.last_measure[ts] = 0.0
 
         # Load vehicles
@@ -79,7 +88,6 @@ class SumoEnvironment(Env):
         observation = self._compute_observations()
         reward = self._compute_rewards()
         done = self.sim_step > self.sim_max_time
-        #print('s=',observation['t'], 'r=', reward['t'], 'a=', actions['t'])
 
         info = {'step': self.sim_step, 'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids])}
 
@@ -97,13 +105,12 @@ class SumoEnvironment(Env):
     def _compute_observations(self):
         observations = {}
         for ts in self.ts_ids:
-            phase_id = self.traffic_signals[ts].phase / 2  # 0 -> 0 and 2 -> 1
+            phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
             duration = self._discretize_duration(self.traffic_signals[ts].time_on_phase)
-            ns_occupancy, ew_occupancy = self.traffic_signals[ts].get_occupancy()
-            ns_occupancy, ew_occupancy = self._discretize_occupancy(ns_occupancy), self._discretize_occupancy(ew_occupancy)
+            ns_density, ew_density = self.traffic_signals[ts].get_density()
+            ns_density, ew_density = self._discretize_density(ns_density), self._discretize_density(ew_density)
 
-            #observations[ts] = self.radix_encode(phase_id, duration, ns_occupancy, ew_occupancy)
-            observations[ts] = self._state_to_int([phase_id, duration, ns_occupancy, ew_occupancy])
+            observations[ts] = self.radix_encode(phase_id, duration, ns_density, ew_density)
         return observations
 
     def _compute_rewards(self):
@@ -115,65 +122,62 @@ class SumoEnvironment(Env):
             self.last_measure[ts] = new_average
         return rewards
 
-    def _discretize_occupancy(self, occupancy):
-        if occupancy < 0.1:
+    def _discretize_density(self, density):
+        if density < 0.1:
             return 0
-        elif occupancy < 0.2:
+        elif density < 0.2:
             return 1
-        elif occupancy < 0.3:
+        elif density < 0.3:
             return 2
-        elif occupancy < 0.4:
+        elif density < 0.4:
             return 3
-        elif occupancy < 0.5:
+        elif density < 0.5:
             return 4
-        elif occupancy < 0.6:
+        elif density < 0.6:
             return 5
-        elif occupancy < 0.7:
+        elif density < 0.7:
             return 6
-        elif occupancy < 0.8:
+        elif density < 0.8:
             return 7
-        elif occupancy < 0.9:
+        elif density < 0.9:
             return 8
         else:
             return 9
 
     def _discretize_duration(self, duration):
-        if duration < 10:
+        if duration < self.min_green:
             return 0
-        elif duration < 15:
+        elif duration < self.min_green + 5:
             return 1
-        elif duration < 20:
+        elif duration < self.min_green + 10:
             return 2
-        elif duration < 25:
+        elif duration < self.min_green + 15:
             return 3
-        elif duration < 30:
+        elif duration < self.min_green + 20:
             return 4
-        elif duration < 35:
+        elif duration < self.min_green + 25:
             return 5
-        elif duration < 40:
+        elif duration < self.min_green + 30:
             return 6
-        elif duration < 45:
+        elif duration < self.min_green + 35:
             return 7
-        else:
+        elif duration < self.min_green + 40:
             return 8
-
-    def _state_to_int(self, state):
-        x = int("".join([str(int(i)) for i in state]))
-        return x
+        else:
+            return 9
 
     def radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
         values = [phase_id, duration, ns_stopped, ew_stopped]
         res = 0
         for i in range(len(self.radix_factors)):
             res = res * self.radix_factors[i] + values[i]
-
         return int(res)
 
     def radix_decode(self, value):
         res = [0 for _ in range(len(self.radix_factors))]
-        for i in reversed(range(4)):
+        for i in reversed(range(len(self.radix_factors))):
             res[i] = value % self.radix_factors[i]
-            value = value / self.radix_factors[i]
+            value = value // self.radix_factors[i]
         return res
 
     def close(self):

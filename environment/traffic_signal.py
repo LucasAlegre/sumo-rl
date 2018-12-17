@@ -6,21 +6,16 @@ class TrafficSignal:
     NS = 0
     EW = 2
 
-    def __init__(self, ts_id, delta_time):
+    def __init__(self, ts_id, delta_time, min_green, custom_phases):
         self.id = ts_id
         self.time_on_phase = 0
         self.delta_time = delta_time
-        self.min_green = 10
+        self.min_green = min_green
         self.edges = self._compute_edges()
         self.edges_capacity = self._compute_edges_capacity()
-        phases = [
-            traci.trafficlight.Phase(42000, 42000, 42000, "GGGrrr"),   # north-south -> 0
-            traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
-            traci.trafficlight.Phase(42000, 42000, 42000, "rrrGGG"),   # east-west -> 2
-            traci.trafficlight.Phase(2000, 2000, 2000, "rrryyy"),
-        ]
-        logic = traci.trafficlight.Logic("new-program", 0, 0, 0, phases)
-        traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
+        if custom_phases is not None:
+            logic = traci.trafficlight.Logic("new-program", 0, 0, 0, custom_phases)
+            traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
 
     @property
     def phase(self):
@@ -51,10 +46,10 @@ class TrafficSignal:
             self.EW: sum([traci.lane.getLength(lane) for lane in self.edges[self.EW]]) / vehicle_size_min_gap
         }
 
-    def get_occupancy(self):
-        ns_occupancy = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.NS]]) / self.edges_capacity[self.NS]
-        ew_occupancy = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.EW]]) / self.edges_capacity[self.EW]
-        return ns_occupancy, ew_occupancy
+    def get_density(self):
+        ns_density = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.NS]]) / self.edges_capacity[self.NS]
+        ew_density = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.EW]]) / self.edges_capacity[self.EW]
+        return ns_density, ew_density
 
     def get_stopped_vehicles_num(self):
         ns_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
