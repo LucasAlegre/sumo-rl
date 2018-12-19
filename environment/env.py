@@ -106,11 +106,11 @@ class SumoEnvironment(Env):
         observations = {}
         for ts in self.ts_ids:
             phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
-            duration = self._discretize_duration(self.traffic_signals[ts].time_on_phase)
+            elapsed = self._discretize_elapsed_time(self.traffic_signals[ts].time_on_phase)
             ns_density, ew_density = self.traffic_signals[ts].get_density()
             ns_density, ew_density = self._discretize_density(ns_density), self._discretize_density(ew_density)
 
-            observations[ts] = self.radix_encode(phase_id, duration, ns_density, ew_density)
+            observations[ts] = self.radix_encode([phase_id, elapsed, ns_density, ew_density])
         return observations
 
     def _compute_rewards(self):
@@ -144,30 +144,29 @@ class SumoEnvironment(Env):
         else:
             return 9
 
-    def _discretize_duration(self, duration):
-        if duration < self.min_green:
+    def _discretize_elapsed_time(self, elapsed):
+        if elapsed < self.min_green:
             return 0
-        elif duration < self.min_green + 5:
+        elif elapsed < self.min_green + 5:
             return 1
-        elif duration < self.min_green + 10:
+        elif elapsed < self.min_green + 10:
             return 2
-        elif duration < self.min_green + 15:
+        elif elapsed < self.min_green + 15:
             return 3
-        elif duration < self.min_green + 20:
+        elif elapsed < self.min_green + 20:
             return 4
-        elif duration < self.min_green + 25:
+        elif elapsed < self.min_green + 25:
             return 5
-        elif duration < self.min_green + 30:
+        elif elapsed < self.min_green + 30:
             return 6
-        elif duration < self.min_green + 35:
+        elif elapsed < self.min_green + 35:
             return 7
-        elif duration < self.min_green + 40:
+        elif elapsed < self.min_green + 40:
             return 8
         else:
             return 9
 
-    def radix_encode(self, phase_id, duration, ns_stopped, ew_stopped):
-        values = [phase_id, duration, ns_stopped, ew_stopped]
+    def radix_encode(self, values):
         res = 0
         for i in range(len(self.radix_factors)):
             res = res * self.radix_factors[i] + values[i]

@@ -25,6 +25,6 @@ if __name__ == '__main__':
 
     plt.title("")
     plt.xlabel("Time Step")
-    plt.ylabel("Total Nº Stopped Vehicles")
+    plt.ylabel("Total Number of Stopped Vehicles")
     plt.grid()
     plt.show()

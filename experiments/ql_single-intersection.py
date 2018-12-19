@@ -17,32 +17,42 @@ from exploration.epsilon_greedy import EpsilonGreedy
 
 if __name__ == '__main__':
 
-    verbose = True
-    no_learning = False
+    prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                  description="""Q-Learning Single-Intersection""")
+    prs.add_argument("-a", dest="alpha", type=float, default=0.1, required=False, help="Alpha learning rate.\n")
+    prs.add_argument("-g", dest="gamma", type=float, default=0.8, required=False, help="Gamma discount rate.\n")
+    prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
+    prs.add_argument("-me", dest="min_epsilon", type=float, default=0.005, required=False, help="Minimum epsilon.\n")
+    prs.add_argument("-d", dest="decay", type=float, default=1.0, required=False, help="Epsilon decay.\n")
+    prs.add_argument("-mg", dest="min_green", type=int, default=10, required=False, help="Minimum green time.\n")
+    prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
+    prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
+    args = prs.parse_args()
 
     env = SumoEnvironment(conf_file='nets/single-intersection/single-intersection.sumocfg',
-                          use_gui=True,
-                          num_seconds=20000,
-                          min_green=10,
+                          use_gui=args.gui,
+                          num_seconds=args.seconds,
+                          min_green=args.min_green,
                           custom_phases=[
-                            traci.trafficlight.Phase(42000, 42000, 42000, "GGrr"),   # north-south
+                            traci.trafficlight.Phase(10000, 10000, 10000, "GGrr"),   # north-south
                             traci.trafficlight.Phase(2000, 2000, 2000, "yyrr"),
-                            traci.trafficlight.Phase(42000, 42000, 42000, "rrGG"),   # west-east
-                            traci.trafficlight.Phase(2000, 2000, 2000, "rryy"),
+                            traci.trafficlight.Phase(20000, 20000, 20000, "rrGG"),   # west-east
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rryy")
                             ])
 
     initial_states = env.reset()
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
                              state_space=env.observation_space,
                              action_space=env.action_space,
-                             alpha=0.1,
-                             gamma=0.8,
-                             exploration_strategy=EpsilonGreedy(initial_epsilon=0.05, min_epsilon=0.05, decay=1)) for ts in env.ts_ids}
+                             alpha=args.alpha,
+                             gamma=args.gamma,
+                             exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay)) for ts in env.ts_ids}
 
     infos = []
     done = False
-
-    if no_learning:
+    if args.fixed:
         while not done:
             _, _, done, info = env.step({})
             infos.append(info)
@@ -52,7 +62,7 @@ if __name__ == '__main__':
 
             s, r, done, info = env.step(actions=actions)
 
-            if verbose:
+            if args.v:
                 print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(s['t']), 'r=', r['t'])
 
             infos.append(info)
@@ -62,5 +72,5 @@ if __name__ == '__main__':
     env.close()
 
     df = pd.DataFrame(infos)
-    df.to_csv('outputs/single-intersection.csv')
+    df.to_csv('outputs/single-intersection.csv', index=False)
 
