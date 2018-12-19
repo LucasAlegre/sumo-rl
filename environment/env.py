@@ -31,6 +31,7 @@ class SumoEnvironment(Env):
                  time_to_load_vehicles=0,
                  delta_time=5,
                  min_green=10,
+                 max_green=60,
                  custom_phases=None):
 
         self._conf = conf_file
@@ -47,10 +48,11 @@ class SumoEnvironment(Env):
         self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
         self.delta_time = delta_time  # seconds on sumo at each step
         self.min_green = min_green
+        self.max_green = max_green
 
         self.observation_space = spaces.Tuple((
             spaces.Discrete(2),   # Phase NS or EW
-            spaces.Discrete(10),  # Duration of phase
+            spaces.Discrete(self.max_green//self.delta_time),  # Elapsed time of phase
             spaces.Discrete(10),  # NS stopped cars
             spaces.Discrete(10))  # EW stopped cars
         )
@@ -63,7 +65,7 @@ class SumoEnvironment(Env):
         traci.start(sumo_cmd)
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
-            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.custom_phases)
+            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
             self.last_measure[ts] = 0.0
 
         # Load vehicles
@@ -74,7 +76,7 @@ class SumoEnvironment(Env):
 
     @property
     def sim_step(self):
-        return traci.simulation.getCurrentTime()/1000
+        return traci.simulation.getCurrentTime()/1000  # milliseconds to seconds
 
     def step(self, actions):
         # act
@@ -145,26 +147,13 @@ class SumoEnvironment(Env):
             return 9
 
     def _discretize_elapsed_time(self, elapsed):
-        if elapsed < self.min_green:
-            return 0
-        elif elapsed < self.min_green + 5:
-            return 1
-        elif elapsed < self.min_green + 10:
-            return 2
-        elif elapsed < self.min_green + 15:
-            return 3
-        elif elapsed < self.min_green + 20:
-            return 4
-        elif elapsed < self.min_green + 25:
-            return 5
-        elif elapsed < self.min_green + 30:
-            return 6
-        elif elapsed < self.min_green + 35:
-            return 7
-        elif elapsed < self.min_green + 40:
-            return 8
-        else:
-            return 9
+        classe = 0
+        for i in range(self.max_green//self.delta_time):
+            if elapsed <= self.delta_time + i*self.delta_time:
+                return classe
+            else:
+                classe += 1
+        return classe
 
     def radix_encode(self, values):
         res = 0

@@ -24,21 +24,27 @@ if __name__ == '__main__':
     prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
     prs.add_argument("-me", dest="min_epsilon", type=float, default=0.005, required=False, help="Minimum epsilon.\n")
     prs.add_argument("-d", dest="decay", type=float, default=1.0, required=False, help="Epsilon decay.\n")
-    prs.add_argument("-mg", dest="min_green", type=int, default=10, required=False, help="Minimum green time.\n")
+    prs.add_argument("-mingreen", dest="min_green", type=int, default=10, required=False, help="Minimum green time.\n")
+    prs.add_argument("-maxgreen", dest="max_green", type=int, default=60, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
+    prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
+    prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
     prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     args = prs.parse_args()
+    ns = args.ns * 1000
+    we = args.we * 1000
 
     env = SumoEnvironment(conf_file='nets/single-intersection/single-intersection.sumocfg',
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
+                          max_green=args.max_green,
                           custom_phases=[
-                            traci.trafficlight.Phase(10000, 10000, 10000, "GGrr"),   # north-south
+                            traci.trafficlight.Phase(ns, ns, ns, "GGrr"),   # north-south
                             traci.trafficlight.Phase(2000, 2000, 2000, "yyrr"),
-                            traci.trafficlight.Phase(20000, 20000, 20000, "rrGG"),   # west-east
+                            traci.trafficlight.Phase(we, we, we, "rrGG"),   # west-east
                             traci.trafficlight.Phase(2000, 2000, 2000, "rryy")
                             ])
 

@@ -6,11 +6,12 @@ class TrafficSignal:
     NS = 0
     EW = 2
 
-    def __init__(self, ts_id, delta_time, min_green, custom_phases):
+    def __init__(self, ts_id, delta_time, min_green, max_green, custom_phases):
         self.id = ts_id
         self.time_on_phase = 0
         self.delta_time = delta_time
         self.min_green = min_green
+        self.max_green = max_green
         self.edges = self._compute_edges()
         self.edges_capacity = self._compute_edges_capacity()
         if custom_phases is not None:
@@ -22,8 +23,11 @@ class TrafficSignal:
         return traci.trafficlight.getPhase(self.id)
 
     def keep(self):
-        self.time_on_phase += self.delta_time
-        traci.trafficlight.setPhaseDuration(self.id, self.delta_time)
+        if self.time_on_phase >= self.max_green:
+            self.change()
+        else:
+            self.time_on_phase += self.delta_time
+            traci.trafficlight.setPhaseDuration(self.id, self.delta_time)
 
     def change(self):
         if self.time_on_phase < self.min_green:  # min green time => do not change
