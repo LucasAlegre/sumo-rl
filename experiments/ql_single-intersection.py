@@ -25,12 +25,13 @@ if __name__ == '__main__':
     prs.add_argument("-me", dest="min_epsilon", type=float, default=0.005, required=False, help="Minimum epsilon.\n")
     prs.add_argument("-d", dest="decay", type=float, default=1.0, required=False, help="Epsilon decay.\n")
     prs.add_argument("-mingreen", dest="min_green", type=int, default=10, required=False, help="Minimum green time.\n")
-    prs.add_argument("-maxgreen", dest="max_green", type=int, default=60, required=False, help="Maximum green time.\n")
+    prs.add_argument("-maxgreen", dest="max_green", type=int, default=30, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
     prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
     prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
     prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function (queue or wait).\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     args = prs.parse_args()
     ns = args.ns * 1000
@@ -47,6 +48,10 @@ if __name__ == '__main__':
                             traci.trafficlight.Phase(we, we, we, "rrGG"),   # west-east
                             traci.trafficlight.Phase(2000, 2000, 2000, "rryy")
                             ])
+    if args.reward == 'queue':
+        env._compute_rewards = env._queue_average_reward
+    else:
+        env._compute_rewards = env._waiting_time_reward
 
     initial_states = env.reset()
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
@@ -56,8 +61,8 @@ if __name__ == '__main__':
                              gamma=args.gamma,
                              exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay)) for ts in env.ts_ids}
 
-    infos = []
     done = False
+    infos = []
     if args.fixed:
         while not done:
             _, _, done, info = env.step({})
@@ -67,11 +72,10 @@ if __name__ == '__main__':
             actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
             s, r, done, info = env.step(actions=actions)
+            infos.append(info)
 
             if args.v:
                 print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(s['t']), 'r=', r['t'])
-
-            infos.append(info)
 
             for agent_id in ql_agents.keys():
                 ql_agents[agent_id].learn(new_state=s[agent_id], reward=r[agent_id])
@@ -79,4 +83,6 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(infos)
     df.to_csv('outputs/single-intersection.csv', index=False)
+
+
 

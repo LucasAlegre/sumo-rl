@@ -7,12 +7,8 @@
         <begin value="0"/>
         <end value="100000"/>
     </time>
-    <max-depart-delay value="3600"/>
-
 </configuration>
 
-<!-- 
- <output>
-        <summary-output value="output_sumo.xml"/>
- </output>
- -->
+
+
+

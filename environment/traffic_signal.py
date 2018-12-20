@@ -58,17 +58,9 @@ class TrafficSignal:
     def get_stopped_vehicles_num(self):
         ns_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
         ew_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]])
-        #print(ns_stopped, ew_stopped)
         return ns_stopped, ew_stopped
 
-    def get_mean_waiting_time(self):
+    def get_waiting_time(self):
         ns_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.NS]])
         ew_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.EW]])
-        n = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
-        e = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]])
-        if n != 0:
-            ns_wait /= n
-        if e != 0:
-            ew_wait /= e
-        #print(ns_stopped, ew_stopped)
         return ns_wait, ew_wait

@@ -2,5 +2,5 @@
     <route id="route_ns" edges="n_t t_s"/>
     <route id="route_we" edges="w_t t_e"/>
     <flow id="flow_ns" route="route_ns" begin="0" end="20000" period="6" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_we" route="route_we" begin="0" end="20000" period="2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="route_we" begin="0" end="20000" period="0.5" departSpeed="max" departPos="base" departLane="best"/>
 </routes>

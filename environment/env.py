@@ -28,10 +28,11 @@ class SumoEnvironment(Env):
     def __init__(self, conf_file,
                  use_gui=False,
                  num_seconds=20000,
+                 max_depart_delay=3600,
                  time_to_load_vehicles=0,
                  delta_time=5,
                  min_green=10,
-                 max_green=60,
+                 max_green=50,
                  custom_phases=None):
 
         self._conf = conf_file
@@ -47,8 +48,11 @@ class SumoEnvironment(Env):
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
         self.delta_time = delta_time  # seconds on sumo at each step
+        self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
         self.min_green = min_green
         self.max_green = max_green
+        self.total_load_vehicles = 0
+        self.total_departed_vehicles = 0
 
         self.observation_space = spaces.Tuple((
             spaces.Discrete(2),   # Phase NS or EW
@@ -61,8 +65,9 @@ class SumoEnvironment(Env):
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
-        sumo_cmd = [self._sumo_binary, '-c', self._conf]
+        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay)]
         traci.start(sumo_cmd)
+
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
             self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
@@ -70,7 +75,7 @@ class SumoEnvironment(Env):
 
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):
-            traci.simulationStep()
+            self._sumo_step()
 
         return self._compute_observations()
 
@@ -84,16 +89,14 @@ class SumoEnvironment(Env):
 
         # run simulation for delta time
         for _ in range(self.delta_time):
-            traci.simulationStep()
+            self._sumo_step()
 
         # observe new state and reward
         observation = self._compute_observations()
         reward = self._compute_rewards()
         done = self.sim_step > self.sim_max_time
 
-        info = {'step': self.sim_step, 'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids])}
-
-        return observation, reward, done, info
+        return observation, reward, done, self._compute_step_info()
 
     def apply_actions(self, actions):
         for ts, action in actions.items():
@@ -116,12 +119,24 @@ class SumoEnvironment(Env):
         return observations
 
     def _compute_rewards(self):
+        return self._waiting_time_reward()
+
+    def _queue_average_reward(self):
         rewards = {}
         for ts in self.ts_ids:
             ns_stopped, ew_stopped = self.traffic_signals[ts].get_stopped_vehicles_num()
             new_average = ((ns_stopped + ew_stopped) / 2)
             rewards[ts] = self.last_measure[ts] - new_average
             self.last_measure[ts] = new_average
+        return rewards
+
+    def _waiting_time_reward(self):
+        rewards = {}
+        for ts in self.ts_ids:
+            ns_wait, ew_wait = self.traffic_signals[ts].get_waiting_time()
+            ts_wait = ns_wait + ew_wait
+            rewards[ts] = self.last_measure[ts] - ts_wait
+            self.last_measure[ts] = ts_wait
         return rewards
 
     def _discretize_density(self, density):
@@ -167,6 +182,23 @@ class SumoEnvironment(Env):
             res[i] = value % self.radix_factors[i]
             value = value // self.radix_factors[i]
         return res
+
+    def _sumo_step(self):
+        traci.simulationStep()
+        self.total_load_vehicles += traci.simulation.getLoadedNumber()
+        self.total_departed_vehicles += traci.simulation.getDepartedNumber()
+
+    @property
+    def buffer_size(self):
+        return self.total_load_vehicles - self.total_departed_vehicles
+
+    def _compute_step_info(self):
+        return {
+            'step_time': self.sim_step,
+            'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
+            'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids]),
+            'buffer_size': self.buffer_size
+        }
 
     def close(self):
         traci.close()

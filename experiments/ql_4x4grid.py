@@ -2,7 +2,6 @@ import argparse
 import os
 import sys
 import pandas as pd
-import matplotlib.pyplot as plt
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
