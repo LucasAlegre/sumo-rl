@@ -31,7 +31,7 @@ if __name__ == '__main__':
     prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
     prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
     prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
-    prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function (queue or wait).\n")
+    prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-f wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     args = prs.parse_args()
     ns = args.ns * 1000

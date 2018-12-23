@@ -28,7 +28,7 @@ class SumoEnvironment(Env):
     def __init__(self, conf_file,
                  use_gui=False,
                  num_seconds=20000,
-                 max_depart_delay=3600,
+                 max_depart_delay=100000,
                  time_to_load_vehicles=0,
                  delta_time=5,
                  min_green=10,
@@ -57,15 +57,17 @@ class SumoEnvironment(Env):
         self.observation_space = spaces.Tuple((
             spaces.Discrete(2),   # Phase NS or EW
             spaces.Discrete(self.max_green//self.delta_time),  # Elapsed time of phase
-            spaces.Discrete(10),  # NS stopped cars
-            spaces.Discrete(10))  # EW stopped cars
+            spaces.Discrete(10),  # NS density
+            spaces.Discrete(10),  # EW density
+            spaces.Discrete(10),  # NS stopped-density
+            spaces.Discrete(10))  # EW stopped-density
         )
         self.action_space = spaces.Discrete(2)  # Keep or change
 
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
-        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay)]
+        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '100']
         traci.start(sumo_cmd)
 
         self.ts_ids = traci.trafficlight.getIDList()
@@ -112,20 +114,25 @@ class SumoEnvironment(Env):
         for ts in self.ts_ids:
             phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
             elapsed = self._discretize_elapsed_time(self.traffic_signals[ts].time_on_phase)
+
             ns_density, ew_density = self.traffic_signals[ts].get_density()
             ns_density, ew_density = self._discretize_density(ns_density), self._discretize_density(ew_density)
 
-            observations[ts] = self.radix_encode([phase_id, elapsed, ns_density, ew_density])
+            ns_stop_density, ew_stop_density = self.traffic_signals[ts].get_stopped_density()
+            ns_stop_density, ew_stop_density = self._discretize_density(ns_stop_density), self._discretize_density(ew_stop_density)
+
+            observations[ts] = self.radix_encode([phase_id, elapsed, ns_density, ew_density, ns_stop_density, ew_stop_density])
         return observations
 
     def _compute_rewards(self):
         return self._waiting_time_reward()
+        #return self._queue_average_reward()
 
     def _queue_average_reward(self):
         rewards = {}
         for ts in self.ts_ids:
             ns_stopped, ew_stopped = self.traffic_signals[ts].get_stopped_vehicles_num()
-            new_average = ((ns_stopped + ew_stopped) / 2)
+            new_average = (ns_stopped + ew_stopped) / 2
             rewards[ts] = self.last_measure[ts] - new_average
             self.last_measure[ts] = new_average
         return rewards
@@ -162,13 +169,9 @@ class SumoEnvironment(Env):
             return 9
 
     def _discretize_elapsed_time(self, elapsed):
-        classe = 0
         for i in range(self.max_green//self.delta_time):
             if elapsed <= self.delta_time + i*self.delta_time:
-                return classe
-            else:
-                classe += 1
-        return classe
+                return i
 
     def radix_encode(self, values):
         res = 0

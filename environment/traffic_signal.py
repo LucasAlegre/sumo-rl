@@ -55,6 +55,11 @@ class TrafficSignal:
         ew_density = sum([traci.lane.getLastStepVehicleNumber(lane) for lane in self.edges[self.EW]]) / self.edges_capacity[self.EW]
         return ns_density, ew_density
 
+    def get_stopped_density(self):
+        ns_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]]) / self.edges_capacity[self.NS]
+        ew_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]]) / self.edges_capacity[self.EW]
+        return ns_stopped, ew_stopped
+
     def get_stopped_vehicles_num(self):
         ns_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.NS]])
         ew_stopped = sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.edges[self.EW]])
@@ -64,3 +69,13 @@ class TrafficSignal:
         ns_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.NS]])
         ew_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.EW]])
         return ns_wait, ew_wait
+
+        #ls = traci.lane.getLastStepVehicleIDs(self.edges[self.NS][0]) + traci.lane.getLastStepVehicleIDs(self.edges[self.NS][1])
+        #ns_wait = sum([traci.vehicle.getAccumulatedWaitingTime(id) for id in ls])
+
+        #ls = traci.lane.getLastStepVehicleIDs(self.edges[self.EW][0]) + traci.lane.getLastStepVehicleIDs(self.edges[self.EW][1])
+        #ew_wait = sum([traci.vehicle.getAccumulatedWaitingTime(id) for id in ls])
+
+        #return ns_wait, ew_wait
+
+

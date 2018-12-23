@@ -9,6 +9,7 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
+import traci
 from environment.env import SumoEnvironment
 from agents.ql_agent import QLAgent
 from exploration.epsilon_greedy import EpsilonGreedy
@@ -16,7 +17,17 @@ from exploration.epsilon_greedy import EpsilonGreedy
 
 if __name__ == '__main__':
 
-    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg', use_gui=False, num_seconds=20000, time_to_load_vehicles=300)
+    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg',
+                          use_gui=True,
+                          num_seconds=20000,
+                          time_to_load_vehicles=300,
+                          max_depart_delay=0,
+                          custom_phases=[
+                            traci.trafficlight.Phase(1000, 1000, 1000, "GGGrrr"),   # north-south
+                            traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
+                            traci.trafficlight.Phase(100000, 100000, 100000, "rrrGGG"),   # west-east
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rrryyy")
+                            ])
 
     initial_states = env.reset()
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
@@ -24,14 +35,14 @@ if __name__ == '__main__':
                              action_space=env.action_space,
                              alpha=0.1,
                              gamma=0.8,
-                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.999)) for ts in env.ts_ids}
+                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.9985)) for ts in env.ts_ids}
 
     infos = []
     done = False
     while not done:
         actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
-        s, r, done, info = env.step(actions=actions)
+        s, r, done, info = env.step(actions={})
 
         infos.append(info)
 
@@ -40,5 +51,5 @@ if __name__ == '__main__':
     env.close()
 
     df = pd.DataFrame(infos)
-    df.to_csv('outputs/c2.csv')
+    df.to_csv('outputs/c1.csv')
 

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     plt.grid()
 
     plt.figure(3)
-    plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=5))
+    plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=6))
     plt.title("")
     plt.xlabel("Time Step")
     plt.ylabel("Buffer Size")
