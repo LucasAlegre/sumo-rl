@@ -67,13 +67,16 @@ class SumoEnvironment(Env):
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
-        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '100']
+        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '1000']
         traci.start(sumo_cmd)
 
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
             self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
             self.last_measure[ts] = 0.0
+
+        self.total_load_vehicles = 0
+        self.total_departed_vehicles = 0
 
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):

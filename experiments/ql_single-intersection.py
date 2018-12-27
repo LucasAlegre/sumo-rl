@@ -33,6 +33,7 @@ if __name__ == '__main__':
     prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-f wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
+    prs.add_argument("-ep", dest="episodes", type=int, default=1, help="Number of episodes.\n")
     args = prs.parse_args()
     ns = args.ns * 1000
     we = args.we * 1000
@@ -53,36 +54,37 @@ if __name__ == '__main__':
     else:
         env._compute_rewards = env._waiting_time_reward
 
-    initial_states = env.reset()
-    ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
-                             state_space=env.observation_space,
-                             action_space=env.action_space,
-                             alpha=args.alpha,
-                             gamma=args.gamma,
-                             exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay)) for ts in env.ts_ids}
+    for episode in range(1, args.episodes+1):
+        initial_states = env.reset()
+        ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
+                                 state_space=env.observation_space,
+                                 action_space=env.action_space,
+                                 alpha=args.alpha,
+                                 gamma=args.gamma,
+                                 exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay)) for ts in env.ts_ids}
 
-    done = False
-    infos = []
-    if args.fixed:
-        while not done:
-            _, _, done, info = env.step({})
-            infos.append(info)
-    else:
-        while not done:
-            actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
+        done = False
+        infos = []
+        if args.fixed:
+            while not done:
+                _, _, done, info = env.step({})
+                infos.append(info)
+        else:
+            while not done:
+                actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
-            s, r, done, info = env.step(actions=actions)
-            infos.append(info)
+                s, r, done, info = env.step(actions=actions)
+                infos.append(info)
 
-            if args.v:
-                print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(s['t']), 'r=', r['t'])
+                if args.v:
+                    print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(s['t']), 'r=', r['t'])
 
-            for agent_id in ql_agents.keys():
-                ql_agents[agent_id].learn(new_state=s[agent_id], reward=r[agent_id])
-    env.close()
+                for agent_id in ql_agents.keys():
+                    ql_agents[agent_id].learn(new_state=s[agent_id], reward=r[agent_id])
+        env.close()
 
-    df = pd.DataFrame(infos)
-    df.to_csv('outputs/single-intersection.csv', index=False)
+        df = pd.DataFrame(infos)
+        df.to_csv('outputs/single-intersection-ep_{}.csv'.format(episode), index=False)
 
 
 

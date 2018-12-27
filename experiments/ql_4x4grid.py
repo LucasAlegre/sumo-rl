@@ -18,14 +18,14 @@ from exploration.epsilon_greedy import EpsilonGreedy
 if __name__ == '__main__':
 
     env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg',
-                          use_gui=True,
+                          use_gui=False,
                           num_seconds=20000,
                           time_to_load_vehicles=300,
                           max_depart_delay=0,
                           custom_phases=[
-                            traci.trafficlight.Phase(1000, 1000, 1000, "GGGrrr"),   # north-south
+                            traci.trafficlight.Phase(42000, 42000, 42000, "GGGrrr"),   # north-south
                             traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
-                            traci.trafficlight.Phase(100000, 100000, 100000, "rrrGGG"),   # west-east
+                            traci.trafficlight.Phase(42000, 42000, 42000, "rrrGGG"),   # west-east
                             traci.trafficlight.Phase(2000, 2000, 2000, "rrryyy")
                             ])
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     while not done:
         actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
-        s, r, done, info = env.step(actions={})
+        s, r, done, info = env.step(actions=actions)
 
         infos.append(info)
 
@@ -51,5 +51,5 @@ if __name__ == '__main__':
     env.close()
 
     df = pd.DataFrame(infos)
-    df.to_csv('outputs/c1.csv')
+    df.to_csv('outputs/c2.csv')
 
