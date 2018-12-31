@@ -5,8 +5,9 @@ class TrafficSignal:
 
     NS = 0
     EW = 2
+    vehicles = {}
 
-    def __init__(self, ts_id, delta_time, min_green, max_green, custom_phases):
+    def __init__(self, ts_id, delta_time, min_green, max_green, custom_phases=None):
         self.id = ts_id
         self.time_on_phase = 0
         self.delta_time = delta_time
@@ -66,15 +67,27 @@ class TrafficSignal:
         return ns_stopped, ew_stopped
 
     def get_waiting_time(self):
-        #ns_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.NS]])
-        #ew_wait = sum([traci.lane.getWaitingTime(lane) for lane in self.edges[self.EW]])
-        #return ns_wait, ew_wait
-
         ls = traci.lane.getLastStepVehicleIDs(self.edges[self.NS][0]) + traci.lane.getLastStepVehicleIDs(self.edges[self.NS][1])
-        ns_wait = sum([traci.vehicle.getAccumulatedWaitingTime(id) for id in ls])
+        ns_wait = 0.0
+        for veh in ls:
+            veh_lane = traci.vehicle.getLaneID(veh)
+            acc = traci.vehicle.getAccumulatedWaitingTime(veh)
+            if veh not in self.vehicles:
+                self.vehicles[veh] = {veh_lane: acc}
+            else:
+                self.vehicles[veh][veh_lane] = acc - sum([self.vehicles[veh][lane] for lane in self.vehicles[veh].keys() if lane != veh_lane])
+            ns_wait += self.vehicles[veh][veh_lane]
 
         ls = traci.lane.getLastStepVehicleIDs(self.edges[self.EW][0]) + traci.lane.getLastStepVehicleIDs(self.edges[self.EW][1])
-        ew_wait = sum([traci.vehicle.getAccumulatedWaitingTime(id) for id in ls])
+        ew_wait = 0.0
+        for veh in ls:
+            veh_lane = traci.vehicle.getLaneID(veh)
+            acc = traci.vehicle.getAccumulatedWaitingTime(veh)
+            if veh not in self.vehicles:
+                self.vehicles[veh] = {veh_lane: acc}
+            else:
+                self.vehicles[veh][veh_lane] = acc - sum([self.vehicles[veh][lane] for lane in self.vehicles[veh].keys() if lane != veh_lane])
+            ew_wait += self.vehicles[veh][veh_lane]
 
         return ns_wait, ew_wait
 

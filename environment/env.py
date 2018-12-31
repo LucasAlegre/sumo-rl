@@ -67,7 +67,7 @@ class SumoEnvironment(Env):
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
-        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '1000']
+        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '10000']
         traci.start(sumo_cmd)
 
         self.ts_ids = traci.trafficlight.getIDList()
@@ -129,6 +129,7 @@ class SumoEnvironment(Env):
 
     def _compute_rewards(self):
         return self._waiting_time_reward()
+        #return self._waiting_time_reward2()
         #return self._queue_average_reward()
 
     def _queue_average_reward(self):
@@ -147,6 +148,18 @@ class SumoEnvironment(Env):
             ts_wait = ns_wait + ew_wait
             rewards[ts] = self.last_measure[ts] - ts_wait
             self.last_measure[ts] = ts_wait
+        return rewards
+
+    def _waiting_time_reward2(self):
+        rewards = {}
+        for ts in self.ts_ids:
+            ns_wait, ew_wait = self.traffic_signals[ts].get_waiting_time()
+            ts_wait = ns_wait + ew_wait
+            if ts_wait == 0:
+                rewards[ts] = 1.0
+            else:
+                rewards[ts] = 1.0/ts_wait
+
         return rewards
 
     def _discretize_density(self, density):

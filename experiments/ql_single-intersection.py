@@ -33,7 +33,7 @@ if __name__ == '__main__':
     prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-f wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
-    prs.add_argument("-ep", dest="episodes", type=int, default=1, help="Number of episodes.\n")
+    prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
     ns = args.ns * 1000
     we = args.we * 1000
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     else:
         env._compute_rewards = env._waiting_time_reward
 
-    for episode in range(1, args.episodes+1):
+    for run in range(1, args.runs+1):
         initial_states = env.reset()
         ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
                                  state_space=env.observation_space,
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('outputs/single-intersection-ep_{}.csv'.format(episode), index=False)
+        df.to_csv('outputs/single-intersection-ep_{}.csv'.format(run), index=False)
 
 
 

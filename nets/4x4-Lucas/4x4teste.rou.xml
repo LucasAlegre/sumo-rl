@@ -1,0 +1,8 @@
+<routes>
+
+    <flow id="0" from="16to0" to="12to24" begin="0" end="20000" period="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="1" from="17to1" to="13to25" begin="0" end="20000" period="1000" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="2" from="18to2" to="14to26" begin="0" end="20000" period="1000" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="3" from="19to3" to="15to27" begin="0" end="20000" period="1000" departSpeed="max" departPos="base" departLane="best"/>
+
+</routes>

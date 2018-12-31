@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import glob
-from scipy.stats import sem
 
 
 def moving_average(interval, window_size):
@@ -49,21 +48,21 @@ if __name__ == '__main__':
         df = pd.read_csv(args.file)
 
         plt.figure(1)
-        plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=6))
+        plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=5))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Total Number of Stopped Vehicles")
         plt.grid()
 
         plt.figure(2)
-        plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=6))
+        plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=5))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Total Waiting Time of Vehicles")
         plt.grid()
 
         plt.figure(3)
-        plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=6))
+        plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=5))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Buffer Size")

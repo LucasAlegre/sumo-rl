@@ -17,9 +17,13 @@ from exploration.epsilon_greedy import EpsilonGreedy
 
 if __name__ == '__main__':
 
+    alpha = 0.1
+    gamma = 0.99
+    decay = 1
+
     env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg',
                           use_gui=False,
-                          num_seconds=20000,
+                          num_seconds=80000,
                           time_to_load_vehicles=300,
                           max_depart_delay=0,
                           custom_phases=[
@@ -33,9 +37,9 @@ if __name__ == '__main__':
     ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
                              state_space=env.observation_space,
                              action_space=env.action_space,
-                             alpha=0.1,
-                             gamma=0.8,
-                             exploration_strategy=EpsilonGreedy(initial_epsilon=1.0, min_epsilon=0.005, decay=0.9985)) for ts in env.ts_ids}
+                             alpha=alpha,
+                             gamma=gamma,
+                             exploration_strategy=EpsilonGreedy(initial_epsilon=0.05, min_epsilon=0.005, decay=decay)) for ts in env.ts_ids}
 
     infos = []
     done = False
@@ -51,5 +55,5 @@ if __name__ == '__main__':
     env.close()
 
     df = pd.DataFrame(infos)
-    df.to_csv('outputs/c2.csv')
+    df.to_csv('outputs/c1c2_alpha{}_gamma{}_decay{}.csv'.format(alpha, gamma, decay), index=False)
 
