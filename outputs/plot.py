@@ -14,6 +14,7 @@ if __name__ == '__main__':
 
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     prs.add_argument("-f", dest="file", required=True, help="The csv file to plot.\n")
+    prs.add_argument("-w", dest="window", required=False, default=5, type=int, help="The moving average window.\n")
     prs.add_argument("-average", action='store_true', default=False)
     args = prs.parse_args()
 
@@ -27,8 +28,8 @@ if __name__ == '__main__':
                 main_df = pd.concat((main_df, df))
 
         steps = main_df.groupby('step_time').total_stopped.mean().keys()
-        mean_stopped = moving_average(main_df.groupby('step_time').mean()['total_stopped'], window_size=5)
-        sem = moving_average(main_df.groupby('step_time').sem()['total_stopped'], window_size=5)
+        mean_stopped = moving_average(main_df.groupby('step_time').mean()['total_stopped'], window_size=args.window)
+        sem = moving_average(main_df.groupby('step_time').sem()['total_stopped'], window_size=args.window)
         plt.figure(1, figsize=(12, 9))
         ax = plt.subplot()
         #plt.xlim([0, 20000])
@@ -48,21 +49,21 @@ if __name__ == '__main__':
         df = pd.read_csv(args.file)
 
         plt.figure(1)
-        plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=5))
+        plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=args.window))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Total Number of Stopped Vehicles")
         plt.grid()
 
         plt.figure(2)
-        plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=5))
+        plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=args.window))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Total Waiting Time of Vehicles")
         plt.grid()
 
         plt.figure(3)
-        plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=5))
+        plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=args.window))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Buffer Size")
