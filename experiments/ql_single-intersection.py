@@ -84,7 +84,7 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('outputs/single-intersection-ep_{}.csv'.format(run), index=False)
+        df.to_csv('outputs/single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
 
 
 

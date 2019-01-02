@@ -8,15 +8,18 @@ else:
 import traci
 import sumolib
 from gym import Env
+from ray.rllib.env.multi_agent_env import MultiAgentEnv
+from gym import error, spaces, utils
+from gym.utils import seeding
 import traci.constants as tc
 from gym import spaces
 import numpy as np
-
+import pandas as pd
 
 from .traffic_signal import TrafficSignal
 
 
-class SumoEnvironment(Env):
+class SumoEnvironment(MultiAgentEnv):
 
     KEEP = 0
     CHANGE = 1
@@ -47,22 +50,21 @@ class SumoEnvironment(Env):
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
         self.min_green = min_green
         self.max_green = max_green
-        self.total_load_vehicles = 0
-        self.total_departed_vehicles = 0
 
-        self.observation_space = spaces.Tuple((
-            spaces.Discrete(2),   # Phase NS or EW
-            spaces.Discrete(self.max_green//self.delta_time),  # Elapsed time of phase
-            spaces.Discrete(10),  # NS density
-            spaces.Discrete(10),  # EW density
-            spaces.Discrete(10),  # NS stopped-density
-            spaces.Discrete(10))  # EW stopped-density
-        )
+        self.observation_space = spaces.Box(low=np.array([0, 0, 0, 0, 0, 0]), high=np.array([1, 50, 1, 1, 1, 1]))
         self.action_space = spaces.Discrete(2)  # Keep or change
 
-        self.radix_factors = [s.n for s in self.observation_space.spaces]
+        self.metrics = []
+        self.run = 0
 
     def reset(self):
+        if self.run != 0:
+            df = pd.DataFrame(self.metrics)
+            df.to_csv('outputs/dqntestedes{}.csv'.format(self.run), index=False)
+        self.run += 1
+        self.metrics = []
+        TrafficSignal.vehicles = {}
+
         sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '10000']
         traci.start(sumo_cmd)
 
@@ -70,10 +72,6 @@ class SumoEnvironment(Env):
         for ts in self.ts_ids:
             self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
             self.last_measure[ts] = 0.0
-        TrafficSignal.vehicles = {}
-
-        self.total_load_vehicles = 0
-        self.total_departed_vehicles = 0
 
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):
@@ -96,9 +94,10 @@ class SumoEnvironment(Env):
         # observe new state and reward
         observation = self._compute_observations()
         reward = self._compute_rewards()
-        done = self.sim_step > self.sim_max_time
+        done = {'__all__': self.sim_step > self.sim_max_time}
+        self.metrics.append(self._compute_step_info())
 
-        return observation, reward, done, self._compute_step_info()
+        return observation, reward, done, {}
 
     def apply_actions(self, actions):
         for ts, action in actions.items():
@@ -113,15 +112,12 @@ class SumoEnvironment(Env):
         observations = {}
         for ts in self.ts_ids:
             phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
-            elapsed = self._discretize_elapsed_time(self.traffic_signals[ts].time_on_phase)
+            elapsed = self.traffic_signals[ts].time_on_phase
 
             ns_density, ew_density = self.traffic_signals[ts].get_density()
-            ns_density, ew_density = self._discretize_density(ns_density), self._discretize_density(ew_density)
-
             ns_stop_density, ew_stop_density = self.traffic_signals[ts].get_stopped_density()
-            ns_stop_density, ew_stop_density = self._discretize_density(ns_stop_density), self._discretize_density(ew_stop_density)
 
-            observations[ts] = self.radix_encode([phase_id, elapsed, ns_density, ew_density, ns_stop_density, ew_stop_density])
+            observations[ts] = [phase_id, elapsed, ns_density, ew_density, ns_stop_density, ew_stop_density]
         return observations
 
     def _compute_rewards(self):
@@ -159,63 +155,15 @@ class SumoEnvironment(Env):
 
         return rewards
 
-    def _discretize_density(self, density):
-        if density < 0.1:
-            return 0
-        elif density < 0.2:
-            return 1
-        elif density < 0.3:
-            return 2
-        elif density < 0.4:
-            return 3
-        elif density < 0.5:
-            return 4
-        elif density < 0.6:
-            return 5
-        elif density < 0.7:
-            return 6
-        elif density < 0.8:
-            return 7
-        elif density < 0.9:
-            return 8
-        else:
-            return 9
-
-    def _discretize_elapsed_time(self, elapsed):
-        for i in range(self.max_green//self.delta_time):
-            if elapsed <= self.delta_time + i*self.delta_time:
-                return i
-
-    def radix_encode(self, values):
-        res = 0
-        for i in range(len(self.radix_factors)):
-            res = res * self.radix_factors[i] + values[i]
-        return int(res)
-
-    def radix_decode(self, value):
-        res = [0 for _ in range(len(self.radix_factors))]
-        for i in reversed(range(len(self.radix_factors))):
-            res[i] = value % self.radix_factors[i]
-            value = value // self.radix_factors[i]
-        return res
-
     def _sumo_step(self):
         traci.simulationStep()
-        self.total_load_vehicles += traci.simulation.getLoadedNumber()
-        self.total_departed_vehicles += traci.simulation.getDepartedNumber()
-
-    @property
-    def buffer_size(self):
-        return self.total_load_vehicles - self.total_departed_vehicles
 
     def _compute_step_info(self):
         return {
             'step_time': self.sim_step,
             'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
-            'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids]),
-            'buffer_size': self.buffer_size
+            'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids])
         }
 
     def close(self):
         traci.close()
-

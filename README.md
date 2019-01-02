@@ -30,5 +30,5 @@ python3 experiments/ql_single-intersection.py
 ```
 ## To plot results:
 ```
-python3 outputs/plot.py -f outputs/single-intersection.csv
+python3 outputs/plot.py -f outputs/single-intersection_rewardqueue_run1.csv
 ```
