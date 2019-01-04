@@ -44,9 +44,14 @@ if __name__ == '__main__':
     else:
         #plt.xlim([0, 20000])
         #plt.ylim([0, 20])
-        #plt.axvline(x=10000, color='k', linestyle='--')
+        #plt.axvline(x=20000, color='k', linestyle='--')
+        #plt.axvline(x=40000, color='k', linestyle='--')
+        #plt.axvline(x=60000, color='k', linestyle='--')
 
         df = pd.read_csv(args.file)
+
+        df['cum_total_stopped'] = df.total_stopped.cumsum()
+        df['cum_wait_time'] = df.total_wait_time.cumsum()
 
         plt.figure(1)
         plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=args.window))
@@ -56,18 +61,32 @@ if __name__ == '__main__':
         plt.grid()
 
         plt.figure(2)
+        plt.plot(df['step_time'], moving_average(df['cum_total_stopped'], window_size=args.window))
+        plt.title("")
+        plt.xlabel("Time Step")
+        plt.ylabel("Cumulative Number of Stopped Vehicles")
+        plt.grid()
+
+        plt.figure(3)
         plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=args.window))
         plt.title("")
         plt.xlabel("Time Step")
         plt.ylabel("Total Waiting Time of Vehicles")
         plt.grid()
 
-        plt.figure(3)
-        plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=args.window))
+        plt.figure(4)
+        plt.plot(df['step_time'], moving_average(df['cum_wait_time'], window_size=args.window))
         plt.title("")
         plt.xlabel("Time Step")
-        plt.ylabel("Buffer Size")
+        plt.ylabel("Cumulative Total Waiting Time of Vehicles")
         plt.grid()
+
+        #plt.figure(3)
+        #plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=args.window))
+        #plt.title("")
+        #plt.xlabel("Time Step")
+        #plt.ylabel("Buffer Size")
+        #plt.grid()
 
     plt.show()
 

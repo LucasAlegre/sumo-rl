@@ -24,6 +24,9 @@ class SumoEnvironment(MultiAgentEnv):
     KEEP = 0
     CHANGE = 1
 
+    observation_space = spaces.Box(low=np.array([0, 0, 0, 0, 0, 0]), high=np.array([1, 1, 1, 1, 1, 1]))
+    action_space = spaces.Discrete(2)  # Keep or change
+
     def __init__(self, conf_file,
                  use_gui=False,
                  num_seconds=20000,
@@ -51,16 +54,13 @@ class SumoEnvironment(MultiAgentEnv):
         self.min_green = min_green
         self.max_green = max_green
 
-        self.observation_space = spaces.Box(low=np.array([0, 0, 0, 0, 0, 0]), high=np.array([1, 50, 1, 1, 1, 1]))
-        self.action_space = spaces.Discrete(2)  # Keep or change
-
         self.metrics = []
         self.run = 0
 
     def reset(self):
         if self.run != 0:
             df = pd.DataFrame(self.metrics)
-            df.to_csv('outputs/dqntestedes{}.csv'.format(self.run), index=False)
+            df.to_csv('outputs/a3cteste{}.csv'.format(self.run), index=False)
         self.run += 1
         self.metrics = []
         TrafficSignal.vehicles = {}
@@ -112,7 +112,7 @@ class SumoEnvironment(MultiAgentEnv):
         observations = {}
         for ts in self.ts_ids:
             phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
-            elapsed = self.traffic_signals[ts].time_on_phase
+            elapsed = self.traffic_signals[ts].time_on_phase / 50
 
             ns_density, ew_density = self.traffic_signals[ts].get_density()
             ns_stop_density, ew_stop_density = self.traffic_signals[ts].get_stopped_density()

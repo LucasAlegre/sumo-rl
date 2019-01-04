@@ -41,6 +41,7 @@ class TrafficSignal:
         """
         :return: Dict green phase to edge id
         """
+        #print(len(traci.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0]._phases))
         lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # remove duplicates and keep order
         return {self.NS: lanes[:2], self.EW: lanes[2:]}  # two lanes per edge
 
@@ -70,7 +71,7 @@ class TrafficSignal:
         ls = traci.lane.getLastStepVehicleIDs(self.edges[self.NS][0]) + traci.lane.getLastStepVehicleIDs(self.edges[self.NS][1])
         ns_wait = 0.0
         for veh in ls:
-            veh_lane = traci.vehicle.getLaneID(veh)
+            veh_lane = self.get_edge_id(traci.vehicle.getLaneID(veh))
             acc = traci.vehicle.getAccumulatedWaitingTime(veh)
             if veh not in self.vehicles:
                 self.vehicles[veh] = {veh_lane: acc}
@@ -88,7 +89,15 @@ class TrafficSignal:
             else:
                 self.vehicles[veh][veh_lane] = acc - sum([self.vehicles[veh][lane] for lane in self.vehicles[veh].keys() if lane != veh_lane])
             ew_wait += self.vehicles[veh][veh_lane]
+            #print(self.vehicles[veh], traci.vehicle.getWaitingTime(veh), traci.vehicle.getAccumulatedWaitingTime(veh))
+            #print(veh_lane, self.get_edge_id(veh_lane))
 
         return ns_wait, ew_wait
 
-
+    @staticmethod
+    def get_edge_id(lane):
+        ''' Get edge Id from lane Id
+        :param lane: id of the lane
+        :return: the edge id of the lane
+        '''
+        return lane[:-2]
