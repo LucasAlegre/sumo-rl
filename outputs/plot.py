@@ -33,7 +33,7 @@ if __name__ == '__main__':
         plt.figure(1, figsize=(12, 9))
         ax = plt.subplot()
         #plt.xlim([0, 20000])
-        plt.ylim([0, 20])
+        #plt.ylim([0, 20])
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 

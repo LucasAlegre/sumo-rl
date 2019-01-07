@@ -200,8 +200,8 @@ class SumoEnvironment(Env):
 
     def _sumo_step(self):
         traci.simulationStep()
-        self.total_load_vehicles += traci.simulation.getLoadedNumber()
-        self.total_departed_vehicles += traci.simulation.getDepartedNumber()
+        # self.total_load_vehicles += traci.simulation.getLoadedNumber()
+        # self.total_departed_vehicles += traci.simulation.getDepartedNumber()
 
     @property
     def buffer_size(self):
@@ -212,7 +212,7 @@ class SumoEnvironment(Env):
             'step_time': self.sim_step,
             'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
             'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids]),
-            'buffer_size': self.buffer_size
+            # 'buffer_size': self.buffer_size
         }
 
     def close(self):
