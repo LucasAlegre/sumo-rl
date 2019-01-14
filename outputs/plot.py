@@ -5,10 +5,29 @@ import argparse
 import glob
 
 
+def fig():
+    fig = 1
+    while True:
+        yield fig
+        fig += 1
+fig_gen = fig()
+
 def moving_average(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
 
+def plot_figure(x, y, figsize=(12, 9), x_label='', y_label='', title=''):
+    plt.figure(next(fig_gen), figsize=figsize)
+    ax = plt.subplot()
+    #plt.xlim([0, 20000])
+    #plt.ylim([0, 20])
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    plt.title(title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.grid()
+    plt.plot(x, y)
 
 if __name__ == '__main__':
 
@@ -30,16 +49,13 @@ if __name__ == '__main__':
         steps = main_df.groupby('step_time').total_stopped.mean().keys()
         mean_stopped = moving_average(main_df.groupby('step_time').mean()['total_stopped'], window_size=args.window)
         sem = moving_average(main_df.groupby('step_time').sem()['total_stopped'], window_size=args.window)
-        plt.figure(1, figsize=(12, 9))
-        ax = plt.subplot()
-        #plt.xlim([0, 20000])
-        #plt.ylim([0, 20])
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
 
-        plt.grid()
-        plt.plot(steps, mean_stopped)
-        plt.fill_between(steps, mean_stopped + sem*1.96, mean_stopped - sem*1.96, alpha=0.5)
+        steps = main_df.groupby('step_time').total_stopped.mean().keys()
+        mean = moving_average(main_df.groupby('step_time').mean()['total_wait_time'], window_size=args.window)
+        sem = moving_average(main_df.groupby('step_time').sem()['total_wait_time'], window_size=args.window)
+
+        plot_figure(steps, mean, x_label='Time Step (seconds)', y_label='Waiting Time (seconds)')
+        plt.fill_between(steps, mean + sem*1.96, mean - sem*1.96, alpha=0.5)
 
     else:
         #plt.xlim([0, 20000])
@@ -53,33 +69,15 @@ if __name__ == '__main__':
         df['cum_total_stopped'] = df.total_stopped.cumsum()
         df['cum_wait_time'] = df.total_wait_time.cumsum()
 
-        plt.figure(1)
-        plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=args.window))
-        plt.title("")
-        plt.xlabel("Time Step")
-        plt.ylabel("Total Number of Stopped Vehicles")
-        plt.grid()
+        plot_figure(x=df['step_time'],
+                    y=moving_average(df['total_stopped'], window_size=args.window),
+                    x_label="Time Step (seconds)",
+                    y_label="Total Number of Stopped Vehicles")
 
-        plt.figure(2)
-        plt.plot(df['step_time'], moving_average(df['cum_total_stopped'], window_size=args.window))
-        plt.title("")
-        plt.xlabel("Time Step")
-        plt.ylabel("Cumulative Number of Stopped Vehicles")
-        plt.grid()
-
-        plt.figure(3)
-        plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=args.window))
-        plt.title("")
-        plt.xlabel("Time Step")
-        plt.ylabel("Total Waiting Time of Vehicles")
-        plt.grid()
-
-        plt.figure(4)
-        plt.plot(df['step_time'], moving_average(df['cum_wait_time'], window_size=args.window))
-        plt.title("")
-        plt.xlabel("Time Step")
-        plt.ylabel("Cumulative Total Waiting Time of Vehicles")
-        plt.grid()
+        plot_figure(x=df['step_time'],
+                    y=moving_average(df['total_wait_time'], window_size=args.window),
+                    x_label="Time Step (seconds)",
+                    y_label="Total Waiting Time of Vehicles")
 
         #plt.figure(3)
         #plt.plot(df['step_time'], moving_average(df['buffer_size'], window_size=args.window))
@@ -89,4 +87,3 @@ if __name__ == '__main__':
         #plt.grid()
 
     plt.show()
-
