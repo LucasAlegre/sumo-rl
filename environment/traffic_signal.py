@@ -5,23 +5,38 @@ class TrafficSignal:
 
     NS = 0
     EW = 2
-    vehicles = {}
 
-    def __init__(self, ts_id, delta_time, min_green, max_green, custom_phases=None):
+    def __init__(self, env, ts_id, delta_time, min_green, max_green, phases):
         self.id = ts_id
+        self.env = env
         self.time_on_phase = 0
         self.delta_time = delta_time
         self.min_green = min_green
         self.max_green = max_green
         self.edges = self._compute_edges()
         self.edges_capacity = self._compute_edges_capacity()
-        if custom_phases is not None:
-            logic = traci.trafficlight.Logic("new-program", 0, 0, 0, custom_phases)
-            traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
-
+        
+        logic = traci.trafficlight.Logic("new-program", 0, 0, 0, phases)
+        traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
+        self.phases = [p for p in range(len(phases))]
+        
     @property
     def phase(self):
         return traci.trafficlight.getPhase(self.id)
+
+    def set_phase(self, new_phase):
+        """
+        
+        """
+        new_phase *= 2
+        #print(new_phase, self.phase)
+        if self.phase == new_phase or self.time_on_phase < self.min_green:
+            self.time_on_phase += self.delta_time
+            traci.trafficlight.setPhase(self.id, self.phase) 
+        else:
+            self.time_on_phase = self.delta_time
+            traci.trafficlight.setPhase(self.id, self.phases[new_phase-1])
+            
 
     def keep(self):
         if self.time_on_phase >= self.max_green:
@@ -73,22 +88,22 @@ class TrafficSignal:
         for veh in ls:
             veh_lane = self.get_edge_id(traci.vehicle.getLaneID(veh))
             acc = traci.vehicle.getAccumulatedWaitingTime(veh)
-            if veh not in self.vehicles:
-                self.vehicles[veh] = {veh_lane: acc}
+            if veh not in self.env.vehicles:
+                self.env.vehicles[veh] = {veh_lane: acc}
             else:
-                self.vehicles[veh][veh_lane] = acc - sum([self.vehicles[veh][lane] for lane in self.vehicles[veh].keys() if lane != veh_lane])
-            ns_wait += self.vehicles[veh][veh_lane]
+                self.env.vehicles[veh][veh_lane] = acc - sum([self.env.vehicles[veh][lane] for lane in self.env.vehicles[veh].keys() if lane != veh_lane])
+            ns_wait += self.env.vehicles[veh][veh_lane]
 
         ls = traci.lane.getLastStepVehicleIDs(self.edges[self.EW][0]) + traci.lane.getLastStepVehicleIDs(self.edges[self.EW][1])
         ew_wait = 0.0
         for veh in ls:
             veh_lane = traci.vehicle.getLaneID(veh)
             acc = traci.vehicle.getAccumulatedWaitingTime(veh)
-            if veh not in self.vehicles:
-                self.vehicles[veh] = {veh_lane: acc}
+            if veh not in self.env.vehicles:
+                self.env.vehicles[veh] = {veh_lane: acc}
             else:
-                self.vehicles[veh][veh_lane] = acc - sum([self.vehicles[veh][lane] for lane in self.vehicles[veh].keys() if lane != veh_lane])
-            ew_wait += self.vehicles[veh][veh_lane]
+                self.env.vehicles[veh][veh_lane] = acc - sum([self.env.vehicles[veh][lane] for lane in self.env.vehicles[veh].keys() if lane != veh_lane])
+            ew_wait += self.env.vehicles[veh][veh_lane]
             #print(self.vehicles[veh], traci.vehicle.getWaitingTime(veh), traci.vehicle.getAccumulatedWaitingTime(veh))
             #print(veh_lane, self.get_edge_id(veh_lane))
 

@@ -21,15 +21,14 @@ class SumoEnvironment(Env):
     KEEP = 0
     CHANGE = 1
 
-    def __init__(self, conf_file,
+    def __init__(self, conf_file, phases,
                  use_gui=False,
                  num_seconds=20000,
                  max_depart_delay=100000,
                  time_to_load_vehicles=0,
                  delta_time=5,
                  min_green=10,
-                 max_green=50,
-                 custom_phases=None):
+                 max_green=50):
 
         self._conf = conf_file
         if use_gui:
@@ -39,7 +38,8 @@ class SumoEnvironment(Env):
 
         self.ts_ids = list()
         self.traffic_signals = dict()
-        self.custom_phases = custom_phases
+        self.phases = phases
+        self.vehicles = {}
         self.last_measure = dict()    # used to reward function remember last measure
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
@@ -68,9 +68,9 @@ class SumoEnvironment(Env):
 
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
-            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
+            self.traffic_signals[ts] = TrafficSignal(self, ts, self.delta_time, self.min_green, self.max_green, self.phases)
             self.last_measure[ts] = 0.0
-        TrafficSignal.vehicles = {}
+        self.vehicles = {}
 
         self.total_load_vehicles = 0
         self.total_departed_vehicles = 0
@@ -88,7 +88,7 @@ class SumoEnvironment(Env):
     def step(self, actions):
         # act
         self.apply_actions(actions)
-
+   
         # run simulation for delta time
         for _ in range(self.delta_time):
             self._sumo_step()
@@ -102,12 +102,13 @@ class SumoEnvironment(Env):
 
     def apply_actions(self, actions):
         for ts, action in actions.items():
-            if action == self.KEEP:
+            self.traffic_signals[ts].set_phase(action)
+            """ if action == self.KEEP:
                 self.traffic_signals[ts].keep()
             elif action == self.CHANGE:
                 self.traffic_signals[ts].change()
             else:
-                exit('Invalid action!')
+                exit('Invalid action!') """
 
     def _compute_observations(self):
         observations = {}
@@ -184,7 +185,7 @@ class SumoEnvironment(Env):
         for i in range(self.max_green//self.delta_time):
             if elapsed <= self.delta_time + i*self.delta_time:
                 return i
-
+        return self.max_green//self.delta_time -1
     def radix_encode(self, values):
         res = 0
         for i in range(len(self.radix_factors)):

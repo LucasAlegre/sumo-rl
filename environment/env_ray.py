@@ -46,6 +46,7 @@ class SumoEnvironment(MultiAgentEnv):
         self.ts_ids = list()
         self.traffic_signals = dict()
         self.custom_phases = custom_phases
+        self.vehicles = {}
         self.last_measure = dict()    # used to reward function remember last measure
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
@@ -63,16 +64,16 @@ class SumoEnvironment(MultiAgentEnv):
             df.to_csv('outputs/a3cteste{}.csv'.format(self.run), index=False)
         self.run += 1
         self.metrics = []
-        TrafficSignal.vehicles = {}
+        self.vehicles = {}
 
         sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '10000']
         traci.start(sumo_cmd)
 
         self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
-            self.traffic_signals[ts] = TrafficSignal(ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
+            self.traffic_signals[ts] = TrafficSignal(self, ts, self.delta_time, self.min_green, self.max_green, self.custom_phases)
             self.last_measure[ts] = 0.0
-
+        
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):
             self._sumo_step()
