@@ -18,9 +18,6 @@ from .traffic_signal import TrafficSignal
 
 class SumoEnvironment(Env):
 
-    KEEP = 0
-    CHANGE = 1
-
     def __init__(self, conf_file, phases,
                  use_gui=False,
                  num_seconds=20000,
@@ -47,18 +44,14 @@ class SumoEnvironment(Env):
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
         self.min_green = min_green
         self.max_green = max_green
-        self.total_load_vehicles = 0
-        self.total_departed_vehicles = 0
+        self.yellow_time = 2
 
         self.observation_space = spaces.Tuple((
-            spaces.Discrete(2),   # Phase NS or EW
+            spaces.Discrete(len(phases) // 2),   # Green Phase
             spaces.Discrete(self.max_green//self.delta_time),  # Elapsed time of phase
-            spaces.Discrete(10),  # NS density
-            spaces.Discrete(10),  # EW density
-            spaces.Discrete(10),  # NS stopped-density
-            spaces.Discrete(10))  # EW stopped-density
-        )
-        self.action_space = spaces.Discrete(2)  # Keep or change
+            *(spaces.Discrete(10) for _ in range(len(phases)))    # Density and stopped-density for each green phase
+        ))
+        self.action_space = spaces.Discrete(len(phases) // 2)   # Number of green phases == number of phases (green+yellow) divided by 2
 
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
@@ -71,9 +64,6 @@ class SumoEnvironment(Env):
             self.traffic_signals[ts] = TrafficSignal(self, ts, self.delta_time, self.min_green, self.max_green, self.phases)
             self.last_measure[ts] = 0.0
         self.vehicles = {}
-
-        self.total_load_vehicles = 0
-        self.total_departed_vehicles = 0
 
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):
@@ -90,7 +80,11 @@ class SumoEnvironment(Env):
         self.apply_actions(actions)
    
         # run simulation for delta time
-        for _ in range(self.delta_time):
+        for _ in range(self.yellow_time): 
+            self._sumo_step()
+        for ts in self.ts_ids:
+            self.traffic_signals[ts].update_phase()
+        for _ in range(self.delta_time - self.yellow_time):
             self._sumo_step()
 
         # observe new state and reward
@@ -102,7 +96,7 @@ class SumoEnvironment(Env):
 
     def apply_actions(self, actions):
         for ts, action in actions.items():
-            self.traffic_signals[ts].set_phase(action)
+            self.traffic_signals[ts].set_next_phase(action)
             """ if action == self.KEEP:
                 self.traffic_signals[ts].keep()
             elif action == self.CHANGE:
@@ -116,13 +110,13 @@ class SumoEnvironment(Env):
             phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
             elapsed = self._discretize_elapsed_time(self.traffic_signals[ts].time_on_phase)
 
-            ns_density, ew_density = self.traffic_signals[ts].get_density()
-            ns_density, ew_density = self._discretize_density(ns_density), self._discretize_density(ew_density)
+            density = self.traffic_signals[ts].get_density()
+            density = [self._discretize_density(d) for d in density]
 
-            ns_stop_density, ew_stop_density = self.traffic_signals[ts].get_stopped_density()
-            ns_stop_density, ew_stop_density = self._discretize_density(ns_stop_density), self._discretize_density(ew_stop_density)
+            stop_density = self.traffic_signals[ts].get_stopped_density()
+            stop_density = [self._discretize_density(d) for d in stop_density]
 
-            observations[ts] = self.radix_encode([phase_id, elapsed, ns_density, ew_density, ns_stop_density, ew_stop_density])
+            observations[ts] = self.radix_encode([phase_id, elapsed] + density + stop_density)
         return observations
 
     def _compute_rewards(self):
@@ -133,8 +127,7 @@ class SumoEnvironment(Env):
     def _queue_average_reward(self):
         rewards = {}
         for ts in self.ts_ids:
-            ns_stopped, ew_stopped = self.traffic_signals[ts].get_stopped_vehicles_num()
-            new_average = (ns_stopped + ew_stopped) / 2
+            new_average = np.mean(self.traffic_signals[ts].get_stopped_vehicles_num())
             rewards[ts] = self.last_measure[ts] - new_average
             self.last_measure[ts] = new_average
         return rewards
@@ -142,8 +135,7 @@ class SumoEnvironment(Env):
     def _waiting_time_reward(self):
         rewards = {}
         for ts in self.ts_ids:
-            ns_wait, ew_wait = self.traffic_signals[ts].get_waiting_time()
-            ts_wait = ns_wait + ew_wait
+            ts_wait = sum(self.traffic_signals[ts].get_waiting_time())
             rewards[ts] = self.last_measure[ts] - ts_wait
             self.last_measure[ts] = ts_wait
         return rewards
@@ -201,19 +193,12 @@ class SumoEnvironment(Env):
 
     def _sumo_step(self):
         traci.simulationStep()
-        # self.total_load_vehicles += traci.simulation.getLoadedNumber()
-        # self.total_departed_vehicles += traci.simulation.getDepartedNumber()
-
-    @property
-    def buffer_size(self):
-        return self.total_load_vehicles - self.total_departed_vehicles
 
     def _compute_step_info(self):
         return {
             'step_time': self.sim_step,
             'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
-            'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids]),
-            # 'buffer_size': self.buffer_size
+            'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids])
         }
 
     def close(self):

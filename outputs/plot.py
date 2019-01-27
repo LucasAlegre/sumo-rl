@@ -3,7 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import glob
+from cycler import cycler
 
+plt.rc('lines', linewidth=2)
+plt.rc('axes', prop_cycle=(cycler('color', ['#e41a1c','#377eb8','#4daf4a','#984ea3'])))
+
+#labels = ['Partial State', 'Complete State']
 
 def fig():
     fig = 1
@@ -22,16 +27,16 @@ def moving_average(interval, window_size):
 
 def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
     plt.figure(next(fig_gen), figsize=figsize)
-    plt.rcParams.update({'font.size': 16})
+    plt.rcParams.update({'font.size': 20})
     ax = plt.subplot()
 
     # manually change this:
-    #plt.xlim([300, 79900])
-    #plt.yticks([x for x in range(0, 7001, 500)])
-    #plt.ylim([0, 7000])
-    #plt.axvline(x=20000, color='k', linestyle='--')
-    #plt.axvline(x=40000, color='k', linestyle='--')
-    #plt.axvline(x=60000, color='k', linestyle='--')
+    plt.xlim([380, 79900])
+    plt.yticks([x for x in range(0, 7001, 500)])
+    plt.ylim([0, 6000])
+    plt.axvline(x=20000, color='k', linestyle='--')
+    plt.axvline(x=40000, color='k', linestyle='--')
+    plt.axvline(x=60000, color='k', linestyle='--')
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -81,23 +86,21 @@ if __name__ == '__main__':
 
             #plt.fill_between(steps, mean + sem*1.96, mean - sem*1.96, alpha=0.5)
             plt.plot(steps, mean)
-            plt.fill_between(steps, mean + std, mean - std, alpha=0.3, color='gray')
+            plt.fill_between(steps, mean + std, mean - std, alpha=0.3)
 
     else:
-        df = pd.read_csv(args.file)
+        for filename in args.file:
+            df = pd.read_csv(filename)
 
-        df['cum_total_stopped'] = df.total_stopped.cumsum()
-        df['cum_wait_time'] = df.total_wait_time.cumsum()
+            df['cum_total_stopped'] = df.total_stopped.cumsum()
+            df['cum_wait_time'] = df.total_wait_time.cumsum()
 
-        plot_figure(x=df['step_time'],
-                    y=moving_average(df['total_stopped'], window_size=args.window),
-                    x_label="Time Step (s)",
-                    y_label="Total Number of Stopped Vehicles")
+            plot_figure(x_label="Time Step (s)", y_label="Total Number of Stopped Vehicles")
+            plt.plot(df['step_time'], moving_average(df['total_stopped'], window_size=args.window))
 
-        plot_figure(x=df['step_time'],
-                    y=moving_average(df['total_wait_time'], window_size=args.window),
-                    x_label="Time Step (s)",
-                    y_label="Total Waiting Time of Vehicles (s)")
+            plot_figure(x_label="Time Step (s)", y_label="Total Waiting Time of Vehicles (s)")
+            plt.plot(df['step_time'], moving_average(df['total_wait_time'], window_size=args.window))
 
-    plt.savefig("saved.png", bbox_inches="tight")
+    plt.legend()
+    plt.savefig("saved.pdf", bbox_inches="tight")
     plt.show()

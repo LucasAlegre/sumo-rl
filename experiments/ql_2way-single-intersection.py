@@ -28,28 +28,27 @@ if __name__ == '__main__':
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=30, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=40000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
-    ns = args.ns * 1000
-    we = args.we * 1000
 
     env = SumoEnvironment(conf_file='nets/2way-single-intersection/single-intersection.sumocfg',
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green,
+                          max_depart_delay=0,
                           phases=[
-                            traci.trafficlight.Phase(40000, 40000, 40000, "GGgrrrGGgrrr"),   
-                            traci.trafficlight.Phase(2000, 2000, 2000, "yygrrryygrrr"),
-                            traci.trafficlight.Phase(we, we, we, "rrGrrrrrGrrr"),   
-                            traci.trafficlight.Phase(40000, 40000, 40000, "rryrrrrryrrr"),
-                            traci.trafficlight.Phase(ns, ns, ns, "rrrGGgrrrGGg"),   
-                            traci.trafficlight.Phase(40000, 40000, 40000, "rrryygrrryyg"),
-                            traci.trafficlight.Phase(we, we, we, "rrrrrGrrrrrG"),   
-                            traci.trafficlight.Phase(40000, 40000, 40000, "rrrrryrrrrry")
+                            traci.trafficlight.Phase(40000, 40000, 40000, "GGrrrrGGrrrr"),   
+                            traci.trafficlight.Phase(2000, 2000, 2000, "yyrrrryyrrrr"),
+                            traci.trafficlight.Phase(40000, 40000, 40000, "rrGrrrrrGrrr"),   
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rryrrrrryrrr"),
+                            traci.trafficlight.Phase(40000, 40000, 40000, "rrrGGrrrrGGr"),   
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rrryyrrrryyr"),
+                            traci.trafficlight.Phase(40000, 40000, 40000, "rrrrrGrrrrrG"),   
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
                             ])
                             
     if args.reward == 'queue':
@@ -87,7 +86,7 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('outputs/single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
+        df.to_csv('outputs/2way-single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
 
 
 

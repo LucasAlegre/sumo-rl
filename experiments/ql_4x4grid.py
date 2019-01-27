@@ -34,7 +34,7 @@ if __name__ == '__main__':
                             traci.trafficlight.Phase(2000, 2000, 2000, "rrryyy")
                             ])
 
-    for run in range(runs+1):
+    for run in range(1, runs+1):
         initial_states = env.reset()
         ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
                                  state_space=env.observation_space,

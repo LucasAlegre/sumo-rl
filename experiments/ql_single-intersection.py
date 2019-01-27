@@ -43,6 +43,7 @@ if __name__ == '__main__':
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green,
+                          max_depart_delay=0,
                           phases=[
                             traci.trafficlight.Phase(ns, ns, ns, "GGrr"),   # north-south
                             traci.trafficlight.Phase(2000, 2000, 2000, "yyrr"),
@@ -84,7 +85,7 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('outputs/single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
+        df.to_csv('outputs/5single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
 
 
 
