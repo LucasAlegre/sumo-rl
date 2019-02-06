@@ -60,7 +60,7 @@ class TrafficSignal:
         """
         #print(len(traci.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0]._phases))
         lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # remove duplicates and keep order
-        print({p : lanes[p*2:p*2+2] for p in range(self.num_green_phases)})
+        #print({p : lanes[p*2:p*2+2] for p in range(self.num_green_phases)})
         return {p : lanes[p*2:p*2+2] for p in range(self.num_green_phases)}  # two lanes per edge
 
     def _compute_edges_capacity(self):

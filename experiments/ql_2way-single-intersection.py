@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import pandas as pd
+from datetime import datetime
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -19,6 +20,7 @@ if __name__ == '__main__':
 
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                   description="""Q-Learning Single-Intersection""")
+    prs.add_argument("-route", dest="route", type=str, required=True, help="Route definition xml file.\n")
     prs.add_argument("-a", dest="alpha", type=float, default=0.1, required=False, help="Alpha learning rate.\n")
     prs.add_argument("-g", dest="gamma", type=float, default=0.99, required=False, help="Gamma discount rate.\n")
     prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
@@ -28,29 +30,30 @@ if __name__ == '__main__':
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=30, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=40000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
+    prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
+    ns = args.ns * 1000
+    we = args.we * 1000
+    experiment_time = str(datetime.now()).split('.')[0]
 
-    env = SumoEnvironment(conf_file='nets/2way-single-intersection/single-intersection.sumocfg',
+    env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
+                          route_file=args.route,
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green,
                           max_depart_delay=0,
                           phases=[
-                            traci.trafficlight.Phase(40000, 40000, 40000, "GGrrrrGGrrrr"),   
-                            traci.trafficlight.Phase(2000, 2000, 2000, "yyrrrryyrrrr"),
-                            traci.trafficlight.Phase(40000, 40000, 40000, "rrGrrrrrGrrr"),   
-                            traci.trafficlight.Phase(2000, 2000, 2000, "rryrrrrryrrr"),
-                            traci.trafficlight.Phase(40000, 40000, 40000, "rrrGGrrrrGGr"),   
-                            traci.trafficlight.Phase(2000, 2000, 2000, "rrryyrrrryyr"),
-                            traci.trafficlight.Phase(40000, 40000, 40000, "rrrrrGrrrrrG"),   
-                            traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
+                            traci.trafficlight.Phase(ns, ns, ns, "GGrr"),   # north-south
+                            traci.trafficlight.Phase(2000, 2000, 2000, "yyrr"),
+                            traci.trafficlight.Phase(we, we, we, "rrGG"),   # west-east
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rryy")
                             ])
-                            
     if args.reward == 'queue':
         env._compute_rewards = env._queue_average_reward
     else:
@@ -86,7 +89,8 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('outputs/2way-single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
+        df.to_csv('outputs/2way-single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}_reward{}_run{}.csv'
+        .format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay, args.reward, run), index=False)
 
 
 

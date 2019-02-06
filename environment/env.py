@@ -18,7 +18,7 @@ from .traffic_signal import TrafficSignal
 
 class SumoEnvironment(Env):
 
-    def __init__(self, conf_file, phases,
+    def __init__(self, net_file, route_file, phases,
                  use_gui=False,
                  num_seconds=20000,
                  max_depart_delay=100000,
@@ -27,7 +27,8 @@ class SumoEnvironment(Env):
                  min_green=10,
                  max_green=50):
 
-        self._conf = conf_file
+        self._net = net_file
+        self._route = route_file
         if use_gui:
             self._sumo_binary = sumolib.checkBinary('sumo-gui')
         else:
@@ -56,7 +57,12 @@ class SumoEnvironment(Env):
         self.radix_factors = [s.n for s in self.observation_space.spaces]
 
     def reset(self):
-        sumo_cmd = [self._sumo_binary, '-c', self._conf, '--max-depart-delay', str(self.max_depart_delay), '--waiting-time-memory', '10000', '--random']
+        sumo_cmd = [self._sumo_binary,
+                     '-n', self._net,
+                     '-r', self._route,
+                     '--max-depart-delay', str(self.max_depart_delay), 
+                     '--waiting-time-memory', '10000', 
+                     '--random']
         traci.start(sumo_cmd)
 
         self.ts_ids = traci.trafficlight.getIDList()

@@ -20,11 +20,12 @@ if __name__ == '__main__':
     alpha = 0.1
     gamma = 0.99
     decay = 1
-    runs = 30
+    runs = 1
 
-    env = SumoEnvironment('nets/4x4-Lucas/4x4.sumocfg',
+    env = SumoEnvironment(net_file='nets/4x4-Lucas/4x4.net.xml',
+                          route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                           use_gui=False,
-                          num_seconds=20000,
+                          num_seconds=80000,
                           time_to_load_vehicles=300,
                           max_depart_delay=0,
                           phases=[
@@ -56,6 +57,5 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('testets.csv', index=False)
-        #df.to_csv('outputs/artigoc1c2c1c2badstate_alpha{}_gamma{}_decay{}_run{}.csv'.format(alpha, gamma, decay, run), index=False)
+        df.to_csv('outputs/4x4grid/c1c2c1c2_alpha{}_gamma{}_decay{}_run{}.csv'.format(alpha, gamma, decay, run), index=False)
 

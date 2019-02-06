@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import pandas as pd
+from datetime import datetime
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -19,6 +20,7 @@ if __name__ == '__main__':
 
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                   description="""Q-Learning Single-Intersection""")
+    prs.add_argument("-route", dest="route", type=str, required=True, help="Route definition xml file.\n")
     prs.add_argument("-a", dest="alpha", type=float, default=0.1, required=False, help="Alpha learning rate.\n")
     prs.add_argument("-g", dest="gamma", type=float, default=0.99, required=False, help="Gamma discount rate.\n")
     prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
@@ -37,8 +39,10 @@ if __name__ == '__main__':
     args = prs.parse_args()
     ns = args.ns * 1000
     we = args.we * 1000
+    experiment_time = str(datetime.now()).split('.')[0]
 
-    env = SumoEnvironment(conf_file='nets/single-intersection/single-intersection.sumocfg',
+    env = SumoEnvironment(net_file='nets/single-intersection/single-intersection.net.xml',
+                          route_file=args.route,
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
@@ -85,7 +89,8 @@ if __name__ == '__main__':
         env.close()
 
         df = pd.DataFrame(infos)
-        df.to_csv('outputs/5single-intersection_reward{}_run{}.csv'.format(args.reward, run), index=False)
+        df.to_csv('outputs/single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}_reward{}_run{}.csv'
+        .format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay, args.reward, run), index=False)
 
 
 
