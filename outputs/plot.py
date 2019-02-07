@@ -32,7 +32,7 @@ def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
     ax = plt.subplot()
 
     # manually change this:
-    #plt.xlim([380, 39900])
+    #plt.xlim([380, 19900])
     #plt.yticks([0]+[x for x in range(1500, 3001, 250)])
     #plt.ylim([1500, 3000])
     #plt.axvline(x=20000, color='k', linestyle='--')

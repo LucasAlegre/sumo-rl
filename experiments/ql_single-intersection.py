@@ -61,21 +61,21 @@ if __name__ == '__main__':
 
     for run in range(1, args.runs+1):
         initial_states = env.reset()
-        ql_agents = {ts: QLAgent(starting_state=initial_states[ts],
+        ql_agents = {ts: QLAgent(starting_state=env.encode(initial_states[ts]),
                                  state_space=env.observation_space,
                                  action_space=env.action_space,
                                  alpha=args.alpha,
                                  gamma=args.gamma,
                                  exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay)) for ts in env.ts_ids}
 
-        done = False
+        done = {'__all__': False}
         infos = []
         if args.fixed:
             while not done:
                 _, _, done, info = env.step({})
                 infos.append(info)
         else:
-            while not done:
+            while not done['__all__']:
                 actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
                 s, r, done, info = env.step(actions=actions)
@@ -85,7 +85,7 @@ if __name__ == '__main__':
                     print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(s['t']), 'r=', r['t'])
 
                 for agent_id in ql_agents.keys():
-                    ql_agents[agent_id].learn(new_state=s[agent_id], reward=r[agent_id])
+                    ql_agents[agent_id].learn(new_state=env.encode(s[agent_id]), reward=r[agent_id])
         env.close()
 
         df = pd.DataFrame(infos)
