@@ -30,15 +30,11 @@ if __name__ == '__main__':
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=30, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
-    prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
     prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
-    ns = args.ns * 1000
-    we = args.we * 1000
     experiment_time = str(datetime.now()).split('.')[0]
 
     env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
@@ -48,11 +44,16 @@ if __name__ == '__main__':
                           min_green=args.min_green,
                           max_green=args.max_green,
                           max_depart_delay=0,
+                          time_to_load_vehicles=120,
                           phases=[
-                            traci.trafficlight.Phase(ns, ns, ns, "GGrr"),   # north-south
-                            traci.trafficlight.Phase(2000, 2000, 2000, "yyrr"),
-                            traci.trafficlight.Phase(we, we, we, "rrGG"),   # west-east
-                            traci.trafficlight.Phase(2000, 2000, 2000, "rryy")
+                            traci.trafficlight.Phase(32000, 32000, 32000, "GGrrrrGGrrrr"),  
+                            traci.trafficlight.Phase(2000, 2000, 2000, "yyrrrryyrrrr"),
+                            traci.trafficlight.Phase(32000, 32000, 32000, "rrGrrrrrGrrr"),   
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rryrrrrryrrr"),
+                            traci.trafficlight.Phase(32000, 32000, 32000, "rrrGGrrrrGGr"),   
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rrryyrrrryyr"),
+                            traci.trafficlight.Phase(32000, 32000, 32000, "rrrrrGrrrrrG"), 
+                            traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
                             ])
     if args.reward == 'queue':
         env._compute_rewards = env._queue_average_reward
@@ -74,15 +75,16 @@ if __name__ == '__main__':
             while not done['__all__']:
                 _, _, done, info = env.step({})
                 infos.append(info)
+
         else:
-            while not done:
+            while not done['__all__']:
                 actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
                 s, r, done, info = env.step(actions=actions)
                 infos.append(info)
 
                 if args.v:
-                    print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(s['t']), 'r=', r['t'])
+                    print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_encode(s['t']), 'r=', r['t'])
 
                 for agent_id in ql_agents.keys():
                     ql_agents[agent_id].learn(new_state=env.encode(s[agent_id]), reward=r[agent_id])

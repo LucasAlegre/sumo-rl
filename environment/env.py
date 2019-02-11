@@ -48,9 +48,9 @@ class SumoEnvironment(MultiAgentEnv):
         self.max_green = max_green
         self.yellow_time = 2
 
-        self.observation_space = spaces.Box(low=np.array([0, 0, 0, 0, 0, 0]), high=np.array([1, 1, 1, 1, 1, 1]))
+        self.observation_space = spaces.Box(low=np.zeros(12), high=np.ones(12))
         self.discrete_observation_space = spaces.Tuple((
-            spaces.Discrete(len(phases) // 2),   # Green Phase
+            *(spaces.Discrete(2) for _ in range(len(phases)//2)),   # Green Phase
             spaces.Discrete(self.max_green//self.delta_time),  # Elapsed time of phase
             *(spaces.Discrete(10) for _ in range(len(phases)))    # Density and stopped-density for each green phase
         ))
@@ -59,12 +59,13 @@ class SumoEnvironment(MultiAgentEnv):
         self.radix_factors = [s.n for s in self.discrete_observation_space.spaces]
         self.run = 0
         self.metrics = []
+        
     def reset(self):
-        """if self.run != 0:
+        if self.run != 0:
             df = pd.DataFrame(self.metrics)
-            df.to_csv('outputs/4x4grid/a3cteste{}.csv'.format(self.run), index=False)
+            df.to_csv('outputs/2way-single-intersection/a3cteste{}.csv'.format(self.run), index=False)
         self.run += 1
-        self.metrics = [] """
+        self.metrics = []
         sumo_cmd = [self._sumo_binary,
                      '-n', self._net,
                      '-r', self._route,
@@ -106,8 +107,8 @@ class SumoEnvironment(MultiAgentEnv):
         reward = self._compute_rewards()
         done = {'__all__': self.sim_step > self.sim_max_time}
         info = self._compute_step_info()
-        #self.metrics.append(info)
-        return observation, reward, done, info
+        self.metrics.append(info)
+        return observation, reward, done, {}
 
     def apply_actions(self, actions):
         for ts, action in actions.items():
@@ -116,12 +117,12 @@ class SumoEnvironment(MultiAgentEnv):
     def _compute_observations(self):
         observations = {}
         for ts in self.ts_ids:
-            phase_id = self.traffic_signals[ts].phase // 2  # 0 -> 0 and 2 -> 1
-            elapsed = self.traffic_signals[ts].time_on_phase #/ 50.0
+            phase_id = [1 if self.traffic_signals[ts].phase//2 == i else 0 for i in range(len(self.phases)//2)]  #one-hot encoding
+            elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
             density = self.traffic_signals[ts].get_density()
             stop_density = self.traffic_signals[ts].get_stopped_density()
 
-            observations[ts] = [phase_id, elapsed] + density + stop_density
+            observations[ts] = phase_id + [elapsed] + density + stop_density
         return observations
 
     def _compute_rewards(self):
@@ -163,7 +164,8 @@ class SumoEnvironment(MultiAgentEnv):
         return {
             'step_time': self.sim_step,
             'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
-            'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids])
+            'total_wait_time': sum([self.last_measure[ts] for ts in self.ts_ids])
+            #'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids])
         }
 
     def close(self):
@@ -196,6 +198,7 @@ class SumoEnvironment(MultiAgentEnv):
             return 9
 
     def _discretize_elapsed_time(self, elapsed):
+        elapsed *= self.max_green
         for i in range(self.max_green//self.delta_time):
             if elapsed <= self.delta_time + i*self.delta_time:
                 return i

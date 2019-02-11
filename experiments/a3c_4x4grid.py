@@ -21,9 +21,9 @@ if __name__ == '__main__':
     ray.init()
 
     register_env("4x4grid", lambda _: SumoEnvironment(net_file='nets/4x4-Lucas/4x4.net.xml',
-                                                    route_file='nets/4x4-Lucas/4x4c2.rou.xml',
-                                                    use_gui=True,
-                                                    num_seconds=20000,
+                                                    route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
+                                                    use_gui=False,
+                                                    num_seconds=80000,
                                                     time_to_load_vehicles=120,
                                                     max_depart_delay=0,
                                                     phases=[

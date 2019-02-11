@@ -71,7 +71,7 @@ if __name__ == '__main__':
         done = {'__all__': False}
         infos = []
         if args.fixed:
-            while not done:
+            while not done['__all__']:
                 _, _, done, info = env.step({})
                 infos.append(info)
         else:
