@@ -1,0 +1,6 @@
+<routes>
+    <flow id="flow_ew" from="-h11" to="-h13" begin="0" end="100000" probability="0.4" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" from="h23" to="h21" begin="0" end="100000" period="20" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ns" from="-v11" to="-v13" begin="0" end="100000" period="20" departSpeed="max" departPos="base" departLane="best"/> 
+    
+</routes>
