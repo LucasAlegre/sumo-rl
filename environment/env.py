@@ -26,7 +26,8 @@ class SumoEnvironment(MultiAgentEnv):
                  time_to_load_vehicles=0,
                  delta_time=5,
                  min_green=10,
-                 max_green=50):
+                 max_green=50,
+                 lanes_per_ts=4):
 
         self._net = net_file
         self._route = route_file
@@ -47,14 +48,15 @@ class SumoEnvironment(MultiAgentEnv):
         self.min_green = min_green
         self.max_green = max_green
         self.yellow_time = 2
+        self.lanes_per_ts = lanes_per_ts
 
         self.observation_space = spaces.Box(low=np.zeros(12), high=np.ones(12))
         self.discrete_observation_space = spaces.Tuple((
-            *(spaces.Discrete(2) for _ in range(len(phases)//2)),   # Green Phase
-            spaces.Discrete(self.max_green//self.delta_time),  # Elapsed time of phase
-            *(spaces.Discrete(10) for _ in range(len(phases)))    # Density and stopped-density for each green phase
+            *(spaces.Discrete(2) for _ in range(len(phases)//2)),           # Green Phase
+            spaces.Discrete(self.max_green//self.delta_time),               # Elapsed time of phase
+            *(spaces.Discrete(10) for _ in range(2*self.lanes_per_ts))      # Density and stopped-density for each lane
         ))
-        self.action_space = spaces.Discrete(len(phases) // 2)   # Number of green phases == number of phases (green+yellow) divided by 2
+        self.action_space = spaces.Discrete(len(phases)//2)   # Number of green phases == number of phases (green+yellow) divided by 2
 
         self.radix_factors = [s.n for s in self.discrete_observation_space.spaces]
         self.run = 0
@@ -119,10 +121,10 @@ class SumoEnvironment(MultiAgentEnv):
         for ts in self.ts_ids:
             phase_id = [1 if self.traffic_signals[ts].phase//2 == i else 0 for i in range(len(self.phases)//2)]  #one-hot encoding
             elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
-            density = self.traffic_signals[ts].get_density()
-            stop_density = self.traffic_signals[ts].get_stopped_density()
+            density = self.traffic_signals[ts].get_lanes_density()
+            queue = self.traffic_signals[ts].get_lanes_queue()
 
-            observations[ts] = phase_id + [elapsed] + density + stop_density
+            observations[ts] = phase_id + [elapsed] + density + queue
         return observations
 
     def _compute_rewards(self):

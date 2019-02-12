@@ -40,7 +40,7 @@ if __name__ == '__main__':
     trainer = A3CAgent(env="2way-single-intersection", config={
         "multiagent": {
             "policy_graphs": {
-                '0': (A3CPolicyGraph, spaces.Box(low=np.zeros(13), high=np.ones(13)), spaces.Discrete(4), {})
+                '0': (A3CPolicyGraph, spaces.Box(low=np.zeros(21), high=np.ones(21)), spaces.Discrete(4), {})
             },
             "policy_mapping_fn": lambda id: '0'  # Traffic lights are always controlled by this policy
         },

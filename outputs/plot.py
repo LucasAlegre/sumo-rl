@@ -8,7 +8,7 @@ from cycler import cycler
 plt.rc('lines', linewidth=2)
 plt.rc('axes', prop_cycle=(cycler('color', ['#e41a1c','#377eb8','#4daf4a','#984ea3']))) # line colors
 
-#labels = ['Partial State', 'Complete State']
+#labels = ['$queue$', '$queue + density$']
 #i = 0
 
 def fig():
@@ -32,13 +32,17 @@ def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
     ax = plt.subplot()
 
     # manually change this:
-    #plt.xlim([380, 19900])
-    #plt.yticks([0]+[x for x in range(1500, 3001, 250)])
-    #plt.ylim([1500, 3000])
-    #plt.axvline(x=20000, color='k', linestyle='--')
+    plt.xlim([380, 39900])
+    plt.yticks([0]+[x for x in range(1500, 3001, 250)])
+    plt.ylim([1500, 3001])
+    plt.axvline(x=20000, color='k', linestyle='--')
     #plt.axvline(x=40000, color='k', linestyle='--')
     #plt.axvline(x=60000, color='k', linestyle='--')
     plt.grid(axis='y')
+    plt.text(8000,2850,'Context 1')
+    plt.text(28000,2850,'Context 2')
+    #plt.text(44500,5000,'Context 1')
+    #plt.text(64500,5000,'Context 2')
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)

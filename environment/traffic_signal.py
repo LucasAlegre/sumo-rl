@@ -13,12 +13,13 @@ class TrafficSignal:
     def __init__(self, env, ts_id, delta_time, min_green, max_green, phases):
         self.id = ts_id
         self.env = env
-        self.time_on_phase = 0
+        self.time_on_phase = 0.0
         self.delta_time = delta_time
         self.min_green = min_green
         self.max_green = max_green
         self.green_phase = 0
         self.num_green_phases = len(phases) // 2
+        self.lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # remove duplicates and keep order
         self.edges = self._compute_edges()
         self.edges_capacity = self._compute_edges_capacity()
 
@@ -65,10 +66,7 @@ class TrafficSignal:
         """
         return: Dict green phase to edge id
         """
-        #print(len(traci.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0]._phases))
-        lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # remove duplicates and keep order
-        #print({p : lanes[p*2:p*2+2] for p in range(self.num_green_phases)})
-        return {p : lanes[p*2:p*2+2] for p in range(self.num_green_phases)}  # two lanes per edge
+        return {p : self.lanes[p*2:p*2+2] for p in range(self.num_green_phases)}  # two lanes per edge
 
     def _compute_edges_capacity(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
@@ -100,6 +98,14 @@ class TrafficSignal:
                 wait_time += self.env.vehicles[veh][veh_lane]
             wait_time_per_road.append(wait_time)
         return wait_time_per_road
+
+    def get_lanes_density(self):
+        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
+        return [traci.lane.getLastStepVehicleNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap) for lane in self.lanes]
+    
+    def get_lanes_queue(self):
+        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
+        return [traci.lane.getLastStepHaltingNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap) for lane in self.lanes]
 
     @staticmethod
     def get_edge_id(lane):
