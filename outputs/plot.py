@@ -9,7 +9,8 @@ plt.rc('lines', linewidth=2)
 plt.rc('axes', prop_cycle=(cycler('color', ['#e41a1c','#377eb8','#4daf4a','#984ea3']))) # line colors
 
 #labels = ['$queue$', '$queue + density$']
-#i = 0
+labels = ['A3C', 'A2C']
+i = 0
 
 def fig():
     fig = 1
@@ -25,22 +26,22 @@ def moving_average(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
 
-
 def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
     plt.figure(next(fig_gen), figsize=figsize)
     plt.rcParams.update({'font.size': 20})
     ax = plt.subplot()
+    plt.tight_layout()
 
     # manually change this:
-    plt.xlim([380, 39900])
-    plt.yticks([0]+[x for x in range(1500, 3001, 250)])
-    plt.ylim([1500, 3001])
-    plt.axvline(x=20000, color='k', linestyle='--')
-    #plt.axvline(x=40000, color='k', linestyle='--')
-    #plt.axvline(x=60000, color='k', linestyle='--')
+    plt.xlim([380, 99900])
+    #plt.yticks([0]+[x for x in range(1500, 3001, 250)])
+    #plt.ylim([1500, 3001])
+    plt.axvline(x=25000, color='k', linestyle='--')
+    plt.axvline(x=50000, color='k', linestyle='--')
+    plt.axvline(x=75000, color='k', linestyle='--')
     plt.grid(axis='y')
-    plt.text(8000,2850,'Context 1')
-    plt.text(28000,2850,'Context 2')
+    #plt.text(8000,2850,'Context 1')
+    #plt.text(28000,2850,'Context 2')
     #plt.text(44500,5000,'Context 1')
     #plt.text(64500,5000,'Context 2')
 
@@ -77,9 +78,10 @@ if __name__ == '__main__':
         std = moving_average(main_df.groupby('step_time').std()['total_wait_time'], window_size=args.window)
 
         #plt.fill_between(steps, mean + sem*1.96, mean - sem*1.96, alpha=0.5)
-        plt.plot(steps, mean)
+        plt.plot(steps, mean, label=labels[i])
+        i += 1
         plt.fill_between(steps, mean + std, mean - std, alpha=0.3)
 
-    #plt.legend()
+    plt.legend()
     plt.savefig("saved.pdf", bbox_inches="tight")
     plt.show()

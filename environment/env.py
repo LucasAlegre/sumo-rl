@@ -18,16 +18,26 @@ from .traffic_signal import TrafficSignal
 
 
 class SumoEnvironment(MultiAgentEnv):
+    """
+    SUMO Environment for Traffic Signal Control
 
-    def __init__(self, net_file, route_file, phases,
-                 use_gui=False,
-                 num_seconds=20000,
-                 max_depart_delay=100000,
-                 time_to_load_vehicles=0,
-                 delta_time=5,
-                 min_green=10,
-                 max_green=50,
-                 lanes_per_ts=4):
+        :param net_file: (str) SUMO .net.xml file
+        :param route_file: (str) SUMO .rou.xml file
+        :param phases: (traci.trafficlight.Phase list) Traffic Signal phases definition
+        :param out_csv_name: (str) name of the .csv output with simulation results. If None no output is generated
+        :param use_gui: (bool) Wheter to run SUMO simulation with GUI visualisation
+        :param num_seconds: (int) Number of simulated seconds on SUMO
+        :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
+        :param time_to_load_vehicles: (int) Number of simulation seconds ran before learning begins
+        :param delta_time: (int) Simulation seconds between actions
+        :param min_green: (int) Minimum green time in a phase
+        :param max_green: (int) Max green time in a phase
+        :lanes_per_ts: (int) Number of lanes per traffic signal
+        :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
+    """
+
+    def __init__(self, net_file, route_file, phases, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
+                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, lanes_per_ts=8, single_agent=False):
 
         self._net = net_file
         self._route = route_file
@@ -36,10 +46,12 @@ class SumoEnvironment(MultiAgentEnv):
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
 
+        self.single_agent = single_agent
         self.ts_ids = list()
         self.traffic_signals = dict()
         self.phases = phases
-        self.vehicles = {}
+        self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
+        self.vehicles = dict()
         self.last_measure = dict()    # used to reward function remember last measure
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
@@ -50,24 +62,26 @@ class SumoEnvironment(MultiAgentEnv):
         self.yellow_time = 2
         self.lanes_per_ts = lanes_per_ts
 
-        self.observation_space = spaces.Box(low=np.zeros(12), high=np.ones(12))
+        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 1 + 2*self.lanes_per_ts), high=np.ones(self.num_green_phases + 1 + 2*self.lanes_per_ts))
         self.discrete_observation_space = spaces.Tuple((
-            *(spaces.Discrete(2) for _ in range(len(phases)//2)),           # Green Phase
+            *(spaces.Discrete(2) for _ in range(self.num_green_phases)),    # Green Phase
             spaces.Discrete(self.max_green//self.delta_time),               # Elapsed time of phase
             *(spaces.Discrete(10) for _ in range(2*self.lanes_per_ts))      # Density and stopped-density for each lane
         ))
-        self.action_space = spaces.Discrete(len(phases)//2)   # Number of green phases == number of phases (green+yellow) divided by 2
+        self.action_space = spaces.Discrete(self.num_green_phases)
+        self.spec = ''
 
         self.radix_factors = [s.n for s in self.discrete_observation_space.spaces]
         self.run = 0
         self.metrics = []
+        self.out_csv_name = out_csv_name
         
     def reset(self):
         if self.run != 0:
-            df = pd.DataFrame(self.metrics)
-            df.to_csv('outputs/2way-single-intersection/a3cteste{}.csv'.format(self.run), index=False)
+            self.save_csv()
         self.run += 1
         self.metrics = []
+
         sumo_cmd = [self._sumo_binary,
                      '-n', self._net,
                      '-r', self._route,
@@ -86,15 +100,21 @@ class SumoEnvironment(MultiAgentEnv):
         for _ in range(self.time_to_load_vehicles):
             self._sumo_step()
 
-        return self._compute_observations()
+        if self.single_agent:
+            return self._compute_observations()[self.ts_ids[0]]
+        else:
+            return self._compute_observations()
 
     @property
     def sim_step(self):
+        """
+        Return current simulation second on SUMO
+        """
         return traci.simulation.getCurrentTime()/1000  # milliseconds to seconds
 
     def step(self, actions):
         # act
-        self.apply_actions(actions)
+        self._apply_actions(actions)
    
         # run simulation for delta time
         for _ in range(self.yellow_time): 
@@ -110,16 +130,31 @@ class SumoEnvironment(MultiAgentEnv):
         done = {'__all__': self.sim_step > self.sim_max_time}
         info = self._compute_step_info()
         self.metrics.append(info)
-        return observation, reward, done, {}
+        
+        if self.single_agent:
+            return observation[self.ts_ids[0]], reward[self.ts_ids[0]], done['__all__'], {}
+        else:
+            return observation, reward, done, {}
 
-    def apply_actions(self, actions):
-        for ts, action in actions.items():
-            self.traffic_signals[ts].set_next_phase(action)
+    def _apply_actions(self, actions):
+        """
+        Set the next green phase for the traffic signals
+        :param actions: If single-agent, actions is an int between 0 and self.num_green_phases (next green phase)
+                        If multiagent, actions is a dict {ts_id : greenPhase}
+        """   
+        if self.single_agent:
+            self.traffic_signals[self.ts_ids[0]].set_next_phase(actions)
+        else:
+            for ts, action in actions.items():
+                self.traffic_signals[ts].set_next_phase(action)
 
     def _compute_observations(self):
+        """
+        Return the current observation for each traffic signal
+        """
         observations = {}
         for ts in self.ts_ids:
-            phase_id = [1 if self.traffic_signals[ts].phase//2 == i else 0 for i in range(len(self.phases)//2)]  #one-hot encoding
+            phase_id = [1 if self.traffic_signals[ts].phase//2 == i else 0 for i in range(self.num_green_phases)]  #one-hot encoding
             elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
             density = self.traffic_signals[ts].get_lanes_density()
             queue = self.traffic_signals[ts].get_lanes_queue()
@@ -174,8 +209,8 @@ class SumoEnvironment(MultiAgentEnv):
         traci.close()
 
     def encode(self, state):
-        return self.radix_encode([state[0], self._discretize_elapsed_time(state[1])] + 
-                                 [self._discretize_density(d) for d in state[2:]])
+        discrete_state = [state[0], self._discretize_elapsed_time(state[1])] + [self._discretize_density(d) for d in state[2:]]
+        return self.radix_encode(discrete_state)
 
     def _discretize_density(self, density):
         if density < 0.1:
@@ -219,5 +254,8 @@ class SumoEnvironment(MultiAgentEnv):
             value = value // self.radix_factors[i]
         return res
 
-
+    def save_csv(self):
+        if self.out_csv_name is not None:
+            df = pd.DataFrame(self.metrics)
+            df.to_csv(self.out_csv_name + '_run{}'.format(self.run) + '.csv', index=False)
 

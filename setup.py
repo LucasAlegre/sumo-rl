@@ -1,6 +1,6 @@
 from setuptools import setup
 
-REQUIRED = ['gym', 'numpy', 'pandas', 'matplotlib']
+REQUIRED = ['gym', 'numpy', 'pandas', 'matplotlib', 'ray[rllib]']
 
 setup(
     name='sumo-rl',

@@ -1,10 +1,13 @@
-# Reinforcement Learning - SUMO
+# SUMO-RL
 
-Environments inheriting OpenAI Gym Env and RL algorithms to control Traffic Signal controllers on SUMO.
+SUMO-RL provides an easy interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
-# Install
+The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib). If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
+[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
-## To install SUMO:
+## Install
+
+### To install SUMO:
 
 ```
 sudo apt-get install sumo sumo-tools sumo-doc
@@ -15,20 +18,45 @@ echo 'export SUMO_HOME="/usr/share/sumo"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## To install required packages:
+### To install required packages:
 ```
 sudo python3 setup.py install
 ```
 
-# Examples
+## Examples
 
-Use one of the created experiments on /experiments or create your own experiment:
+Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate a SumoEnvironment and use it with your RL algorithm.
 
-## To run ql_single-intersection:
+### [Q-learning](https://github.com/LucasAlegre/sumo-rl/blob/master/agents/ql_agent.py) in a one-way single intersection:
 ```
 python3 experiments/ql_single-intersection.py 
 ```
-## To plot results:
+
+### [RLlib A3C](https://github.com/ray-project/ray/tree/master/python/ray/rllib/agents/a3c) multiagent in a 4x4 grid:
+```
+python3 experiments/a3c_4x4grid.py
+```
+
+### [stable-baselines A2C](https://stable-baselines.readthedocs.io/en/master/modules/a2c.html) in a 2-way single intersection:
+```
+python3 experiments/a2c_2way-single-intersection.py
+```
+
+### To plot results:
 ```
 python3 outputs/plot.py -f outputs/single-intersection_rewardqueue_run1.csv
 ```
+
+## Cite
+If you use this repository in your research, please cite:
+```
+@misc{sumorl,
+    author = {Lucas N. Alegre},
+    title = {SUMO-RL},
+    year = {2019},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    howpublished = {\url{https://github.com/LucasAlegre/sumo-rl}},
+}
+```
+

@@ -1,0 +1,74 @@
+<routes>
+    <route id="route_ns" edges="n_t t_s"/>
+    <route id="route_nw" edges="n_t t_w"/>
+    <route id="route_ne" edges="n_t t_e"/>
+    <route id="route_we" edges="w_t t_e"/>
+    <route id="route_wn" edges="w_t t_n"/>
+    <route id="route_ws" edges="w_t t_s"/>
+    <route id="route_ew" edges="e_t t_w"/>
+    <route id="route_en" edges="e_t t_n"/>
+    <route id="route_es" edges="e_t t_s"/>
+    <route id="route_sn" edges="s_t t_n"/>
+    <route id="route_se" edges="s_t t_e"/>
+    <route id="route_sw" edges="s_t t_w"/>
+
+    <flow id="flow_ns" route="route_ns" begin="0" end="25000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw" route="route_nw" begin="0" end="25000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="route_ne" begin="0" end="25000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="route_sw" begin="0" end="25000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn" route="route_sn" begin="0" end="25000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se" route="route_se" begin="0" end="25000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en" route="route_en" begin="0" end="25000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew" route="route_ew" begin="0" end="25000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="route_es" begin="0" end="25000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="route_wn" begin="0" end="25000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="route_we" begin="0" end="25000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws" route="route_ws" begin="0" end="25000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+
+
+    <flow id="flow_ns2" route="route_ns" begin="25000" end="50000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw2" route="route_nw" begin="25000" end="50000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne2" route="route_ne" begin="25000" end="50000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw2" route="route_sw" begin="25000" end="50000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn2" route="route_sn" begin="25000" end="50000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se2" route="route_se" begin="25000" end="50000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en2" route="route_en" begin="25000" end="50000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew2" route="route_ew" begin="25000" end="50000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es2" route="route_es" begin="25000" end="50000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn2" route="route_wn" begin="25000" end="50000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we2" route="route_we" begin="25000" end="50000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws2" route="route_ws" begin="25000" end="50000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    
+
+    <flow id="flow_ns3" route="route_ns" begin="50000" end="75000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw3" route="route_nw" begin="50000" end="75000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne3" route="route_ne" begin="50000" end="75000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw3" route="route_sw" begin="50000" end="75000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn3" route="route_sn" begin="50000" end="75000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se3" route="route_se" begin="50000" end="75000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en3" route="route_en" begin="50000" end="75000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew3" route="route_ew" begin="50000" end="75000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es3" route="route_es" begin="50000" end="75000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn3" route="route_wn" begin="50000" end="75000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we3" route="route_we" begin="50000" end="75000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws3" route="route_ws" begin="50000" end="75000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+
+
+    <flow id="flow_ns4" route="route_ns" begin="75000" end="100000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw4" route="route_nw" begin="75000" end="100000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne4" route="route_ne" begin="75000" end="100000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw4" route="route_sw" begin="75000" end="100000" vehsPerHour="50" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn4" route="route_sn" begin="75000" end="100000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se4" route="route_se" begin="75000" end="100000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en4" route="route_en" begin="75000" end="100000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew4" route="route_ew" begin="75000" end="100000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es4" route="route_es" begin="75000" end="100000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn4" route="route_wn" begin="75000" end="100000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we4" route="route_we" begin="75000" end="100000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws4" route="route_ws" begin="75000" end="100000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
+
+</routes>

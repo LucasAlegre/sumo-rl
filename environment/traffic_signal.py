@@ -9,6 +9,10 @@ import traci
 
 
 class TrafficSignal:
+    """
+    This class represents a Traffic Signal of an intersection
+    It is responsible for retrieving information and changing the traffic phase using Traci API
+    """
 
     def __init__(self, env, ts_id, delta_time, min_green, max_green, phases):
         self.id = ts_id
