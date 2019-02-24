@@ -32,12 +32,11 @@ class SumoEnvironment(MultiAgentEnv):
         :param delta_time: (int) Simulation seconds between actions
         :param min_green: (int) Minimum green time in a phase
         :param max_green: (int) Max green time in a phase
-        :lanes_per_ts: (int) Number of lanes per traffic signal
         :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     """
 
     def __init__(self, net_file, route_file, phases, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
-                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, lanes_per_ts=8, single_agent=False):
+                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, single_agent=False):
 
         self._net = net_file
         self._route = route_file
@@ -46,35 +45,47 @@ class SumoEnvironment(MultiAgentEnv):
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
 
+        traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # start only to retrieve information
+
         self.single_agent = single_agent
-        self.ts_ids = list()
+        self.ts_ids = traci.trafficlight.getIDList()
+        self.lanes_per_ts = len(set(traci.trafficlight.getControlledLanes(self.ts_ids[0])))
         self.traffic_signals = dict()
         self.phases = phases
         self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
         self.vehicles = dict()
-        self.last_measure = dict()    # used to reward function remember last measure
+        self.last_measure = dict()  # used to reward function remember last measure
         self.sim_max_time = num_seconds
-        self.time_to_load_vehicles = time_to_load_vehicles  # number of seconds of simulation ran in reset()
+        self.time_to_load_vehicles = time_to_load_vehicles  # number of simulation seconds ran in reset() before learning starts
         self.delta_time = delta_time  # seconds on sumo at each step
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
         self.min_green = min_green
         self.max_green = max_green
         self.yellow_time = 2
-        self.lanes_per_ts = lanes_per_ts
 
+        """
+        Default observation space is a vector R^(#greenPhases + 1 + 2 * #lanes)
+        s = [current phase one-hot encoded, elapsedTime / maxGreenTime, density for each lane, queue for each lane]
+        You can change this by modifing self.observation_space and the method _compute_observations()
+
+        Action space is which green phase is going to be open for the next delta_time seconds
+        """
         self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 1 + 2*self.lanes_per_ts), high=np.ones(self.num_green_phases + 1 + 2*self.lanes_per_ts))
         self.discrete_observation_space = spaces.Tuple((
-            *(spaces.Discrete(2) for _ in range(self.num_green_phases)),    # Green Phase
+            spaces.Discrete(self.num_green_phases),                         # Green Phase
             spaces.Discrete(self.max_green//self.delta_time),               # Elapsed time of phase
             *(spaces.Discrete(10) for _ in range(2*self.lanes_per_ts))      # Density and stopped-density for each lane
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
+
         self.spec = ''
 
         self.radix_factors = [s.n for s in self.discrete_observation_space.spaces]
         self.run = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
+
+        traci.close()
         
     def reset(self):
         if self.run != 0:
@@ -90,11 +101,11 @@ class SumoEnvironment(MultiAgentEnv):
                      '--random']
         traci.start(sumo_cmd)
 
-        self.ts_ids = traci.trafficlight.getIDList()
         for ts in self.ts_ids:
             self.traffic_signals[ts] = TrafficSignal(self, ts, self.delta_time, self.min_green, self.max_green, self.phases)
             self.last_measure[ts] = 0.0
-        self.vehicles = {}
+
+        self.vehicles = dict()
 
         # Load vehicles
         for _ in range(self.time_to_load_vehicles):
@@ -158,7 +169,6 @@ class SumoEnvironment(MultiAgentEnv):
             elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
             density = self.traffic_signals[ts].get_lanes_density()
             queue = self.traffic_signals[ts].get_lanes_queue()
-
             observations[ts] = phase_id + [elapsed] + density + queue
         return observations
 
@@ -186,12 +196,20 @@ class SumoEnvironment(MultiAgentEnv):
     def _waiting_time_reward2(self):
         rewards = {}
         for ts in self.ts_ids:
-            ns_wait, ew_wait = self.traffic_signals[ts].get_waiting_time()
-            ts_wait = ns_wait + ew_wait
+            ts_wait = sum(self.traffic_signals[ts].get_waiting_time())
+            self.last_measure[ts] = ts_wait
             if ts_wait == 0:
                 rewards[ts] = 1.0
             else:
                 rewards[ts] = 1.0/ts_wait
+        return rewards
+
+    def _waiting_time_reward3(self):
+        rewards = {}
+        for ts in self.ts_ids:
+            ts_wait = sum(self.traffic_signals[ts].get_waiting_time())
+            rewards[ts] = -ts_wait
+            self.last_measure[ts] = ts_wait
         return rewards
 
     def _sumo_step(self):
@@ -209,8 +227,10 @@ class SumoEnvironment(MultiAgentEnv):
         traci.close()
 
     def encode(self, state):
-        discrete_state = [state[0], self._discretize_elapsed_time(state[1])] + [self._discretize_density(d) for d in state[2:]]
-        return self.radix_encode(discrete_state)
+        phase = state[:self.num_green_phases].index(1)
+        elapsed = self._discretize_elapsed_time(state[self.num_green_phases])
+        density_queue = [self._discretize_density(d) for d in state[self.num_green_phases + 1:]]
+        return self.radix_encode([phase, elapsed] + density_queue)
 
     def _discretize_density(self, density):
         if density < 0.1:

@@ -30,12 +30,13 @@ if __name__ == '__main__':
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=30, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
-    prs.add_argument("-r", dest="reward", type=str, default='queue', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-r", dest="reward", type=str, default='wait', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
     experiment_time = str(datetime.now()).split('.')[0]
+    out_csv = 'outputs/2way-single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}_reward{}'.format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay, args.reward)
 
     env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                           route_file=args.route,
@@ -73,26 +74,21 @@ if __name__ == '__main__':
         infos = []
         if args.fixed:
             while not done['__all__']:
-                _, _, done, info = env.step({})
-                infos.append(info)
-
+                _, _, done, _ = env.step({})
         else:
             while not done['__all__']:
                 actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
-                s, r, done, info = env.step(actions=actions)
-                infos.append(info)
+                s, r, done, _ = env.step(actions=actions)
 
                 if args.v:
                     print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_encode(s['t']), 'r=', r['t'])
 
                 for agent_id in ql_agents.keys():
                     ql_agents[agent_id].learn(new_state=env.encode(s[agent_id]), reward=r[agent_id])
+        env.save_csv()
         env.close()
 
-        df = pd.DataFrame(infos)
-        df.to_csv('outputs/2way-single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}_reward{}_run{}.csv'
-        .format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay, args.reward, run), index=False)
 
 
 
