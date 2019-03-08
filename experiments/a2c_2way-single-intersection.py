@@ -11,7 +11,7 @@ else:
 import pandas as pd
 from gym import spaces
 import numpy as np
-from environment.env import SumoEnvironment
+from sumo_rl.environment.env import SumoEnvironment
 import traci
 
 from stable_baselines.common.policies import MlpPolicy
@@ -21,8 +21,8 @@ from stable_baselines import A2C
 # multiprocess environment
 n_cpu = 2   
 env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
-                                    route_file='nets/2way-single-intersection/single-intersection-vhvh.rou.xml',
-                                    out_csv_name='outputs/2way-single-intersection/a2c-contexts',
+                                    route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
+                                    out_csv_name='outputs/2way-single-intersection/a2c-context-density',
                                     single_agent=True,
                                     use_gui=True,
                                     num_seconds=100000,
@@ -39,8 +39,8 @@ env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersec
                                         traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
                                         ]) for i in range(n_cpu)])
 
-model = A2C(MlpPolicy, env, verbose=1)
-model.learn(total_timesteps=100000)
+model = A2C(MlpPolicy, env, verbose=1, lr_schedule='constant')
+model.learn(total_timesteps=200000)
 
 """ del model # remove to demonstrate saving and loading
 

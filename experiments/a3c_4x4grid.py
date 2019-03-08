@@ -13,7 +13,7 @@ from ray.rllib.agents.a3c.a3c_tf_policy_graph import A3CPolicyGraph
 from ray.tune.registry import register_env
 from gym import spaces
 import numpy as np
-from environment.env import SumoEnvironment
+from sumo_rl.environment.env import SumoEnvironment
 import traci
 
 

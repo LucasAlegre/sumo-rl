@@ -174,6 +174,7 @@ class SumoEnvironment(MultiAgentEnv):
 
     def _compute_rewards(self):
         return self._waiting_time_reward()
+        #return self._queue_reward()
         #return self._waiting_time_reward2()
         #return self._queue_average_reward()
 
@@ -183,6 +184,12 @@ class SumoEnvironment(MultiAgentEnv):
             new_average = np.mean(self.traffic_signals[ts].get_stopped_vehicles_num())
             rewards[ts] = self.last_measure[ts] - new_average
             self.last_measure[ts] = new_average
+        return rewards
+
+    def _queue_reward(self):
+        rewards = {}
+        for ts in self.ts_ids:
+            rewards[ts] = - (sum(self.traffic_signals[ts].get_stopped_vehicles_num()))**2
         return rewards
 
     def _waiting_time_reward(self):

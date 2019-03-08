@@ -25,9 +25,9 @@ echo 'export SUMO_HOME="/usr/share/sumo"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### To install required packages:
+### To install sumo_rl package:
 ```
-sudo python3 setup.py install
+pip3 install -e .
 ```
 
 ## Examples

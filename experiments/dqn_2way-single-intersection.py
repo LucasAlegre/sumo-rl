@@ -14,7 +14,7 @@ else:
 import pandas as pd
 from gym import spaces
 import numpy as np
-from environment.env import SumoEnvironment
+from sumo_rl.environment.env import SumoEnvironment
 import traci
 
 

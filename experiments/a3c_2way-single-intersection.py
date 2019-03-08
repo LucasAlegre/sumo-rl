@@ -14,7 +14,7 @@ from ray.tune.registry import register_env
 from ray.tune.logger import pretty_print
 from gym import spaces
 import numpy as np
-from environment.env import SumoEnvironment
+from sumo_rl.environment.env import SumoEnvironment
 import traci
 
 def policy_mapping(id):
