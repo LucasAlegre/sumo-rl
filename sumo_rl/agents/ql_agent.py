@@ -1,8 +1,8 @@
-from agents.agent import Agent
+from sumo_rl.agents.agent import Agent
 from functools import reduce
 import numpy as np
 
-from exploration.epsilon_greedy import EpsilonGreedy
+from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
 
 
 class QLAgent(Agent):

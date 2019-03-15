@@ -36,7 +36,9 @@ class TrafficSignal:
 
     def set_next_phase(self, new_phase):
         """
-        
+        Sets what will be the next green phase and sets yellow phase if the next phase is different than the current
+
+        :param new_phase: (int) Number between [0..num_green_phases] 
         """
         new_phase *= 2
         if self.phase == new_phase or self.time_on_phase < self.min_green:
@@ -48,23 +50,10 @@ class TrafficSignal:
             traci.trafficlight.setPhase(self.id, self.phase + 1)  # turns yellow
             
     def update_phase(self):
+        """
+        Change the next green_phase after it is set by set_next_phase method
+        """
         traci.trafficlight.setPhase(self.id, self.green_phase)
-
-    @DeprecationWarning
-    def keep(self):
-        if self.time_on_phase >= self.max_green:
-            self.change()
-        else:
-            self.time_on_phase += self.delta_time
-            traci.trafficlight.setPhaseDuration(self.id, self.delta_time)
-
-    @DeprecationWarning
-    def change(self):
-        if self.time_on_phase < self.min_green:  # min green time => do not change
-            self.keep()
-        else:
-            self.time_on_phase = self.delta_time
-            traci.trafficlight.setPhaseDuration(self.id, 0)
 
     def _compute_edges(self):
         """
@@ -118,3 +107,19 @@ class TrafficSignal:
         :return: the edge id of the lane
         '''
         return lane[:-2]
+
+    @DeprecationWarning
+    def keep(self):
+        if self.time_on_phase >= self.max_green:
+            self.change()
+        else:
+            self.time_on_phase += self.delta_time
+            traci.trafficlight.setPhaseDuration(self.id, self.delta_time)
+
+    @DeprecationWarning
+    def change(self):
+        if self.time_on_phase < self.min_green:  # min green time => do not change
+            self.keep()
+        else:
+            self.time_on_phase = self.delta_time
+            traci.trafficlight.setPhaseDuration(self.id, 0)

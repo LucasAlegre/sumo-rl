@@ -22,7 +22,7 @@ from stable_baselines import A2C
 n_cpu = 2   
 env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                                     route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
-                                    out_csv_name='outputs/2way-single-intersection/a2c-context-density',
+                                    out_csv_name='outputs/2way-single-intersection/a2c-contexts-sp',
                                     single_agent=True,
                                     use_gui=True,
                                     num_seconds=100000,

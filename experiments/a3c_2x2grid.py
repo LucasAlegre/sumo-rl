@@ -23,10 +23,10 @@ def policy_mapping(id):
 if __name__ == '__main__':
     ray.init()
 
-    register_env("2way-single-intersection", lambda _: SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
-                                                    route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
-                                                    out_csv_name='outputs/2way-single-intersection/a3c-contexts',
-                                                    use_gui=False,
+    register_env("2x2grid", lambda _: SumoEnvironment(net_file='nets/2x2grid/2x2.net.xml',
+                                                    route_file='nets/2x2grid/2x2.rou.xml',
+                                                    out_csv_name='outputs/2x2grid/a3c-contexts',
+                                                    use_gui=True,
                                                     num_seconds=100000,
                                                     time_to_load_vehicles=120,
                                                     max_depart_delay=0,
@@ -41,7 +41,7 @@ if __name__ == '__main__':
                                                         traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
                                                         ]))
 
-    trainer = A3CAgent(env="2way-single-intersection", config={
+    trainer = A3CAgent(env="2x2grid", config={
         "multiagent": {
             "policy_graphs": {
                 '0': (A3CPolicyGraph, spaces.Box(low=np.zeros(21), high=np.ones(21)), spaces.Discrete(4), {})
