@@ -1,7 +1,7 @@
 import os
 import sys
 
-v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+v4 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
@@ -15,36 +15,63 @@ v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="2
     <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>'''
 
-h = v
+h4 = v4
 
-v2 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sn_c" route="route_sn" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_se_c" route="route_se" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn_c" route="route_sn" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se_c" route="route_se" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
 
-    <flow id="flow_en_c" route="route_en" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ew_c" route="route_ew" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_es_c" route="route_es" begin="bb" end="ee" probability="0.030" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" probability="0.030" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_we_c" route="route_we" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>'''
+    <flow id="flow_en_c" route="route_en" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew_c" route="route_ew" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es_c" route="route_es" begin="bb" end="ee" vehsPerHour="600" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" vehsPerHour="600" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>'''
 
-h2 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" probability="0.030" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" probability="0.030" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sn_c" route="route_sn" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_se_c" route="route_se" begin="bb" end="ee" probability="0.015" departSpeed="max" departPos="base" departLane="best"/>
+h =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn_c" route="route_sn" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se_c" route="route_se" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
 
-    <flow id="flow_en_c" route="route_en" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ew_c" route="route_ew" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_es_c" route="route_es" begin="bb" end="ee" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_we_c" route="route_we" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>'''
+    <flow id="flow_en_c" route="route_en" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew_c" route="route_ew" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es_c" route="route_es" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>'''
 
+v2 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="600" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="600" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn_c" route="route_sn" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se_c" route="route_se" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en_c" route="route_en" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew_c" route="route_ew" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es_c" route="route_es" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>'''
+
+h2 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn_c" route="route_sn" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se_c" route="route_se" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en_c" route="route_en" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew_c" route="route_ew" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es_c" route="route_es" begin="bb" end="ee" vehsPerHour="600" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" vehsPerHour="600" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>'''
 
 def get_context(begin, end, c):
     if c % 2 == 0:
@@ -71,8 +98,9 @@ def write_route_file(file=''):
                 <route id="route_sw" edges="s_t t_w"/>''')
 
         c = 0
-        for i in range(0, 100000, 20000):
-            f.write(get_context(i, i+20000, c))
+        step = 100000
+        for i in range(0, 400000, step):
+            f.write(get_context(i, i+step, c))
             c += 1
         
         f.write('''</routes>''')

@@ -19,13 +19,14 @@ from stable_baselines.common.vec_env import SubprocVecEnv
 from stable_baselines import A2C
 
 # multiprocess environment
-n_cpu = 2   
+n_cpu = 2
 env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                                     route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
-                                    out_csv_name='outputs/2way-single-intersection/a2c-contexts-sp',
+                                    out_csv_name='outputs/2way-single-intersection/a2c-contexts-5s-vmvm-400k',
                                     single_agent=True,
-                                    use_gui=True,
-                                    num_seconds=100000,
+                                    use_gui=False,
+                                    num_seconds=400000,
+                                    min_green=5,
                                     time_to_load_vehicles=120,
                                     max_depart_delay=0,
                                     phases=[
@@ -39,8 +40,8 @@ env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersec
                                         traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
                                         ]) for i in range(n_cpu)])
 
-model = A2C(MlpPolicy, env, verbose=1, lr_schedule='constant')
-model.learn(total_timesteps=200000)
+model = A2C(MlpPolicy, env, verbose=1, learning_rate=0.0001, lr_schedule='constant')
+model.learn(total_timesteps=1000000)
 
 """ del model # remove to demonstrate saving and loading
 
