@@ -51,10 +51,10 @@ if __name__ == '__main__':
                           max_green=args.max_green,
                           max_depart_delay=0,
                           phases=[
-                            traci.trafficlight.Phase(ns, ns, ns, "GGrr"),   # north-south
-                            traci.trafficlight.Phase(2000, 2000, 2000, "yyrr"),
-                            traci.trafficlight.Phase(we, we, we, "rrGG"),   # west-east
-                            traci.trafficlight.Phase(2000, 2000, 2000, "rryy")
+                            traci.trafficlight.Phase(ns, "GGrr"),   # north-south
+                            traci.trafficlight.Phase(2000, "yyrr"),
+                            traci.trafficlight.Phase(we, "rrGG"),   # west-east
+                            traci.trafficlight.Phase(2000, "rryy")
                             ])
     if args.reward == 'queue':
         env._compute_rewards = env._queue_average_reward

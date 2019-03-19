@@ -21,23 +21,23 @@ class SumoEnvironment(MultiAgentEnv):
     """
     SUMO Environment for Traffic Signal Control
 
-        :param net_file: (str) SUMO .net.xml file
-        :param route_file: (str) SUMO .rou.xml file
-        :param phases: (traci.trafficlight.Phase list) Traffic Signal phases definition
-        :param out_csv_name: (str) name of the .csv output with simulation results. If None no output is generated
-        :param use_gui: (bool) Wheter to run SUMO simulation with GUI visualisation
-        :param num_seconds: (int) Number of simulated seconds on SUMO
-        :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
-        :param time_to_load_vehicles: (int) Number of simulation seconds ran before learning begins
-        :param delta_time: (int) Simulation seconds between actions
-        :param min_green: (int) Minimum green time in a phase
-        :param max_green: (int) Max green time in a phase
-        :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
+    :param net_file: (str) SUMO .net.xml file
+    :param route_file: (str) SUMO .rou.xml file
+    :param phases: (traci.trafficlight.Phase list) Traffic Signal phases definition
+    :param out_csv_name: (str) name of the .csv output with simulation results. If None no output is generated
+    :param use_gui: (bool) Wheter to run SUMO simulation with GUI visualisation
+    :param num_seconds: (int) Number of simulated seconds on SUMO
+    :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
+    :param time_to_load_vehicles: (int) Number of simulation seconds ran before learning begins
+    :param delta_time: (int) Simulation seconds between actions
+    :param min_green: (int) Minimum green time in a phase
+    :param max_green: (int) Max green time in a phase
+    :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     """
 
     def __init__(self, net_file, route_file, phases, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
-                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, single_agent=False):
-
+                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, single_agent=False, n=0):
+        self.n = n
         self._net = net_file
         self._route = route_file
         if use_gui:
@@ -284,5 +284,5 @@ class SumoEnvironment(MultiAgentEnv):
     def save_csv(self):
         if self.out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
-            df.to_csv(self.out_csv_name + '_run{}'.format(self.run) + '.csv', index=False)
+            df.to_csv(self.out_csv_name + '_e{}_run{}'.format(self.n, self.run) + '.csv', index=False)
 

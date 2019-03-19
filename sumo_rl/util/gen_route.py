@@ -15,6 +15,7 @@ v4 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="
     <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>'''
 
+
 h4 = v4
 
 h =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
@@ -44,6 +45,9 @@ v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="2
     <flow id="flow_wn_c" route="route_wn" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>'''
+
+
+h = v
 
 v2 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
@@ -81,7 +85,7 @@ def get_context(begin, end, c):
     s = s.replace('c', str(c)).replace('bb', str(begin)).replace('ee', str(end))
     return s
 
-def write_route_file(file=''):
+def write_route_file(file, end, step):
     with open(file, 'w+') as f:
         f.write('''<routes>
                 <route id="route_ns" edges="n_t t_s"/>
@@ -98,12 +102,11 @@ def write_route_file(file=''):
                 <route id="route_sw" edges="s_t t_w"/>''')
 
         c = 0
-        step = 100000
-        for i in range(0, 400000, step):
+        for i in range(0, end, step):
             f.write(get_context(i, i+step, c))
             c += 1
         
         f.write('''</routes>''')
 
 if __name__ == '__main__':
-    write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml')
+    write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml', 400000, 100000)

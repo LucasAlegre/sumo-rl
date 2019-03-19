@@ -27,7 +27,7 @@ class TrafficSignal:
         self.edges = self._compute_edges()
         self.edges_capacity = self._compute_edges_capacity()
 
-        logic = traci.trafficlight.Logic("new-program", 0, 0, 0, phases)
+        logic = traci.trafficlight.Logic("new-program", 0, 0, phases=phases)
         traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
 
     @property
@@ -79,7 +79,8 @@ class TrafficSignal:
     def get_waiting_time(self):
         wait_time_per_road = []
         for p in range(self.num_green_phases):
-            veh_list = sum([traci.lane.getLastStepVehicleIDs(lane) for lane in self.edges[p]], [])
+            #veh_list = sum([traci.lane.getLastStepVehicleIDs(lane) for lane in self.edges[p]], [])
+            veh_list = self._get_veh_list(p)
             wait_time = 0.0
             for veh in veh_list:
                 veh_lane = self.get_edge_id(traci.vehicle.getLaneID(veh))
@@ -107,6 +108,12 @@ class TrafficSignal:
         :return: the edge id of the lane
         '''
         return lane[:-2]
+    
+    def _get_veh_list(self, p):
+        veh_list = []
+        for lane in self.edges[p]:
+            veh_list += traci.lane.getLastStepVehicleIDs(lane)
+        return veh_list
 
     @DeprecationWarning
     def keep(self):
