@@ -12,17 +12,20 @@ import pandas as pd
 from gym import spaces
 import numpy as np
 from sumo_rl.environment.env import SumoEnvironment
+from sumo_rl.util.gen_route import write_route_file
 import traci
 
 from stable_baselines.common.policies import MlpPolicy
 from stable_baselines.common.vec_env import SubprocVecEnv
 from stable_baselines import A2C
 
+write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml')
+
 # multiprocess environment
 n_cpu = 2
 env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                                     route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
-                                    out_csv_name='outputs/2way-single-intersection/a2c-contexts-5s-vmvm-400k',
+                                    out_csv_name='outputs/2way-single-intersection/a2c-contexts-5s-mvmv-400k',
                                     single_agent=True,
                                     use_gui=False,
                                     num_seconds=400000,

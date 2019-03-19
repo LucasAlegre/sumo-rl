@@ -17,7 +17,7 @@ v4 =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="
 
 h4 = v4
 
-v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+h =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
@@ -31,7 +31,7 @@ v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="1
     <flow id="flow_we_c" route="route_we" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ws_c" route="route_ws" begin="bb" end="ee" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>'''
 
-h =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
+v =  '''<flow id="flow_ns_c" route="route_ns" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_nw_c" route="route_nw" begin="bb" end="ee" vehsPerHour="200" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ne_c" route="route_ne" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_sw_c" route="route_sw" begin="bb" end="ee" vehsPerHour="400" departSpeed="max" departPos="base" departLane="best"/>
