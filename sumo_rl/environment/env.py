@@ -55,7 +55,7 @@ class SumoEnvironment(MultiAgentEnv):
         self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
         self.vehicles = dict()
         self.last_measure = dict()  # used to reward function remember last measure
-        self.last_reward = {}
+        self.last_reward = {i: 0 for i in self.ts_ids}
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles  # number of simulation seconds ran in reset() before learning starts
         self.delta_time = delta_time  # seconds on sumo at each step
