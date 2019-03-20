@@ -55,6 +55,7 @@ class SumoEnvironment(MultiAgentEnv):
         self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
         self.vehicles = dict()
         self.last_measure = dict()  # used to reward function remember last measure
+        self.last_reward = {}
         self.sim_max_time = num_seconds
         self.time_to_load_vehicles = time_to_load_vehicles  # number of simulation seconds ran in reset() before learning starts
         self.delta_time = delta_time  # seconds on sumo at each step
@@ -141,7 +142,8 @@ class SumoEnvironment(MultiAgentEnv):
         done = {'__all__': self.sim_step > self.sim_max_time}
         info = self._compute_step_info()
         self.metrics.append(info)
-        
+        self.last_reward = reward
+
         if self.single_agent:
             return observation[self.ts_ids[0]], reward[self.ts_ids[0]], done['__all__'], {}
         else:
@@ -224,6 +226,7 @@ class SumoEnvironment(MultiAgentEnv):
 
     def _compute_step_info(self):
         return {
+            'reward': self.last_reward[self.ts_ids[0]],
             'step_time': self.sim_step,
             'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
             'total_wait_time': sum([self.last_measure[ts] for ts in self.ts_ids])
