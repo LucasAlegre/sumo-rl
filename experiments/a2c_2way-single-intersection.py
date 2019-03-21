@@ -41,8 +41,7 @@ env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersec
                                         traci.trafficlight.Phase(2000, "rrryyrrrryyr"),
                                         traci.trafficlight.Phase(32000, "rrrrrGrrrrrG"), 
                                         traci.trafficlight.Phase(2000, "rrrrryrrrrry")
-                                        ],
-                                    n = i) for i in range(n_cpu)])
+                                        ]) for i in range(n_cpu)])
 
 model = A2C(MlpPolicy, env, verbose=1, learning_rate=0.0001, lr_schedule='constant')
 model.learn(total_timesteps=1000000)

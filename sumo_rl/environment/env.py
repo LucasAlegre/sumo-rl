@@ -36,8 +36,8 @@ class SumoEnvironment(MultiAgentEnv):
     """
 
     def __init__(self, net_file, route_file, phases, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
-                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, single_agent=False, n=0):
-        self.n = n
+                 time_to_load_vehicles=0, delta_time=5, min_green=10, max_green=50, single_agent=False):
+
         self._net = net_file
         self._route = route_file
         if use_gui:
@@ -226,8 +226,8 @@ class SumoEnvironment(MultiAgentEnv):
 
     def _compute_step_info(self):
         return {
-            'reward': self.last_reward[self.ts_ids[0]],
             'step_time': self.sim_step,
+            'reward': self.last_reward[self.ts_ids[0]],
             'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
             'total_wait_time': sum([self.last_measure[ts] for ts in self.ts_ids])
             #'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids])
@@ -287,5 +287,5 @@ class SumoEnvironment(MultiAgentEnv):
     def save_csv(self):
         if self.out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
-            df.to_csv(self.out_csv_name + '_e{}_run{}'.format(self.n, self.run) + '.csv', index=False)
+            df.to_csv(self.out_csv_name + '_ep{}'.format(self.run) + '.csv', index=False)
 

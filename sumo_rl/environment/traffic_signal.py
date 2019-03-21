@@ -79,7 +79,6 @@ class TrafficSignal:
     def get_waiting_time(self):
         wait_time_per_road = []
         for p in range(self.num_green_phases):
-            #veh_list = sum([traci.lane.getLastStepVehicleIDs(lane) for lane in self.edges[p]], [])
             veh_list = self._get_veh_list(p)
             wait_time = 0.0
             for veh in veh_list:
