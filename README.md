@@ -1,6 +1,6 @@
 # SUMO-RL
 
-SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
+SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO v.1.1.0](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
 The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
@@ -9,8 +9,8 @@ If instantiated with parameter 'single-agent=True', it behaves like a regular [G
 Goals of this repository:
 - Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO.
 - Support Multiagent RL.
-- Compatibility with Gym Env and popular RL libraries like openaAI baselines and RLlib.
-- Easy customisation: state and reward definitions are easily modifiable. 
+- Compatibility with Gym Env and popular RL libraries like openAI baselines and RLlib.
+- Easy customisation: state and reward definitions are easily modifiable.
 
 ## Install
 
