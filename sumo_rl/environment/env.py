@@ -288,4 +288,3 @@ class SumoEnvironment(MultiAgentEnv):
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
             df.to_csv(out_csv_name + '_run{}'.format(run) + '.csv', index=False)
-
