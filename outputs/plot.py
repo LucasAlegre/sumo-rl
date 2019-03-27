@@ -4,9 +4,16 @@ import numpy as np
 import argparse
 import glob
 from cycler import cycler
+import brewer2mpl
+
+
+#['#e41a1c','#377eb8','#4daf4a','#984ea3']
+bmap = brewer2mpl.get_map('Set1', 'qualitative', 3) # http://colorbrewer2.org/#type=qualitative&scheme=Set1&n=3
+colors = bmap.mpl_colors
 
 plt.rc('lines', linewidth=2)
-plt.rc('axes', prop_cycle=(cycler('color', ['#e41a1c','#377eb8','#4daf4a','#984ea3']))) # line colors
+plt.rc('font', family='sans-serif')
+plt.rc('axes', prop_cycle=(cycler('color', colors))) # line colors
 
 def fig():
     fig = 1
@@ -28,11 +35,11 @@ def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
     ax = plt.subplot()
 
     # manually change this:
-    plt.xlim([380, 399900])
+    #plt.xlim([380, 399900])
     #plt.yticks([0]+[x for x in range(1500, 3001, 250)])
     #plt.ylim([1500, 3001])
-    for i in range(0,400000,100000):
-        plt.axvline(x=i, color='k', linestyle='--')
+    #for i in range(0,400000,100000):
+    #    plt.axvline(x=i, color='k', linestyle='--')
     #plt.axvline(x=25000, color='k', linestyle='--')
     #plt.axvline(x=50000, color='k', linestyle='--')
     #plt.axvline(x=75000, color='k', linestyle='--')
@@ -56,6 +63,7 @@ if __name__ == '__main__':
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     prs.add_argument("-f", dest="file", nargs='+', required=True, help="The csv file to plot.\n")
     prs.add_argument("-label", dest="label", nargs='+', required=False, help="Figure labels.\n")
+    prs.add_argument("-out", dest="out", required=False, default='', help="The .pdf filename in which the figure will be saved.\n")
     prs.add_argument("-w", dest="window", required=False, default=5, type=int, help="The moving average window.\n")
     args = prs.parse_args()
     if args.label:
@@ -86,5 +94,7 @@ if __name__ == '__main__':
 
     if args.label is not None:
         plt.legend()
-    plt.savefig("saved.pdf", bbox_inches="tight")
+
+    if args.out != '':
+        plt.savefig(args.out+'.pdf', bbox_inches="tight")
     plt.show()

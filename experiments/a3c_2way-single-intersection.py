@@ -31,14 +31,14 @@ if __name__ == '__main__':
                                                     time_to_load_vehicles=120,
                                                     max_depart_delay=0,
                                                     phases=[
-                                                        traci.trafficlight.Phase(32000, 32000, 32000, "GGrrrrGGrrrr"),  
-                                                        traci.trafficlight.Phase(2000, 2000, 2000, "yyrrrryyrrrr"),
-                                                        traci.trafficlight.Phase(32000, 32000, 32000, "rrGrrrrrGrrr"),   
-                                                        traci.trafficlight.Phase(2000, 2000, 2000, "rryrrrrryrrr"),
-                                                        traci.trafficlight.Phase(32000, 32000, 32000, "rrrGGrrrrGGr"),   
-                                                        traci.trafficlight.Phase(2000, 2000, 2000, "rrryyrrrryyr"),
-                                                        traci.trafficlight.Phase(32000, 32000, 32000, "rrrrrGrrrrrG"), 
-                                                        traci.trafficlight.Phase(2000, 2000, 2000, "rrrrryrrrrry")
+                                                        traci.trafficlight.Phase(32000, "GGrrrrGGrrrr"),  
+                                                        traci.trafficlight.Phase(2000, "yyrrrryyrrrr"),
+                                                        traci.trafficlight.Phase(32000, "rrGrrrrrGrrr"),   
+                                                        traci.trafficlight.Phase(2000, "rryrrrrryrrr"),
+                                                        traci.trafficlight.Phase(32000, "rrrGGrrrrGGr"),   
+                                                        traci.trafficlight.Phase(2000, "rrryyrrrryyr"),
+                                                        traci.trafficlight.Phase(32000, "rrrrrGrrrrrG"), 
+                                                        traci.trafficlight.Phase(2000, "rrrrryrrrrry")
                                                         ]))
 
     trainer = A3CAgent(env="2way-single-intersection", config={

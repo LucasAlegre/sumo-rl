@@ -27,10 +27,10 @@ if __name__ == '__main__':
                                                     time_to_load_vehicles=120,
                                                     max_depart_delay=0,
                                                     phases=[
-                                                        traci.trafficlight.Phase(35000, 35000, 35000, "GGGrrr"),   # north-south
-                                                        traci.trafficlight.Phase(2000, 2000, 2000, "yyyrrr"),
-                                                        traci.trafficlight.Phase(35000, 35000, 35000, "rrrGGG"),   # west-east
-                                                        traci.trafficlight.Phase(2000, 2000, 2000, "rrryyy")
+                                                        traci.trafficlight.Phase(35000, "GGGrrr"),   # north-south
+                                                        traci.trafficlight.Phase(2000, "yyyrrr"),
+                                                        traci.trafficlight.Phase(35000, "rrrGGG"),   # west-east
+                                                        traci.trafficlight.Phase(2000, "rrryyy")
                                                         ]))
 
     trainer = A3CAgent(env="4x4grid", config={
