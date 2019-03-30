@@ -14,10 +14,12 @@ Goals of this repository:
 
 ## Install
 
-### To install SUMO:
+### To install SUMO v1.1.0:
 
 ```
-sudo apt-get install sumo sumo-tools sumo-doc
+sudo add-apt-repository ppa:sumo/stable
+sudo apt-get update
+sudo apt-get install sumo sumo-tools sumo-doc 
 ```
 Don't forget to set SUMO_HOME variable (default sumo installation path is /usr/share/sumo)
 ```

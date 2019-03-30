@@ -32,7 +32,7 @@ if __name__ == '__main__':
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
     prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
     prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=20000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-r", dest="reward", type=str, default='wait', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
@@ -86,9 +86,8 @@ if __name__ == '__main__':
 
                 for agent_id in ql_agents.keys():
                     ql_agents[agent_id].learn(new_state=env.encode(s[agent_id]), reward=r[agent_id])
-        env.save_csv()
+        env.save_csv(out_csv, run)
         env.close()
-
 
 
 

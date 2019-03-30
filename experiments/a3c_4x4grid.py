@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
     register_env("4x4grid", lambda _: SumoEnvironment(net_file='nets/4x4-Lucas/4x4.net.xml',
                                                     route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
+                                                    out_csv_name='outputs/4x4grid/a3c-4x4grid',
                                                     use_gui=False,
                                                     num_seconds=80000,
                                                     time_to_load_vehicles=120,
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     trainer = A3CAgent(env="4x4grid", config={
         "multiagent": {
             "policy_graphs": {
-                '0': (A3CPolicyGraph, spaces.Box(low=np.array([0, 0, 0, 0, 0, 0]), high=np.array([1, 1, 1, 1, 1, 1])), spaces.Discrete(2), {})
+                '0': (A3CPolicyGraph, spaces.Box(low=np.zeros(11), high=np.ones(11)), spaces.Discrete(2), {})
             },
             "policy_mapping_fn": lambda id: '0'  # Traffic lights are always controlled by this policy
         },

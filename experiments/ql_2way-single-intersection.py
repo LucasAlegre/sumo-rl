@@ -40,6 +40,7 @@ if __name__ == '__main__':
 
     env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                           route_file=args.route,
+                          out_csv_name=out_csv,
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
@@ -86,7 +87,7 @@ if __name__ == '__main__':
 
                 for agent_id in ql_agents.keys():
                     ql_agents[agent_id].learn(new_state=env.encode(s[agent_id]), reward=r[agent_id])
-        env.save_csv()
+        env.save_csv(out_csv, run)
         env.close()
 
 
