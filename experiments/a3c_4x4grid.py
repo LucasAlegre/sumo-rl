@@ -8,7 +8,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import pandas as pd
 import ray
-from ray.rllib.agents.a3c.a3c import A3CAgent
+from ray.rllib.agents.a3c.a3c import A3CTrainer
 from ray.rllib.agents.a3c.a3c_tf_policy_graph import A3CPolicyGraph
 from ray.tune.registry import register_env
 from gym import spaces
@@ -34,7 +34,7 @@ if __name__ == '__main__':
                                                         traci.trafficlight.Phase(2000, "rrryyy")
                                                         ]))
 
-    trainer = A3CAgent(env="4x4grid", config={
+    trainer = A3CTrainer(env="4x4grid", config={
         "multiagent": {
             "policy_graphs": {
                 '0': (A3CPolicyGraph, spaces.Box(low=np.zeros(11), high=np.ones(11)), spaces.Discrete(2), {})

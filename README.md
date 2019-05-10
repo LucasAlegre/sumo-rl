@@ -14,7 +14,7 @@ Goals of this repository:
 
 ## Install
 
-### To install SUMO v1.1.0:
+### To install SUMO v1.2.0:
 
 ```
 sudo add-apt-repository ppa:sumo/stable
