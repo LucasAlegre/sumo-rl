@@ -130,12 +130,12 @@ class SumoEnvironment(MultiAgentEnv):
     def step(self, actions):
         # act
         self._apply_actions(actions)
-   
-        # run simulation for delta time
+
         for _ in range(self.yellow_time): 
             self._sumo_step()
-        for ts in self.ts_ids:
-            self.traffic_signals[ts].update_phase()
+        if actions:
+            for ts in self.ts_ids:
+                self.traffic_signals[ts].update_phase()
         for _ in range(self.delta_time - self.yellow_time):
             self._sumo_step()
 

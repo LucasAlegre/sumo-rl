@@ -48,14 +48,14 @@ if __name__ == '__main__':
                           max_depart_delay=0,
                           time_to_load_vehicles=120,
                           phases=[
-                            traci.trafficlight.Phase(32000, "GGrrrrGGrrrr"),  
-                            traci.trafficlight.Phase(2000, "yyrrrryyrrrr"),
-                            traci.trafficlight.Phase(32000, "rrGrrrrrGrrr"),   
-                            traci.trafficlight.Phase(2000, "rryrrrrryrrr"),
-                            traci.trafficlight.Phase(32000, "rrrGGrrrrGGr"),   
-                            traci.trafficlight.Phase(2000, "rrryyrrrryyr"),
-                            traci.trafficlight.Phase(32000, "rrrrrGrrrrrG"), 
-                            traci.trafficlight.Phase(2000, "rrrrryrrrrry")
+                            traci.trafficlight.Phase(32, "GGrrrrGGrrrr"),  
+                            traci.trafficlight.Phase(2, "yyrrrryyrrrr"),
+                            traci.trafficlight.Phase(32, "rrGrrrrrGrrr"),   
+                            traci.trafficlight.Phase(2, "rryrrrrryrrr"),
+                            traci.trafficlight.Phase(32, "rrrGGrrrrGGr"),   
+                            traci.trafficlight.Phase(2, "rrryyrrrryyr"),
+                            traci.trafficlight.Phase(32, "rrrrrGrrrrrG"), 
+                            traci.trafficlight.Phase(2, "rrrrryrrrrry")
                             ])
     if args.reward == 'queue':
         env._compute_rewards = env._queue_average_reward

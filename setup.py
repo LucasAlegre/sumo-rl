@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='sumo-rl',
-    version='0.3',
+    version='0.4',
     packages=['sumo_rl',],
     install_requires=REQUIRED,
     author='LucasAlegre',

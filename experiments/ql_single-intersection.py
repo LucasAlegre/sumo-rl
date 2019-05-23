@@ -37,8 +37,6 @@ if __name__ == '__main__':
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
-    ns = args.ns * 1000
-    we = args.we * 1000
     experiment_time = str(datetime.now()).split('.')[0]
     out_csv = 'outputs/single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}_reward{}'.format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay, args.reward)
 
@@ -51,10 +49,10 @@ if __name__ == '__main__':
                           max_green=args.max_green,
                           max_depart_delay=0,
                           phases=[
-                            traci.trafficlight.Phase(ns, "GGrr"),   # north-south
-                            traci.trafficlight.Phase(2000, "yyrr"),
-                            traci.trafficlight.Phase(we, "rrGG"),   # west-east
-                            traci.trafficlight.Phase(2000, "rryy")
+                            traci.trafficlight.Phase(args.ns, "GGrr"),   # north-south
+                            traci.trafficlight.Phase(2, "yyrr"),
+                            traci.trafficlight.Phase(args.we, "rrGG"),   # west-east
+                            traci.trafficlight.Phase(2, "rryy")
                             ])
     if args.reward == 'queue':
         env._compute_rewards = env._queue_average_reward
