@@ -27,7 +27,7 @@ env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersec
                                     route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
                                     out_csv_name='outputs/2way-single-intersection/a2c-contexts-5s-vmvm-400k',
                                     single_agent=True,
-                                    use_gui=False,
+                                    use_gui=True,
                                     num_seconds=400000,
                                     min_green=5,
                                     time_to_load_vehicles=120,

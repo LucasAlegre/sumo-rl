@@ -48,7 +48,7 @@ if __name__ == '__main__':
         while not done['__all__']:
             actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
-            s, r, done, info = env.step(actions=actions)
+            s, r, done, info = env.step(action=actions)
             infos.append(info)
 
             for agent_id in ql_agents.keys():

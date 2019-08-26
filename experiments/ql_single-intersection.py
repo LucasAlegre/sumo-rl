@@ -77,7 +77,7 @@ if __name__ == '__main__':
             while not done['__all__']:
                 actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
-                s, r, done, _ = env.step(actions=actions)
+                s, r, done, _ = env.step(action=actions)
 
                 if args.v:
                     print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(env.encode(s['t'])), 'r=', r['t'])

@@ -80,6 +80,8 @@ class SumoEnvironment(MultiAgentEnv):
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
 
+        self.reward_range = (-float('inf'), float('inf'))
+        self.metadata = {}
         self.spec = ''
 
         self.radix_factors = [s.n for s in self.discrete_observation_space.spaces]
@@ -127,15 +129,14 @@ class SumoEnvironment(MultiAgentEnv):
         """
         return traci.simulation.getCurrentTime()/1000  # milliseconds to seconds
 
-    def step(self, actions):
+    def step(self, action):
         # act
-        self._apply_actions(actions)
+        self._apply_actions(action)
 
         for _ in range(self.yellow_time): 
             self._sumo_step()
-        if actions:
-            for ts in self.ts_ids:
-                self.traffic_signals[ts].update_phase()
+        for ts in self.ts_ids:
+            self.traffic_signals[ts].update_phase()
         for _ in range(self.delta_time - self.yellow_time):
             self._sumo_step()
 

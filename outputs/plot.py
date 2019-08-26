@@ -88,6 +88,7 @@ if __name__ == '__main__':
         std = moving_average(main_df.groupby('step_time').std()['total_wait_time'], window_size=args.window)
 
         #plt.fill_between(steps, mean + sem*1.96, mean - sem*1.96, alpha=0.5)
+        print(len(steps), len(mean), steps.shape, mean.shape)
         plt.plot(steps, mean, label=labels[0])
         labels.pop(0)
         plt.fill_between(steps, mean + std, mean - std, alpha=0.3)
