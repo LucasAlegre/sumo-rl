@@ -53,7 +53,7 @@ python3 experiments/a2c_2way-single-intersection.py
 
 ### To plot results:
 ```
-python3 outputs/plot.py -f outputs/single-intersection_rewardqueue_run1.csv
+python3 outputs/plot.py -f outputs/2way-single-intersection/a3c 
 ```
 ![alt text](https://github.com/LucasAlegre/sumo-rl/blob/master/outputs/result.png)
 
