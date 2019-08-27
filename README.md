@@ -55,6 +55,7 @@ python3 experiments/a2c_2way-single-intersection.py
 ```
 python3 outputs/plot.py -f outputs/single-intersection_rewardqueue_run1.csv
 ```
+![alt text](https://github.com/LucasAlegre/sumo-rl/blob/master/outputs/result.png)
 
 ## Cite
 If you use this repository in your research, please cite:

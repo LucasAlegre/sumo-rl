@@ -9,7 +9,7 @@ else:
 import pandas as pd
 import ray
 from ray.rllib.agents.a3c.a3c import A3CTrainer
-from ray.rllib.agents.a3c.a3c_tf_policy_graph import A3CPolicyGraph
+from ray.rllib.agents.a3c.a3c_tf_policy import A3CTFPolicy
 from ray.tune.registry import register_env
 from gym import spaces
 import numpy as np
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     trainer = A3CTrainer(env="4x4grid", config={
         "multiagent": {
             "policy_graphs": {
-                '0': (A3CPolicyGraph, spaces.Box(low=np.zeros(11), high=np.ones(11)), spaces.Discrete(2), {})
+                '0': (A3CTFPolicy, spaces.Box(low=np.zeros(11), high=np.ones(11)), spaces.Discrete(2), {})
             },
             "policy_mapping_fn": lambda id: '0'  # Traffic lights are always controlled by this policy
         },

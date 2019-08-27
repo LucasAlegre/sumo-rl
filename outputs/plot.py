@@ -1,19 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 import argparse
 import glob
-from cycler import cycler
-import brewer2mpl
 
-
-#['#e41a1c','#377eb8','#4daf4a','#984ea3']
-bmap = brewer2mpl.get_map('Set1', 'qualitative', 3) # http://colorbrewer2.org/#type=qualitative&scheme=Set1&n=3
-colors = bmap.mpl_colors
-
-plt.rc('lines', linewidth=2)
-plt.rc('font', family='sans-serif')
-plt.rc('axes', prop_cycle=(cycler('color', colors))) # line colors
+sns.set(rc={'figure.figsize':(12,9)}, font_scale=2, style='darkgrid')
+colors = sns.color_palette('colorblind', 4)
+sns.set_palette(colors)
 
 def fig():
     fig = 1
@@ -22,7 +16,6 @@ def fig():
         fig += 1
 fig_gen = fig()
 
-
 def moving_average(interval, window_size):
     if window_size == 1:
         return interval
@@ -30,8 +23,6 @@ def moving_average(interval, window_size):
     return np.convolve(interval, window, 'same')
 
 def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
-    plt.figure(next(fig_gen), figsize=figsize)
-    plt.rcParams.update({'font.size': 20})
     ax = plt.subplot()
 
     # manually change this:
@@ -82,14 +73,13 @@ if __name__ == '__main__':
             else:
                 main_df = pd.concat((main_df, df))
 
-        steps = main_df.groupby('step_time').total_stopped.mean().keys()
+        steps = main_df.groupby('step_time').total_stopped.mean().keys().values
         mean = moving_average(main_df.groupby('step_time').mean()['total_wait_time'], window_size=args.window)
         #sem = moving_average(main_df.groupby('step_time').sem()['total_wait_time'], window_size=args.window)
         std = moving_average(main_df.groupby('step_time').std()['total_wait_time'], window_size=args.window)
 
         #plt.fill_between(steps, mean + sem*1.96, mean - sem*1.96, alpha=0.5)
-        print(len(steps), len(mean), steps.shape, mean.shape)
-        plt.plot(steps, mean, label=labels[0])
+        plt.plot(steps, mean)
         labels.pop(0)
         plt.fill_between(steps, mean + std, mean - std, alpha=0.3)
 
