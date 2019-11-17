@@ -52,7 +52,7 @@ if __name__ == '__main__':
             infos.append(info)
 
             for agent_id in ql_agents.keys():
-                ql_agents[agent_id].learn(new_state=env.encode(s[agent_id]), reward=r[agent_id])
+                ql_agents[agent_id].learn(next_state=env.encode(s[agent_id]), reward=r[agent_id])
 
         env.close()
 

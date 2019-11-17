@@ -6,7 +6,6 @@ from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
 class QLAgent:
 
     def __init__(self, starting_state, state_space, action_space, alpha=0.5, gamma=0.95, exploration_strategy=EpsilonGreedy()):
-        super(QLAgent, self).__init__(state_space, action_space)
         self.state = starting_state
         self.state_space = state_space
         self.action_space = action_space
