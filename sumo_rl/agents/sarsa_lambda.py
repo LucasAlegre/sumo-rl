@@ -1,0 +1,67 @@
+import numpy as np
+
+
+class TrueOnlineSarsaLambda:
+
+    def __init__(self, state_space, action_space, alpha=0.001, lamb=0.9, gamma=0.99, epsilon=0.05, fourier_order=15):
+        self.alpha = alpha
+        self.lamb = lamb
+        self.gamma = gamma
+        self.epsilon = epsilon
+
+        self.state_space = state_space
+        self.state_dim = self.state_space.shape[0]
+        self.action_space = action_space
+        self.fourier_order = fourier_order
+
+        self.coeffs = self._build_coefficients()
+        self.lr = self._build_learning_rates() 
+    
+        self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
+        self.theta = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
+
+        self.q_old = 0.0
+        self.action = None
+
+    def _build_coefficients(self):
+        coeff = np.array(np.zeros(self.state_dim))
+        for order in range(1, self.fourier_order + 1):
+            coeff = np.vstack((coeff, np.identity(self.state_dim)*order))
+        return coeff
+
+    def _build_learning_rates(self):
+        lrs = np.repeat(self.alpha, len(self.coeffs))
+        for i in range(len(lrs)):
+            scale = np.linalg.norm(self.coeffs[i])
+            lrs[i] /= 1 if scale == 0.0 else scale
+        return lrs
+
+    def learn(self, state, action, reward, next_state):
+        phi = self.get_features(state)
+        next_phi = self.get_features(next_state)
+        q = self.get_q_value(phi, action)
+        next_q = self.get_q_value(next_phi, self.act(next_phi))
+        td_error = reward + self.gamma * next_q - q
+
+        for a in range(self.action_space.n):
+            if a == action:
+                self.et[a] = self.lamb*self.gamma*self.et[a] + phi - self.lr*self.gamma*self.lamb*(self.et[a]*phi)*phi
+                self.theta[a] += self.lr*(td_error + q - self.q_old)*self.et[a] - self.lr*(q - self.q_old)*phi
+            else:
+                self.et[a] = self.lamb*self.gamma*self.et[a]
+                self.theta[a] += self.lr*(td_error + q - self.q_old)*self.et[a]
+            
+        self.q_old = next_q
+
+    def get_q_value(self, features, action):
+        return np.dot(self.theta[action], features)
+        
+    def get_features(self, state):
+        return np.cos(np.pi * np.dot(self.coeffs, state))
+    
+    def act(self, features):
+        if np.random.rand() < self.epsilon:
+            return self.action_space.sample()
+        else:
+            q_values = [self.get_q_value(features, a) for a in range(self.action_space.n)]
+            return q_values.index(max(q_values))
