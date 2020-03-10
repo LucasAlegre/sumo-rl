@@ -31,7 +31,7 @@ if __name__ == '__main__':
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
     experiment_time = str(datetime.now()).split('.')[0]
-    out_csv = 'outputs/2way-single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}_reward{}'.format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay, args.reward)
+    out_csv = 'outputs/2way-single-intersection/sarsa' + experiment_time
 
     env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                           single_agent=True,
@@ -56,9 +56,8 @@ if __name__ == '__main__':
 
     for run in range(1, args.runs+1):
         obs = env.reset()
-        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space)
+        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon)
         
-        infos = []
         done = False
         if args.fixed:
             while not done:

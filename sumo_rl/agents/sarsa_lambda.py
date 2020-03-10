@@ -15,7 +15,7 @@ class TrueOnlineSarsaLambda:
         self.fourier_order = fourier_order
 
         self.coeffs = self._build_coefficients()
-        self.lr = self._build_learning_rates() 
+        self.lr = self._build_learning_rates()
     
         self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
         self.theta = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
@@ -30,10 +30,9 @@ class TrueOnlineSarsaLambda:
         return coeff
 
     def _build_learning_rates(self):
-        lrs = np.repeat(self.alpha, len(self.coeffs))
-        for i in range(len(lrs)):
-            scale = np.linalg.norm(self.coeffs[i])
-            lrs[i] /= 1 if scale == 0.0 else scale
+        lrs = np.linalg.norm(self.coeffs, axis=1)
+        lrs[lrs==0.] = 1.
+        lrs = self.alpha/lrs
         return lrs
 
     def learn(self, state, action, reward, next_state):
@@ -57,7 +56,7 @@ class TrueOnlineSarsaLambda:
         return np.dot(self.theta[action], features)
         
     def get_features(self, state):
-        return np.cos(np.pi * np.dot(self.coeffs, state))
+        return np.cos(np.dot(np.pi*self.coeffs, state))
     
     def act(self, features):
         if np.random.rand() < self.epsilon:
