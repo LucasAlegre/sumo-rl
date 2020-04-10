@@ -20,7 +20,7 @@ class TrueOnlineSarsaLambda:
         self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
         self.theta = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
 
-        self.q_old = 0.0
+        self.q_old = None
         self.action = None
 
     def _build_coefficients(self):
@@ -35,12 +35,14 @@ class TrueOnlineSarsaLambda:
         lrs = self.alpha/lrs
         return lrs
 
-    def learn(self, state, action, reward, next_state):
+    def learn(self, state, action, reward, next_state, done):
         phi = self.get_features(state)
         next_phi = self.get_features(next_state)
         q = self.get_q_value(phi, action)
         next_q = self.get_q_value(next_phi, self.act(next_phi))
         td_error = reward + self.gamma * next_q - q
+        if self.q_old is None:
+            self.q_old = q
 
         for a in range(self.action_space.n):
             if a == action:
@@ -49,8 +51,11 @@ class TrueOnlineSarsaLambda:
             else:
                 self.et[a] = self.lamb*self.gamma*self.et[a]
                 self.theta[a] += self.lr*(td_error + q - self.q_old)*self.et[a]
-            
+        
         self.q_old = next_q
+        if done:
+            self.q_old = None
+            self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
 
     def get_q_value(self, features, action):
         return np.dot(self.theta[action], features)

@@ -36,7 +36,7 @@ class SumoEnvironment(MultiAgentEnv):
     """
 
     def __init__(self, net_file, route_file, phases, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
-                 time_to_load_vehicles=0, delta_time=5, min_green=5, max_green=50, single_agent=False):
+                 time_to_teleport=-1, time_to_load_vehicles=0, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False):
 
         self._net = net_file
         self._route = route_file
@@ -61,9 +61,10 @@ class SumoEnvironment(MultiAgentEnv):
         self.time_to_load_vehicles = time_to_load_vehicles  # number of simulation seconds ran in reset() before learning starts
         self.delta_time = delta_time  # seconds on sumo at each step
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
+        self.time_to_teleport = time_to_teleport
         self.min_green = min_green
         self.max_green = max_green
-        self.yellow_time = 2
+        self.yellow_time = yellow_time
 
         """
         Default observation space is a vector R^(#greenPhases + 1 + 2 * #lanes)
@@ -93,6 +94,7 @@ class SumoEnvironment(MultiAgentEnv):
         
     def reset(self):
         if self.run != 0:
+            traci.close()
             self.save_csv(self.out_csv_name, self.run)
         self.run += 1
         self.metrics = []
@@ -101,14 +103,16 @@ class SumoEnvironment(MultiAgentEnv):
                      '-n', self._net,
                      '-r', self._route,
                      '--max-depart-delay', str(self.max_depart_delay), 
-                     '--waiting-time-memory', '10000', 
+                     '--waiting-time-memory', '10000',
+                     '--time-to-teleport', str(self.time_to_teleport),
                      '--random']
         if self.use_gui:
             sumo_cmd.append('--start')
+
         traci.start(sumo_cmd)
 
         for ts in self.ts_ids:
-            self.traffic_signals[ts] = TrafficSignal(self, ts, self.delta_time, self.min_green, self.max_green, self.phases)
+            self.traffic_signals[ts] = TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green, self.phases)
             self.last_measure[ts] = 0.0
 
         self.vehicles = dict()
@@ -127,18 +131,23 @@ class SumoEnvironment(MultiAgentEnv):
         """
         Return current simulation second on SUMO
         """
-        return traci.simulation.getCurrentTime()/1000  # milliseconds to seconds
+        return traci.simulation.getTime()
 
     def step(self, action):
-        # act
-        self._apply_actions(action)
+        # No action, follow fixed TL defined in self.phases
+        if action is None or action == {}:
+            for _ in range(self.delta_time):
+                self._sumo_step()
 
-        for _ in range(self.yellow_time): 
-            self._sumo_step()
-        for ts in self.ts_ids:
-            self.traffic_signals[ts].update_phase()
-        for _ in range(self.delta_time - self.yellow_time):
-            self._sumo_step()
+        else:
+            self._apply_actions(action)
+
+            for _ in range(self.yellow_time):
+                self._sumo_step()
+            for ts in self.ts_ids:
+                self.traffic_signals[ts].update_phase()
+            for _ in range(self.delta_time - self.yellow_time):
+                self._sumo_step()
 
         # observe new state and reward
         observation = self._compute_observations()

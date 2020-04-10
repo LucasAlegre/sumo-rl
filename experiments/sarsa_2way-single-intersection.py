@@ -20,11 +20,11 @@ if __name__ == '__main__':
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                   description="""SarsaLambda Single-Intersection""")
     prs.add_argument("-route", dest="route", type=str, default='nets/2way-single-intersection/single-intersection-vhvh.rou.xml', help="Route definition xml file.\n")
-    prs.add_argument("-a", dest="alpha", type=float, default=0.001, required=False, help="Alpha learning rate.\n")
+    prs.add_argument("-a", dest="alpha", type=float, default=0.0001, required=False, help="Alpha learning rate.\n")
     prs.add_argument("-g", dest="gamma", type=float, default=0.99, required=False, help="Gamma discount rate.\n")
     prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
-    prs.add_argument("-mingreen", dest="min_green", type=int, default=10, required=False, help="Minimum green time.\n")
-    prs.add_argument("-maxgreen", dest="max_green", type=int, default=30, required=False, help="Maximum green time.\n")
+    prs.add_argument("-mingreen", dest="min_green", type=int, default=5, required=False, help="Minimum green time.\n")
+    prs.add_argument("-maxgreen", dest="max_green", type=int, default=50, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
     prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     for run in range(1, args.runs+1):
         obs = env.reset()
-        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon)
+        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon, fourier_order=21)
         
         done = False
         if args.fixed:
@@ -68,12 +68,11 @@ if __name__ == '__main__':
 
                 next_obs, r, done, _ = env.step(action=action)
 
-                agent.learn(state=obs, action=action, reward=r, next_state=next_obs)
+                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done=done)
 
                 obs = next_obs
 
         env.save_csv(out_csv, run)
-        env.close()
 
 
 
