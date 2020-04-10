@@ -63,6 +63,10 @@ class TrueOnlineSarsaLambda:
     def get_features(self, state):
         return np.cos(np.dot(np.pi*self.coeffs, state))
     
+    def reset(self):
+        self.q_old = None
+        self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
+    
     def act(self, features):
         if np.random.rand() < self.epsilon:
             return self.action_space.sample()

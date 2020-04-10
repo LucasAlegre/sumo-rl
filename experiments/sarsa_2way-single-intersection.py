@@ -11,6 +11,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 import traci
+from sumo_rl.util.gen_route import write_route_file
 from sumo_rl.environment.env import SumoEnvironment
 from sumo_rl.agents.sarsa_lambda import TrueOnlineSarsaLambda
 
@@ -19,7 +20,7 @@ if __name__ == '__main__':
 
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                   description="""SarsaLambda Single-Intersection""")
-    prs.add_argument("-route", dest="route", type=str, default='nets/2way-single-intersection/single-intersection-vhvh.rou.xml', help="Route definition xml file.\n")
+    prs.add_argument("-route", dest="route", type=str, default='nets/2way-single-intersection/single-intersection-gen.rou.xml', help="Route definition xml file.\n")
     prs.add_argument("-a", dest="alpha", type=float, default=0.0001, required=False, help="Alpha learning rate.\n")
     prs.add_argument("-g", dest="gamma", type=float, default=0.99, required=False, help="Gamma discount rate.\n")
     prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
@@ -27,11 +28,13 @@ if __name__ == '__main__':
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=50, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=400000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
     experiment_time = str(datetime.now()).split('.')[0]
-    out_csv = 'outputs/2way-single-intersection/sarsa' + experiment_time
+    out_csv = 'outputs/2way-single-intersection/sarsa_lambda{}'.format(args.lamb)
+
+    write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml', 400000, 100000)
 
     env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                           single_agent=True,
