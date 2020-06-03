@@ -1,20 +1,29 @@
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import pandas as pd
 import argparse
 import glob
+from itertools import cycle
 
-sns.set(rc={'figure.figsize':(12,9)}, font_scale=2, style='darkgrid')
-colors = sns.color_palette('colorblind', 4)
+sns.set(style='darkgrid', rc={'figure.figsize': (7.2, 4.45),
+                            'text.usetex': True,
+                            'xtick.labelsize': 16,
+                            'ytick.labelsize': 16,
+                            'font.size': 15,
+                            'figure.autolayout': True,
+                            'axes.titlesize' : 16,
+                            'axes.labelsize' : 17,
+                            'lines.linewidth' : 2,
+                            'lines.markersize' : 6,
+                            'legend.fontsize': 15})
+colors = sns.color_palette("colorblind", 4)
+#colors = sns.color_palette("Set1", 2)
+#colors = ['#FF4500','#e31a1c','#329932', 'b', 'b', '#6a3d9a','#fb9a99']
+dashes_styles = cycle(['-', '-.', '--', ':'])
 sns.set_palette(colors)
+colors = cycle(colors)
 
-def fig():
-    fig = 1
-    while True:
-        yield fig
-        fig += 1
-fig_gen = fig()
 
 def moving_average(interval, window_size):
     if window_size == 1:
@@ -22,70 +31,72 @@ def moving_average(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
 
-def plot_figure(figsize=(12, 9), x_label='', y_label='', title=''):
-    ax = plt.subplot()
 
-    # manually change this:
-    #plt.xlim([380, 399900])
-    #plt.yticks([0]+[x for x in range(1500, 3001, 250)])
-    #plt.ylim([1500, 3001])
-    #for i in range(0,400000,100000):
-    #    plt.axvline(x=i, color='k', linestyle='--')
-    #plt.axvline(x=25000, color='k', linestyle='--')
-    #plt.axvline(x=50000, color='k', linestyle='--')
-    #plt.axvline(x=75000, color='k', linestyle='--')
-    plt.grid(axis='y')
-    #plt.text(8000,2850,'Context 1')
-    #plt.text(28000,2850,'Context 2')
-    #plt.text(44500,5000,'Context 1')
-    #plt.text(64500,5000,'Context 2')
+def plot_df(df, color, xaxis, yaxis, init_time=0, ma=1, acc=False, label=''):
+    df[yaxis] = pd.to_numeric(df[yaxis], errors='coerce')  # convert NaN string to NaN value
 
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.get_xaxis().tick_bottom()
-    ax.get_yaxis().tick_left()
-    plt.title(title)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    mean = df.groupby(xaxis).mean()[yaxis]
+    std = df.groupby(xaxis).std()[yaxis]
+    if ma > 1:
+        mean = moving_average(mean, ma)
+        std = moving_average(std, ma)
+
+    x = df.groupby(xaxis)[xaxis].mean().keys().values
+    plt.plot(x, mean, label=label, color=color, linestyle=next(dashes_styles))
+    plt.fill_between(x, mean + std, mean - std, alpha=0.25, color=color, rasterized=True)
+    
+    #plt.ylim([0,200])
+    #plt.xlim([40000, 70000])
 
 
 if __name__ == '__main__':
 
-    prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    prs.add_argument("-f", dest="file", nargs='+', required=True, help="The csv file to plot.\n")
-    prs.add_argument("-label", dest="label", nargs='+', required=False, help="Figure labels.\n")
-    prs.add_argument("-out", dest="out", required=False, default='', help="The .pdf filename in which the figure will be saved.\n")
-    prs.add_argument("-w", dest="window", required=False, default=5, type=int, help="The moving average window.\n")
+    prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                  description="""Plot Traffic Signal Metrics""")  
+    prs.add_argument('-f', nargs='+', required=True, help="Measures files\n")            
+    prs.add_argument('-l', nargs='+', default=None, help="File's legends\n")
+    prs.add_argument('-t', type=str, default="", help="Plot title\n")
+    prs.add_argument("-acc", action="store_true", default=False, help="Accumulate metric.\n")
+    prs.add_argument("-init-time", type=int, default=0, help="Initial second to start plot.\n")
+    prs.add_argument("-yaxis", type=str, default='total_wait_time', help="The column to plot.\n")
+    prs.add_argument("-xaxis", type=str, default='step_time', help="The x axis.\n")
+    prs.add_argument("-ma", type=int, default=1, help="Moving Average Window.\n")
+    prs.add_argument('-sep', type=str, default=',', help="Values separator on file.\n")
+    prs.add_argument('-xlabel', type=str, default='Second', help="X axis label.\n") 
+    prs.add_argument('-ylabel', type=str, default='Total waiting time (s)', help="Y axis label.\n")    
+    prs.add_argument('-output', type=str, default=None, help="PDF output filename.\n")
+   
     args = prs.parse_args()
-    if args.label:
-        labels = args.label
-    else:
-        labels = ['' for _ in range(len(args.file))]
+    labels = cycle(args.l) if args.l is not None else cycle([str(i) for i in range(len(args.f))])
 
-    plot_figure(x_label='Time Step (s)', y_label='Total Waiting Time of Vehicles (s)')
+    plt.figure()
 
-    for filename in args.file:
+    # File reading and grouping
+    for file in args.f:
         main_df = pd.DataFrame()
-        for file in glob.glob(filename+'*'):
-            df = pd.read_csv(file)
+        for f in glob.glob(file+'*'):
+            df = pd.read_csv(f, sep=args.sep)
             if main_df.empty:
                 main_df = df
             else:
                 main_df = pd.concat((main_df, df))
 
-        steps = main_df.groupby('step_time').total_stopped.mean().keys().values
-        mean = moving_average(main_df.groupby('step_time').mean()['total_wait_time'], window_size=args.window)
-        #sem = moving_average(main_df.groupby('step_time').sem()['total_wait_time'], window_size=args.window)
-        std = moving_average(main_df.groupby('step_time').std()['total_wait_time'], window_size=args.window)
+        # Plot DataFrame
+        plot_df(main_df,
+                xaxis=args.xaxis,
+                yaxis=args.yaxis,
+                init_time=args.init_time,
+                label=next(labels),
+                color=next(colors),
+                acc=args.acc,
+                ma=args.ma)
 
-        #plt.fill_between(steps, mean + sem*1.96, mean - sem*1.96, alpha=0.5)
-        plt.plot(steps, mean)
-        labels.pop(0)
-        plt.fill_between(steps, mean + std, mean - std, alpha=0.3)
+    plt.title(args.t)
+    plt.ylabel(args.ylabel)
+    plt.xlabel(args.xlabel)
+    plt.ylim(bottom=0)
 
-    if args.label is not None:
-        plt.legend()
+    if args.output is not None:
+        plt.savefig(args.output+'.pdf', bbox_inches="tight")
 
-    if args.out != '':
-        plt.savefig(args.out+'.pdf', bbox_inches="tight")
     plt.show()
