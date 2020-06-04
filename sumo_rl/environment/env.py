@@ -210,7 +210,7 @@ class SumoEnvironment(MultiAgentEnv):
     def _waiting_time_reward(self):
         rewards = {}
         for ts in self.ts_ids:
-            ts_wait = sum(self.traffic_signals[ts].get_waiting_time())
+            ts_wait = sum(self.traffic_signals[ts].get_waiting_time_per_lane())
             rewards[ts] = self.last_measure[ts] - ts_wait
             self.last_measure[ts] = ts_wait
         return rewards
@@ -241,13 +241,20 @@ class SumoEnvironment(MultiAgentEnv):
         return {
             'step_time': self.sim_step,
             'reward': self.last_reward[self.ts_ids[0]],
-            'total_stopped': sum([sum(self.traffic_signals[ts].get_stopped_vehicles_num()) for ts in self.ts_ids]),
-            'total_wait_time': sum([self.last_measure[ts] for ts in self.ts_ids])
+            'total_stopped': sum(self.traffic_signals[ts].get_total_queued() for ts in self.ts_ids),
+            'total_wait_time': sum(self.last_measure[ts] for ts in self.ts_ids)
             #'total_wait_time': sum([sum(self.traffic_signals[ts].get_waiting_time()) for ts in self.ts_ids])
         }
 
     def close(self):
         traci.close()
+    
+    def save_csv(self, out_csv_name, run):
+        if out_csv_name is not None:
+            df = pd.DataFrame(self.metrics)
+            df.to_csv(out_csv_name + '_run{}'.format(run) + '.csv', index=False)
+
+    # Below functions are for discrete state space
 
     def encode(self, state):
         phase = state[:self.num_green_phases].index(1)
@@ -256,26 +263,7 @@ class SumoEnvironment(MultiAgentEnv):
         return self.radix_encode([phase, elapsed] + density_queue)
 
     def _discretize_density(self, density):
-        if density < 0.1:
-            return 0
-        elif density < 0.2:
-            return 1
-        elif density < 0.3:
-            return 2
-        elif density < 0.4:
-            return 3
-        elif density < 0.5:
-            return 4
-        elif density < 0.6:
-            return 5
-        elif density < 0.7:
-            return 6
-        elif density < 0.8:
-            return 7
-        elif density < 0.9:
-            return 8
-        else:
-            return 9
+        return min(int(density*10), 9)
 
     def _discretize_elapsed_time(self, elapsed):
         elapsed *= self.max_green
@@ -297,7 +285,4 @@ class SumoEnvironment(MultiAgentEnv):
             value = value // self.radix_factors[i]
         return res
 
-    def save_csv(self, out_csv_name, run):
-        if out_csv_name is not None:
-            df = pd.DataFrame(self.metrics)
-            df.to_csv(out_csv_name + '_run{}'.format(run) + '.csv', index=False)
+    

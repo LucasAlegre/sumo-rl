@@ -54,8 +54,7 @@ class TrueOnlineSarsaLambda:
         
         self.q_old = next_q
         if done:
-            self.q_old = None
-            self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
+            self.reset_traces()
 
     def get_q_value(self, features, action):
         return np.dot(self.theta[action], features)
@@ -63,7 +62,7 @@ class TrueOnlineSarsaLambda:
     def get_features(self, state):
         return np.cos(np.dot(np.pi*self.coeffs, state))
     
-    def reset(self):
+    def reset_traces(self):
         self.q_old = None
         self.et = {a: np.zeros(len(self.coeffs)) for a in range(self.action_space.n)}
     

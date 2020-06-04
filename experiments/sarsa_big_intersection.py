@@ -18,7 +18,7 @@ from sumo_rl.agents.sarsa_lambda import TrueOnlineSarsaLambda
 if __name__ == '__main__':
 
     experiment_time = str(datetime.now()).split('.')[0]
-    out_csv = 'outputs/big-intersection/sarsakk' #+ experiment_time
+    out_csv = 'outputs/big-intersection/sarsa-rn' #+ experiment_time
 
     env = SumoEnvironment(net_file='nets/big-intersection/big-intersection.net.xml',
                           single_agent=True,
@@ -29,7 +29,7 @@ if __name__ == '__main__':
                           yellow_time=4,
                           min_green=5,
                           max_green=60,
-                          max_depart_delay=0,
+                          max_depart_delay=300,
                           time_to_load_vehicles=0,
                           phases=[
                             traci.trafficlight.Phase(30, "GGGGrrrrrrGGGGrrrrrr"),  
@@ -42,9 +42,9 @@ if __name__ == '__main__':
                             traci.trafficlight.Phase(4, "rrrrrrrrryrrrrrrrrry")])
 
     fixed_tl = False
-    agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=0.0001, gamma=0.95, epsilon=0.05, lamb=0.9, fourier_order=21)
+    agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=0.00001, gamma=0.95, epsilon=0.01, lamb=0.1, fourier_order=9)
 
-    for run in range(1, 10 +1):
+    for run in range(1, 4 +1):
         obs = env.reset()
         done = False
 
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
                 next_obs, r, done, _ = env.step(action=action)
 
-                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done)
+                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done=done)
 
                 obs = next_obs
 
