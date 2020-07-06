@@ -1,9 +1,9 @@
 import numpy as np
-
+from itertools import combinations
 
 class TrueOnlineSarsaLambda:
 
-    def __init__(self, state_space, action_space, alpha=0.001, lamb=0.9, gamma=0.99, epsilon=0.05, fourier_order=15):
+    def __init__(self, state_space, action_space, alpha=0.001, lamb=0.9, gamma=0.99, epsilon=0.05, fourier_order=7):
         self.alpha = alpha
         self.lamb = lamb
         self.gamma = gamma
@@ -27,6 +27,13 @@ class TrueOnlineSarsaLambda:
         coeff = np.array(np.zeros(self.state_dim))
         for order in range(1, self.fourier_order + 1):
             coeff = np.vstack((coeff, np.identity(self.state_dim)*order))
+        for i, j in combinations(range(self.state_dim), 2):
+            for o1 in range(1, self.fourier_order + 1):
+                for o2 in range(1, self.fourier_order + 1):
+                    c = np.zeros(self.state_dim)
+                    c[i] = o1
+                    c[j] = o2
+                    coeff = np.vstack((coeff, c))
         return coeff
 
     def _build_learning_rates(self):
