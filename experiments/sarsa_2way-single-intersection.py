@@ -32,7 +32,7 @@ if __name__ == '__main__':
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
     experiment_time = str(datetime.now()).split('.')[0]
-    out_csv = 'outputs/2way-single-intersection/sarsa_lambda{}'.format(args.lamb)
+    out_csv = 'outputs/2way-single-intersection/sarsa_lambda'
 
     write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml', 400000, 100000)
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     for run in range(1, args.runs+1):
         obs = env.reset()
-        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon, fourier_order=21)
+        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon, fourier_order=7)
         
         done = False
         if args.fixed:

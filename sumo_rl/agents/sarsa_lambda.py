@@ -1,5 +1,5 @@
 import numpy as np
-from itertools import combinations
+from itertools import combinations, product
 
 class TrueOnlineSarsaLambda:
 
@@ -24,16 +24,13 @@ class TrueOnlineSarsaLambda:
         self.action = None
 
     def _build_coefficients(self):
-        coeff = np.array(np.zeros(self.state_dim))
-        for order in range(1, self.fourier_order + 1):
-            coeff = np.vstack((coeff, np.identity(self.state_dim)*order))
-        for i, j in combinations(range(self.state_dim), 2):
-            for o1 in range(1, self.fourier_order + 1):
-                for o2 in range(1, self.fourier_order + 1):
-                    c = np.zeros(self.state_dim)
-                    c[i] = o1
-                    c[j] = o2
-                    coeff = np.vstack((coeff, c))
+        coeff = np.array(np.zeros(self.state_dim))  # Bias
+        for i in range(1, 2 + 1):
+            for indices in combinations(range(self.state_dim), i):
+                for c in product(range(1, self.fourier_order + 1), repeat=i):
+                    coef = np.zeros(self.state_dim)
+                    coef[list(indices)] = list(c)
+                    coeff = np.vstack((coeff, coef))
         return coeff
 
     def _build_learning_rates(self):

@@ -181,17 +181,24 @@ class SumoEnvironment(MultiAgentEnv):
         observations = {}
         for ts in self.ts_ids:
             phase_id = [1 if self.traffic_signals[ts].phase//2 == i else 0 for i in range(self.num_green_phases)]  #one-hot encoding
-            elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
+            #elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
             density = self.traffic_signals[ts].get_lanes_density()
             queue = self.traffic_signals[ts].get_lanes_queue()
-            observations[ts] = phase_id + [elapsed] + density + queue
+            observations[ts] = phase_id + density + queue
         return observations
 
     def _compute_rewards(self):
         return self._waiting_time_reward()
+        #return self._pressure_reward()
         #return self._queue_reward()
         #return self._waiting_time_reward2()
         #return self._queue_average_reward()
+    
+    def _pressure_reward(self):
+        rewards = {}
+        for ts in self.ts_ids:
+            rewards[ts] = -self.traffic_signals[ts].get_pressure()
+        return rewards
 
     def _queue_average_reward(self):
         rewards = {}

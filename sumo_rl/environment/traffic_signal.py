@@ -25,6 +25,8 @@ class TrafficSignal:
         self.green_phase = 0
         self.num_green_phases = len(phases) // 2
         self.lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # remove duplicates and keep order
+        self.out_lanes = [link[0][1] for link in traci.trafficlight.getControlledLinks(self.id)]
+        self.out_lanes = list(set(self.out_lanes))
 
         logic = traci.trafficlight.Logic("new-program", 0, 0, phases=phases)
         traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
@@ -70,10 +72,17 @@ class TrafficSignal:
             wait_time_per_lane.append(wait_time)
         return wait_time_per_lane
 
+    def get_pressure(self):
+        return abs(sum(traci.lane.getLastStepVehicleNumber(lane) for lane in self.lanes) - sum(traci.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes))
+
+    def get_out_lanes_density(self):
+        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
+        return [min(1, traci.lane.getLastStepVehicleNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.out_lanes]
+
     def get_lanes_density(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
         return [min(1, traci.lane.getLastStepVehicleNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.lanes]
-    
+
     def get_lanes_queue(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
         return [min(1, traci.lane.getLastStepHaltingNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.lanes]
