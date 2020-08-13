@@ -73,7 +73,7 @@ class SumoEnvironment(MultiAgentEnv):
 
         Action space is which green phase is going to be open for the next delta_time seconds
         """
-        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 1 + 2*self.lanes_per_ts), high=np.ones(self.num_green_phases + 1 + 2*self.lanes_per_ts))
+        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 2*self.lanes_per_ts), high=np.ones(self.num_green_phases + 2*self.lanes_per_ts))
         self.discrete_observation_space = spaces.Tuple((
             spaces.Discrete(self.num_green_phases),                         # Green Phase
             spaces.Discrete(self.max_green//self.delta_time),               # Elapsed time of phase
