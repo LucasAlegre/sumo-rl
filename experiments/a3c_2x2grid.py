@@ -44,7 +44,7 @@ if __name__ == '__main__':
     trainer = A3CTrainer(env="2x2grid", config={
         "multiagent": {
             "policy_graphs": {
-                '0': (A3CTFPolicy, spaces.Box(low=np.zeros(21), high=np.ones(21)), spaces.Discrete(4), {})
+                '0': (A3CTFPolicy, spaces.Box(low=np.zeros(20), high=np.ones(20)), spaces.Discrete(4), {})
             },
             "policy_mapping_fn": policy_mapping  # Traffic lights are always controlled by this policy
         },

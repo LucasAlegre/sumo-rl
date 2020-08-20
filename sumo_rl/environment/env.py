@@ -67,8 +67,8 @@ class SumoEnvironment(MultiAgentEnv):
         self.yellow_time = yellow_time
 
         """
-        Default observation space is a vector R^(#greenPhases + 1 + 2 * #lanes)
-        s = [current phase one-hot encoded, elapsedTime / maxGreenTime, density for each lane, queue for each lane]
+        Default observation space is a vector R^(#greenPhases + 2 * #lanes)
+        s = [current phase one-hot encoded, density for each lane, queue for each lane]
         You can change this by modifing self.observation_space and the method _compute_observations()
 
         Action space is which green phase is going to be open for the next delta_time seconds
@@ -76,7 +76,7 @@ class SumoEnvironment(MultiAgentEnv):
         self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 2*self.lanes_per_ts), high=np.ones(self.num_green_phases + 2*self.lanes_per_ts))
         self.discrete_observation_space = spaces.Tuple((
             spaces.Discrete(self.num_green_phases),                         # Green Phase
-            spaces.Discrete(self.max_green//self.delta_time),               # Elapsed time of phase
+            #spaces.Discrete(self.max_green//self.delta_time),               # Elapsed time of phase
             *(spaces.Discrete(10) for _ in range(2*self.lanes_per_ts))      # Density and stopped-density for each lane
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
@@ -265,9 +265,9 @@ class SumoEnvironment(MultiAgentEnv):
 
     def encode(self, state):
         phase = state[:self.num_green_phases].index(1)
-        elapsed = self._discretize_elapsed_time(state[self.num_green_phases])
-        density_queue = [self._discretize_density(d) for d in state[self.num_green_phases + 1:]]
-        return self.radix_encode([phase, elapsed] + density_queue)
+        #elapsed = self._discretize_elapsed_time(state[self.num_green_phases])
+        density_queue = [self._discretize_density(d) for d in state[self.num_green_phases:]]
+        return self.radix_encode([phase] + density_queue)
 
     def _discretize_density(self, density):
         return min(int(density*10), 9)
