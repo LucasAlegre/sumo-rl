@@ -32,7 +32,7 @@ def moving_average(interval, window_size):
     return np.convolve(interval, window, 'same')
 
 
-def plot_df(df, color, xaxis, yaxis, init_time=0, ma=1, acc=False, label=''):
+def plot_df(df, color, xaxis, yaxis, ma=1, label=''):
     df[yaxis] = pd.to_numeric(df[yaxis], errors='coerce')  # convert NaN string to NaN value
 
     mean = df.groupby(xaxis).mean()[yaxis]
@@ -56,8 +56,6 @@ if __name__ == '__main__':
     prs.add_argument('-f', nargs='+', required=True, help="Measures files\n")            
     prs.add_argument('-l', nargs='+', default=None, help="File's legends\n")
     prs.add_argument('-t', type=str, default="", help="Plot title\n")
-    prs.add_argument("-acc", action="store_true", default=False, help="Accumulate metric.\n")
-    prs.add_argument("-init-time", type=int, default=0, help="Initial second to start plot.\n")
     prs.add_argument("-yaxis", type=str, default='total_wait_time', help="The column to plot.\n")
     prs.add_argument("-xaxis", type=str, default='step_time', help="The x axis.\n")
     prs.add_argument("-ma", type=int, default=1, help="Moving Average Window.\n")
@@ -85,10 +83,8 @@ if __name__ == '__main__':
         plot_df(main_df,
                 xaxis=args.xaxis,
                 yaxis=args.yaxis,
-                init_time=args.init_time,
                 label=next(labels),
                 color=next(colors),
-                acc=args.acc,
                 ma=args.ma)
 
     plt.title(args.t)

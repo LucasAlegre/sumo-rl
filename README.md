@@ -1,20 +1,26 @@
+<img src="outputs/logo.png" align="right" width="30%"/>
+
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/LucasAlegre/sumo-rl/blob/master/LICENSE)
+
+
 # SUMO-RL
 
-SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO v.1.5.0](https://github.com/eclipse/sumo) for Traffic Signal Control. 
+SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
 The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
 [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
 Goals of this repository:
-- Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO.
-- Support Multiagent RL.
-- Compatibility with Gym Env and popular RL libraries like openAI baselines and RLlib.
-- Easy customisation: state and reward definitions are easily modifiable.
+- Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
+- Support Multiagent RL
+- Compatibility with Gym Env and popular RL libraries like openAI baselines and RLlib
+- Easy customisation: state and reward definitions are easily modifiable
 
 ## Install
 
-### To install SUMO v1.5.0:
+### Install SUMO latest version:
 
 ```
 sudo add-apt-repository ppa:sumo/stable
@@ -27,9 +33,18 @@ echo 'export SUMO_HOME="/usr/share/sumo"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### To install sumo_rl package:
+### Install SUMO-RL
+
+Stable release version is available through pip
 ```
-pip3 install -e .
+pip install sumo-rl
+```
+
+Alternatively you can install using the latest (unreleased) version
+```
+git clone https://github.com/LucasAlegre/sumo-rl
+cd sumo-rl
+pip install -e .
 ```
 
 ## Examples
@@ -46,18 +61,18 @@ python3 experiments/ql_single-intersection.py
 python3 experiments/a3c_4x4grid.py
 ```
 
-### [stable-baselines A2C](https://stable-baselines.readthedocs.io/en/master/modules/a2c.html) in a 2-way single intersection:
+### [stable-baselines3 DQN](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/dqn/dqn.py) in a 2-way single intersection:
 ```
-python3 experiments/a2c_2way-single-intersection.py
+python3 experiments/dqn_2way-single-intersection.py
 ```
 
-### To plot results:
+### Plotting results:
 ```
 python3 outputs/plot.py -f outputs/2way-single-intersection/a3c 
 ```
 ![alt text](https://github.com/LucasAlegre/sumo-rl/blob/master/outputs/result.png)
 
-## Cite
+## Citation
 If you use this repository in your research, please cite:
 ```
 @misc{sumorl,

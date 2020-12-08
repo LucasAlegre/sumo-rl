@@ -22,26 +22,20 @@ if __name__ == '__main__':
 
     register_env("4x4grid", lambda _: SumoEnvironment(net_file='nets/4x4-Lucas/4x4.net.xml',
                                                     route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
-                                                    out_csv_name='outputs/4x4grid/a3c-4x4grid',
+                                                    out_csv_name='outputs/4x4grid/a3c',
                                                     use_gui=False,
                                                     num_seconds=80000,
-                                                    time_to_load_vehicles=120,
-                                                    max_depart_delay=0,
-                                                    phases=[
-                                                        traci.trafficlight.Phase(35, "GGGrrr"),   # north-south
-                                                        traci.trafficlight.Phase(2, "yyyrrr"),
-                                                        traci.trafficlight.Phase(35, "rrrGGG"),   # west-east
-                                                        traci.trafficlight.Phase(2, "rrryyy")
-                                                        ]))
+                                                    max_depart_delay=0))
 
     trainer = A3CTrainer(env="4x4grid", config={
         "multiagent": {
-            "policy_graphs": {
+            "policies": {
                 '0': (A3CTFPolicy, spaces.Box(low=np.zeros(10), high=np.ones(10)), spaces.Discrete(2), {})
             },
-            "policy_mapping_fn": lambda id: '0'  # Traffic lights are always controlled by this policy
+            "policy_mapping_fn": (lambda id: '0')  # Traffic lights are always controlled by this policy
         },
-        "lr": 0.0001,
+        "lr": 0.001,
+        "no_done_at_end": True
     })
     while True:
         print(trainer.train())  # distributed training step

@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
-REQUIRED = ['gym', 'numpy', 'ray[rllib]']
+REQUIRED = ['gym', 'numpy', 'pandas', 'ray[rllib]']
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='sumo-rl',
-    version='0.6',
+    version='1.0',
     packages=['sumo_rl',],
     install_requires=REQUIRED,
     author='LucasAlegre',
@@ -15,5 +15,5 @@ setup(
     long_description=long_description,
     url='https://github.com/LucasAlegre/sumo-rl',
     license="MIT",
-    description='Environments inheriting OpenAI Gym Env and RL algorithms to control Traffic Signal controllers on SUMO.'
+    description='Environments inheriting OpenAI Gym Env and RL algorithms for Traffic Signal Control on SUMO.'
 )

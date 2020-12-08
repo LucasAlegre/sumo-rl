@@ -33,7 +33,6 @@ if __name__ == '__main__':
     prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
     prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
     prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
-    prs.add_argument("-r", dest="reward", type=str, default='wait', required=False, help="Reward function: [-r queue] for average queue reward or [-r wait] for waiting time reward.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
@@ -47,21 +46,11 @@ if __name__ == '__main__':
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green,
-                          max_depart_delay=0,
-                          phases=[
-                            traci.trafficlight.Phase(args.ns, "GGrr"),   # north-south
-                            traci.trafficlight.Phase(2, "yyrr"),
-                            traci.trafficlight.Phase(args.we, "rrGG"),   # west-east
-                            traci.trafficlight.Phase(2, "rryy")
-                            ])
-    if args.reward == 'queue':
-        env._compute_rewards = env._queue_average_reward
-    else:
-        env._compute_rewards = env._waiting_time_reward
+                          max_depart_delay=0)
 
     for run in range(1, args.runs+1):
         initial_states = env.reset()
-        ql_agents = {ts: QLAgent(starting_state=env.encode(initial_states[ts]),
+        ql_agents = {ts: QLAgent(starting_state=env.encode(initial_states[ts], ts),
                                  state_space=env.observation_space,
                                  action_space=env.action_space,
                                  alpha=args.alpha,
@@ -79,11 +68,8 @@ if __name__ == '__main__':
 
                 s, r, done, _ = env.step(action=actions)
 
-                if args.v:
-                    print('s=', env.radix_decode(ql_agents['t'].state), 'a=', actions['t'], 's\'=', env.radix_decode(env.encode(s['t'])), 'r=', r['t'])
-
                 for agent_id in ql_agents.keys():
-                    ql_agents[agent_id].learn(next_state=env.encode(s[agent_id]), reward=r[agent_id])
+                    ql_agents[agent_id].learn(next_state=env.encode(s[agent_id], agent_id), reward=r[agent_id])
         env.save_csv(out_csv, run)
         env.close()
 

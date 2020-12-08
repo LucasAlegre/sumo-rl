@@ -26,17 +26,7 @@ env = SumoEnvironment(net_file='nets/big-intersection/big-intersection.net.xml',
                         yellow_time=4,
                         min_green=5,
                         max_green=60,
-                        max_depart_delay=0,
-                        time_to_load_vehicles=0,
-                        phases=[
-                        traci.trafficlight.Phase(30, "GGGGrrrrrrGGGGrrrrrr"),  
-                        traci.trafficlight.Phase(4, "yyyyrrrrrryyyyrrrrrr"),
-                        traci.trafficlight.Phase(15, "rrrrGrrrrrrrrrGrrrrr"),   
-                        traci.trafficlight.Phase(4, "rrrryrrrrrrrrryrrrrr"),
-                        traci.trafficlight.Phase(30, "rrrrrGGGGrrrrrrGGGGr"),   
-                        traci.trafficlight.Phase(4, "rrrrryyyyrrrrrryyyyr"),
-                        traci.trafficlight.Phase(15, "rrrrrrrrrGrrrrrrrrrG"), 
-                        traci.trafficlight.Phase(4, "rrrrrrrrryrrrrrrrrry")])
+                        max_depart_delay=0)
 
 model = DQN(
     env=env,
