@@ -12,8 +12,10 @@ setup(
     install_requires=REQUIRED,
     author='LucasAlegre',
     author_email='lucasnale@gmail.com',
-    long_description=long_description,
     url='https://github.com/LucasAlegre/sumo-rl',
+    download_url='https://github.com/LucasAlegre/sumo-rl/archive/v1.0.tar.gz',
+    long_description=open("README.md", encoding="utf-8").read(),
+    long_description_content_type="text/markdown",
     license="MIT",
     description='Environments inheriting OpenAI Gym Env and RL algorithms for Traffic Signal Control on SUMO.'
 )
