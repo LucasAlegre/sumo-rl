@@ -15,7 +15,7 @@ If instantiated with parameter 'single-agent=True', it behaves like a regular [G
 Goals of this repository:
 - Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
 - Support Multiagent RL
-- Compatibility with Gym Env and popular RL libraries like openAI baselines and RLlib
+- Compatibility with gym.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/master/rllib.html)
 - Easy customisation: state and reward definitions are easily modifiable
 
 ## Install
