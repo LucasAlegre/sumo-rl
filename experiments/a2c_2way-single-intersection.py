@@ -1,6 +1,3 @@
-import gym
-
-import argparse
 import os
 import sys
 if 'SUMO_HOME' in os.environ:
@@ -8,10 +5,7 @@ if 'SUMO_HOME' in os.environ:
     sys.path.append(tools)
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
-import pandas as pd
-from gym import spaces
-import numpy as np
-from sumo_rl.environment.env import SumoEnvironment
+from sumo_rl import SumoEnvironment
 from sumo_rl.util.gen_route import write_route_file
 import traci
 

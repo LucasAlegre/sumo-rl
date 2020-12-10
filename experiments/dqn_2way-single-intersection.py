@@ -1,9 +1,5 @@
 import gym
-import numpy as np
-
 from stable_baselines3.dqn.dqn import DQN
-
-import argparse
 import os
 import sys
 if 'SUMO_HOME' in os.environ:
@@ -11,10 +7,7 @@ if 'SUMO_HOME' in os.environ:
     sys.path.append(tools)
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
-import pandas as pd
-from gym import spaces
-import numpy as np
-from sumo_rl.environment.env import SumoEnvironment
+from sumo_rl import SumoEnvironment
 import traci
 
 

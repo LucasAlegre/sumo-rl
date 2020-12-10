@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import pandas as pd
 from datetime import datetime
 
 if 'SUMO_HOME' in os.environ:
@@ -12,7 +11,7 @@ else:
 
 import traci
 from sumo_rl.util.gen_route import write_route_file
-from sumo_rl.environment.env import SumoEnvironment
+from sumo_rl import SumoEnvironment
 from linear_rl.true_online_sarsa import TrueOnlineSarsaLambda
 
 

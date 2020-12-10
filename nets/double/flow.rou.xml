@@ -7,7 +7,6 @@
     <vType id="truck" vClass="truck" color="192,192,192"/>
 	<vType id="emergency" vClass="emergency" color="192,0,0"/>
 
-	
 	<route id="AC" edges="AB1 AB2 BC1 BC2" />
 	<route id="AD" edges="AB1 AB2 BD1 BD2" />
 	<route id="AF" edges="AB1 AB2 BE EF1 EF2" />

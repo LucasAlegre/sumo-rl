@@ -1,7 +1,5 @@
-import argparse
 import os
 import sys
-import pandas as pd
 from datetime import datetime
 import fire
 
@@ -12,7 +10,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 import traci
-from sumo_rl.environment.env import SumoEnvironment
+from sumo_rl import SumoEnvironment
 from linear_rl.true_online_sarsa import TrueOnlineSarsaLambda
 
 

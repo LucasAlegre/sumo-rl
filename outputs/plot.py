@@ -24,7 +24,6 @@ dashes_styles = cycle(['-', '-.', '--', ':'])
 sns.set_palette(colors)
 colors = cycle(colors)
 
-
 def moving_average(interval, window_size):
     if window_size == 1:
         return interval

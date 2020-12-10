@@ -1,7 +1,6 @@
 import argparse
 import os
 import sys
-import pandas as pd
 from datetime import datetime
 
 if 'SUMO_HOME' in os.environ:
@@ -11,9 +10,9 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 import traci
-from sumo_rl.environment.env import SumoEnvironment
-from sumo_rl.agents.ql_agent import QLAgent
-from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
+from sumo_rl import SumoEnvironment
+from sumo_rl.agents import QLAgent
+from sumo_rl.exploration import EpsilonGreedy
 
 
 if __name__ == '__main__':
