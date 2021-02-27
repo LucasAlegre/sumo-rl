@@ -20,7 +20,7 @@ if __name__ == '__main__':
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                   description="""SarsaLambda Single-Intersection""")
     prs.add_argument("-route", dest="route", type=str, default='nets/2way-single-intersection/single-intersection-gen.rou.xml', help="Route definition xml file.\n")
-    prs.add_argument("-a", dest="alpha", type=float, default=0.00001, required=False, help="Alpha learning rate.\n")
+    prs.add_argument("-a", dest="alpha", type=float, default=0.0001, required=False, help="Alpha learning rate.\n")
     prs.add_argument("-g", dest="gamma", type=float, default=0.95, required=False, help="Gamma discount rate.\n")
     prs.add_argument("-e", dest="epsilon", type=float, default=0.01, required=False, help="Epsilon.\n")
     prs.add_argument("-mingreen", dest="min_green", type=int, default=5, required=False, help="Minimum green time.\n")
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
 
-    out_csv = 'outputs/2way-single-intersection/sarsa_lambdavai'
+    out_csv = 'outputs/2way-single-intersection/sarsa_lambda'
 
     write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml', 400000, 100000)
     env = SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     for run in range(1, args.runs+1):
         obs = env.reset()
-        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon, fourier_order=7, lamb=0.9)
+        agent = TrueOnlineSarsaLambda(env.observation_space, env.action_space, alpha=args.alpha, gamma=args.gamma, epsilon=args.epsilon, fourier_order=7, lamb=0.95)
         
         done = False
         if args.fixed:
