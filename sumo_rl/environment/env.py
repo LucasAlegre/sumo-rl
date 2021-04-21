@@ -107,6 +107,9 @@ class SumoEnvironment(MultiAgentEnv):
         if action is None or action == {}:
             for _ in range(self.delta_time):
                 self._sumo_step()
+                if self.sim_step % 5 == 0:
+                    info = self._compute_step_info()
+                    self.metrics.append(info)
         else:
             self._apply_actions(action)
 
