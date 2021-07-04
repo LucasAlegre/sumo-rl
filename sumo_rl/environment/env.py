@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
@@ -185,16 +186,17 @@ class SumoEnvironment(MultiAgentEnv):
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
+            Path(Path(out_csv_name).parent).mkdir(parents=True, exist_ok=True)
             df.to_csv(out_csv_name + '_run{}'.format(run) + '.csv', index=False)
-
 
     # Below functions are for discrete state space
 
     def encode(self, state, ts_id):
-        phase = np.where(state[:self.traffic_signals[ts_id].num_green_phases] == 1)[0]
+        phase = int(np.where(state[:self.traffic_signals[ts_id].num_green_phases] == 1)[0])
         #elapsed = self._discretize_elapsed_time(state[self.num_green_phases])
         density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases:]]
-        return self.radix_encode([phase] + density_queue, ts_id)
+        # tuples are hashable and can be used as key in python dictionary
+        return tuple([phase] + density_queue)
 
     def _discretize_density(self, density):
         return min(int(density*10), 9)
@@ -206,19 +208,5 @@ class SumoEnvironment(MultiAgentEnv):
                 return i
         return self.max_green//self.delta_time -1
 
-    def radix_encode(self, values, ts_id):
-        res = 0
-        self.radix_factors = [s.n for s in self.traffic_signals[ts_id].discrete_observation_space.spaces]
-        for i in range(len(self.radix_factors)):
-            res = res * self.radix_factors[i] + values[i]
-        return int(res)
-
-    """ def radix_decode(self, value):
-        self.radix_factors = [s.n for s in self.discrete_observation_space.spaces]
-        res = [0 for _ in range(len(self.radix_factors))]
-        for i in reversed(range(len(self.radix_factors))):
-            res[i] = value % self.radix_factors[i]
-            value = value // self.radix_factors[i]
-        return res """
 
     
