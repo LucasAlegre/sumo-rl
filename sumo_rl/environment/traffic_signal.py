@@ -50,8 +50,11 @@ class TrafficSignal:
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
 
-        logic = traci.trafficlight.Logic("new-program"+self.id, 0, 0, phases=self.phases)
-        traci.trafficlight.setCompleteRedYellowGreenDefinition(self.id, logic)
+        programs = traci.trafficlight.getAllProgramLogics(self.id)
+        logic = programs[0]
+        logic.type = 0
+        logic.phases = self.phases
+        traci.trafficlight.setProgramLogic(self.id, logic)
 
     @property
     def phase(self):
@@ -64,7 +67,7 @@ class TrafficSignal:
     def update(self):
         self.time_since_last_phase_change += 1
         if self.is_yellow and self.time_since_last_phase_change == self.yellow_time:
-            traci.trafficlight.setPhase(self.id, self.green_phase)
+            traci.trafficlight.setPhase(self.id, int(self.green_phase))
             self.is_yellow = False
 
     def set_next_phase(self, new_phase):

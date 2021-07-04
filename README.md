@@ -32,6 +32,11 @@ Don't forget to set SUMO_HOME variable (default sumo installation path is /usr/s
 echo 'export SUMO_HOME="/usr/share/sumo"' >> ~/.bashrc
 source ~/.bashrc
 ```
+Important: for a huge performance boost (~8x) with Libsumo, you can declare the variable:
+```
+export LIBSUMO_AS_TRACI=1
+```
+Notice that you will not be able to run with sumo-gui if this is active ([more details](https://sumo.dlr.de/docs/Libsumo.html)).
 
 ### Install SUMO-RL
 
