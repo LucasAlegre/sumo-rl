@@ -82,7 +82,7 @@ If you use this repository in your research, please cite:
 ```
 @misc{sumorl,
     author = {Lucas N. Alegre},
-    title = {SUMO-RL},
+    title = {{SUMO-RL}},
     year = {2019},
     publisher = {GitHub},
     journal = {GitHub repository},
