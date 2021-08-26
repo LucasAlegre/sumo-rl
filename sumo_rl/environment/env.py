@@ -9,6 +9,7 @@ else:
 import traci
 import sumolib
 from ray.rllib.env.multi_agent_env import MultiAgentEnv
+from gym.envs.registration import EnvSpec
 import numpy as np
 import pandas as pd
 
@@ -60,7 +61,7 @@ class SumoEnvironment(MultiAgentEnv):
 
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
-        self.spec = ''
+        self.spec = EnvSpec('SUMORL-v0')
 
         self.run = 0
         self.metrics = []
