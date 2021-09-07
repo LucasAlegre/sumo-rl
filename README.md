@@ -52,6 +52,30 @@ cd sumo-rl
 pip install -e .
 ```
 
+## MDP - Observations, Actions and Rewards
+
+
+### Observation
+The default observation for each traffic signal agent is a vector:
+```
+    obs = [phase_one_hot, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
+```
+
+You can define your own observation changing the method 'compute_observation' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py).
+
+### Actions
+Every 'delta_time' seconds, each traffic signal agent can choose the next green phase. E.g.:
+
+<img src="outputs/actions.png" align="center" width="50%"/>
+
+
+### Rewards
+The default reward function is the change in cumulative vehicle delay:
+
+<img src="outputs/reward.png" align="center" width="15%"/>
+
+You can define your own reward function changing the method 'compute_reward' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py).
+
 ## Examples
 
 Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate a SumoEnvironment and use it with your RL algorithm.
