@@ -66,13 +66,13 @@ You can define your own observation changing the method 'compute_observation' of
 ### Actions
 Every 'delta_time' seconds, each traffic signal agent can choose the next green phase. E.g.:
 
-<img src="outputs/actions.png" align="center" width="50%"/>
+<img src="outputs/actions.png" align="center" width="75%"/>
 
 
 ### Rewards
 The default reward function is the change in cumulative vehicle delay:
 
-<img src="outputs/reward.png" align="center" width="15%"/>
+<img src="outputs/reward.png" align="center" width="25%"/>
 
 You can define your own reward function changing the method 'compute_reward' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py).
 
@@ -99,7 +99,7 @@ python3 experiments/dqn_2way-single-intersection.py
 ```
 python3 outputs/plot.py -f outputs/2way-single-intersection/a3c 
 ```
-![alt text](https://github.com/LucasAlegre/sumo-rl/blob/master/outputs/result.png)
+<img src="outputs/result.png" align="center" width="80%"/>
 
 ## Citation
 If you use this repository in your research, please cite:
