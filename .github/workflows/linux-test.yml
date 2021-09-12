@@ -1,0 +1,35 @@
+me: Python tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  linux-test:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo add-apt-repository ppa:sumo/stable
+        sudo apt-get update
+        sudo apt-get install sumo sumo-tools sumo-doc
+        pip install -r requirements.txt
+        export LIBSUMO_AS_TRACI=1
+    - name: Full Python tests
+      run: |
+        pytest ./test/pytest_runner.py
+        pytest ./test/all_parameter_combs.py
+    - name: Source distribution test
+      run: |
+        python setup.py sdist
+        pip install dist/*.tar.gz
