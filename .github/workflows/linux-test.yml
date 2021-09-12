@@ -28,4 +28,4 @@ jobs:
         pip install -e .
     - name: Full Python tests
       run: |
-        pytest ./test/pz_test.py
+        pytest ./tests/pz_test.py
