@@ -15,6 +15,10 @@ import pandas as pd
 
 from .traffic_signal import TrafficSignal
 
+from gym.utils import EzPickle
+from pettingzoo import AECEnv, seeding
+from pettingzoo.utils.agent_selector import agent_selector
+
 
 class SumoEnvironment(MultiAgentEnv):
     """
@@ -207,7 +211,80 @@ class SumoEnvironment(MultiAgentEnv):
         for i in range(self.max_green//self.delta_time):
             if elapsed <= self.delta_time + i*self.delta_time:
                 return i
-        return self.max_green//self.delta_time -1
+        return self.max_green//self.delta_time - 1
 
 
-    
+class SumoEnvironmentPZ(AECEnv, EzPickle):
+    metadata = {'render.modes': ['human', "rgb_array"], 'name': "sumo"}  # fix
+
+    def __init__(self, **kwargs):
+        EzPickle.__init__(self, **kwargs)
+        self._kwargs = kwargs
+
+        self.seed()
+
+        self.agents = self.env.ts_ids
+        self.possible_agents = self.ts_ids
+        self._agent_selector = agent_selector(self.agents)
+        self.agent_selection = self._agent_selector.reset()
+        # spaces
+        self.action_spaces = dict(zip(self.agents, self.env.action_space))  # fix
+        self.observation_spaces = dict(zip(self.agents, self.env.observation_space))  # fix
+
+        # dicts
+        self.observations = {}
+        self.rewards = self.env.rewards  # fix
+        self.dones = self.env.dones  # fix
+        self.infos = {a: '' for a in self.agents}
+
+    # def convert_to_dict(self, list_of_list):
+    #     return dict(zip(self.agents, list_of_list))
+    def seed(self, seed=None):
+        self.randomizer, seed = seeding.np_random(seed)
+        self.env = SumoEnvironment(**self._kwargs)
+
+    def reset(self):
+        self.env.reset()
+        self.agents = self.possible_agents[:]
+        self.agent_selection = self._agent_selector.reset()
+        self.rewards = self.env.rewards  # fix
+        self._cumulative_rewards = {a: 0 for a in self.agents}
+        self.dones = self.env.dones  # fix
+        self.infos = {a: '' for a in self.agents}
+
+    def observe(self, agent):
+        # do
+        obs = self.env.observe()
+        return obs
+
+    def state(self):
+        state = self.env.state()
+        return state
+
+    def close(self):
+        self.env.close()
+
+    def render(self, mode='human'):
+        return self.env.render(mode)
+
+    def step(self, action):
+        # do
+        if self.dones[self.agent_selection]:
+            return self._was_done_step(action)
+        agent = self.agent_selection
+        if not self.action_spaces[agent].contains(action):
+            raise Exception('Action for agent {} must be in Discrete({}).'
+                            'It is currently {}'.format(agent, self.action_spaces[agent].n, action))
+
+        self.env.step(action, agent)
+        # select next agent and observe
+        self.agent_selection = self._agent_selector.next()
+        self.rewards = self.env.rewards
+        self.dones = self.env.dones
+        self.infos = self.env.infos
+
+        self.score = self.env.score
+
+        self._cumulative_rewards[agent] = 0
+        self._accumulate_rewards()
+
