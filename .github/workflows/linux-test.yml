@@ -30,5 +30,6 @@ jobs:
     - name: Full Python tests
       run: |
         source ~/.bashrc
-        echo $ENV
+        echo $SUMO_HOME
+        echo LIBSUMO_AS_TRACI
         pytest ./tests/pz_test.py
