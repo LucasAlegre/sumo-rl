@@ -135,9 +135,10 @@ class SumoEnvironment(MultiAgentEnv):
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
+        done.update({'__all__': self.sim_step > self.sim_max_time})
 
         if self.single_agent:
-            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], done['__all__'], {}
+            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
         else:
             return observations, rewards, dones, {}
 
@@ -154,9 +155,7 @@ class SumoEnvironment(MultiAgentEnv):
                 self.traffic_signals[ts].set_next_phase(action)
 
     def _compute_dones(self):
-        done = {'__all__': self.sim_step > self.sim_max_time}
-        done.update({ts_id: False for ts_id in self.ts_ids})
-        return done
+        return {ts_id: False for ts_id in self.ts_ids}
     
     def _compute_observations(self):
         return {ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
@@ -241,8 +240,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.dones = self.env._compute_done()  # fix for last
         self.infos = {a: '' for a in self.agents}
 
-    # def convert_to_dict(self, list_of_list):
-    #     return dict(zip(self.agents, list_of_list))
     def seed(self, seed=None):
         self.randomizer, seed = seeding.np_random(seed)
         self.env = SumoEnvironment(**self._kwargs)
