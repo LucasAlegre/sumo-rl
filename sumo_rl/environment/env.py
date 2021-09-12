@@ -287,4 +287,3 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
-
