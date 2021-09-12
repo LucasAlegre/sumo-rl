@@ -25,10 +25,10 @@ jobs:
         sudo apt-get install sumo sumo-tools sumo-doc
         echo 'export SUMO_HOME="/usr/share/sumo"' >> ~/.bashrc
         echo 'export LIBSUMO_AS_TRACI=1"' >> ~/.bashrc
-        source ~/.bashrc
         pip install pytest
         pip install -e .[all]
     - name: Full Python tests
       run: |
+        source ~/.bashrc
         echo $ENV
         pytest ./tests/pz_test.py
