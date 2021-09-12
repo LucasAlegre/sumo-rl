@@ -24,6 +24,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install sumo sumo-tools sumo-doc
         export LIBSUMO_AS_TRACI=1
+        pip install pytest
         pip install -e .
     - name: Full Python tests
       run: |
