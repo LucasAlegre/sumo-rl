@@ -229,7 +229,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.agent_selection = self._agent_selector.reset()
         # spaces
         self.action_spaces = dict(zip(self.agents, self.env.action_space))  # fix
-        self.observation_spaces = dict(zip(self.agents, self.env.observation_space)  # fix
+        self.observation_spaces = dict(zip(self.agents, self.env.observation_space))  # fix
 
         # dicts
         self.observations = {}
