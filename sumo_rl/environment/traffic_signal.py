@@ -42,7 +42,7 @@ class TrafficSignal:
 
         Action space is which green phase is going to be open for the next delta_time seconds
         """
-        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 2*len(self.lanes)), high=np.ones(self.num_green_phases + 2*len(self.lanes)))
+        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases + 2*len(self.lanes), dtype=np.float32))
         self.discrete_observation_space = spaces.Tuple((
             spaces.Discrete(self.num_green_phases),                       # Green Phase
             #spaces.Discrete(self.max_green//self.delta_time),            # Elapsed time of phase
