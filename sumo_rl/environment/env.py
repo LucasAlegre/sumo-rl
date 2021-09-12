@@ -237,7 +237,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         # dicts
         self.observations = {}
-        self.rewards = self.env.rewards 
+        self.rewards = self.env._compute_rewards()
         self.dones = self.env._compute_done()  # fix for last
         self.infos = {a: '' for a in self.agents}
 
