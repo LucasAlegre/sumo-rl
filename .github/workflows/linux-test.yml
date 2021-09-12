@@ -23,6 +23,8 @@ jobs:
         sudo add-apt-repository ppa:sumo/stable
         sudo apt-get update
         sudo apt-get install sumo sumo-tools sumo-doc
+        echo 'export SUMO_HOME="/usr/share/sumo"' >> ~/.bashrc
+        source ~/.bashrc
         export LIBSUMO_AS_TRACI=1
         pip install pytest
         pip install -e .[all]
