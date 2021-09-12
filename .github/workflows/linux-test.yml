@@ -31,5 +31,5 @@ jobs:
       run: |
         source ~/.bashrc
         echo $SUMO_HOME
-        echo LIBSUMO_AS_TRACI
+        echo $LIBSUMO_AS_TRACI
         pytest ./tests/pz_test.py
