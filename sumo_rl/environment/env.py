@@ -15,8 +15,8 @@ import pandas as pd
 
 from .traffic_signal import TrafficSignal
 
-from gym.utils import EzPickle
-from pettingzoo import AECEnv, seeding
+from gym.utils import EzPickle, seeding
+from pettingzoo import AECEnv
 from pettingzoo.utils.agent_selector import agent_selector
 
 
