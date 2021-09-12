@@ -23,13 +23,9 @@ jobs:
         sudo add-apt-repository ppa:sumo/stable
         sudo apt-get update
         sudo apt-get install sumo sumo-tools sumo-doc
-        pip install -r requirements.txt
         export LIBSUMO_AS_TRACI=1
+        pip install -e .
     - name: Full Python tests
       run: |
         pytest ./test/pytest_runner.py
         pytest ./test/all_parameter_combs.py
-    - name: Source distribution test
-      run: |
-        python setup.py sdist
-        pip install dist/*.tar.gz
