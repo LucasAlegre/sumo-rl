@@ -134,12 +134,12 @@ class SumoEnvironment(MultiAgentEnv):
 
         observations = self._compute_observations()
         rewards = self._compute_rewards()
-        done = self.compute_done()
+        dones = self._compute_dones()
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], done['__all__'], {}
         else:
-            return observations, rewards, done, {}
+            return observations, rewards, dones, {}
 
     def _apply_actions(self, actions):
         """
@@ -153,7 +153,7 @@ class SumoEnvironment(MultiAgentEnv):
             for ts, action in actions.items():
                 self.traffic_signals[ts].set_next_phase(action)
 
-    def compute_done(self):
+    def _compute_dones(self):
         done = {'__all__': self.sim_step > self.sim_max_time}
         done.update({ts_id: False for ts_id in self.ts_ids})
         return done
@@ -238,7 +238,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         # dicts
         self.observations = {}
         self.rewards = self.env.rewards 
-        self.dones = self.env.compute_done()  # fix for last
+        self.dones = self.env._compute_done()  # fix for last
         self.infos = {a: '' for a in self.agents}
 
     # def convert_to_dict(self, list_of_list):
@@ -253,7 +253,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.agent_selection = self._agent_selector.reset()
         self.rewards = self.env._compute_rewards()
         self._cumulative_rewards = {a: 0 for a in self.agents}
-        self.dones = self.env.compute_done()  # fix for last
+        self.dones = self.env._compute_dones()  # fix for last
         self.infos = {a: '' for a in self.agents}
 
     def observe(self, agent):
