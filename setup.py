@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-REQUIRED = ['gym', 'numpy', 'pandas', 'ray[rllib]']
+REQUIRED = ['gym', 'numpy', 'pandas', 'ray[rllib]', 'pettingzoo']
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 setup(
     name='sumo-rl',
     version='1.0',
-    packages=['sumo_rl',],
+    packages=['sumo_rl'],
     install_requires=REQUIRED,
     author='LucasAlegre',
     author_email='lucasnale@gmail.com',
