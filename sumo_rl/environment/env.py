@@ -223,6 +223,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         self.seed()
 
+        print(self.env)
+
         self.agents = self.env.ts_ids
         self.possible_agents = self.ts_ids
         self._agent_selector = agent_selector(self.agents)
