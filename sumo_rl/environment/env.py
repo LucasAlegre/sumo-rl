@@ -135,7 +135,7 @@ class SumoEnvironment(MultiAgentEnv):
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
-        done.update({'__all__': self.sim_step > self.sim_max_time})
+        dones.update({'__all__': self.sim_step > self.sim_max_time})
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
