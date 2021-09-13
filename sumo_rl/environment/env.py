@@ -270,7 +270,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
     def render(self, mode='human'):
         return self.env.render(mode)
 
-    def step(self, action):
+    def step(self, action, agent):
         # do
         if self.dones[self.agent_selection]:
             return self._was_done_step(action)
@@ -290,3 +290,45 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
+
+
+        # def step(self, action, agent):
+
+        # # update p0, p1 accordingly
+        # # action: 0: do nothing,
+        # # action: 1: p[i] move up
+        # # action: 2: p[i] move down
+        #     if agent == self.agents[0]:
+        #         self.rewards = {a: 0 for a in self.agents}
+        #         self.p0.update(self.area, action)
+        #     elif agent == self.agents[-1]:
+        #         self.p1.update(self.area, action)
+
+        #         # do the rest if not done
+        #         if not self.done:
+        #             # update ball position
+        #             self.done = self.ball.update2(self.area, self.p0, self.p1)
+
+        #             # do the miscellaneous stuff after the last agent has moved
+        #             # reward is the length of time ball is in play
+        #             reward = 0
+        #             # ball is out-of-bounds
+        #             if self.done:
+        #                 reward = -100
+        #                 self.score += reward
+        #             if not self.done:
+        #                 self.num_frames += 1
+        #                 # scaling reward so that the max reward is 100
+        #                 reward = 100 / self.max_cycles
+        #                 self.score += reward
+        #                 if self.num_frames == self.max_cycles:
+        #                     self.done = True
+
+        #             for ag in self.agents:
+        #                 self.rewards[ag] = reward / self.num_agents
+        #                 self.dones[ag] = self.done
+        #                 self.infos[ag] = {}
+
+        #     if self.renderOn:
+        #         pygame.event.pump()
+        #     self.draw()
