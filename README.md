@@ -10,7 +10,7 @@ SUMO-RL provides a simple interface to instantiate Reinforcement Learning enviro
 
 The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
-[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
+[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
 Goals of this repository:
 - Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
@@ -54,27 +54,35 @@ pip install -e .
 
 ## MDP - Observations, Actions and Rewards
 
-
 ### Observation
 The default observation for each traffic signal agent is a vector:
 ```
     obs = [phase_one_hot, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
 ```
+- ```phase_one_hot``` is a one-hot encoded vector indicating the current active green phase
+- ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
+- ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
 
-You can define your own observation changing the method 'compute_observation' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py).
+You can define your own observation changing the method 'compute_observation' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py).
 
 ### Actions
-Every 'delta_time' seconds, each traffic signal agent can choose the next green phase. E.g.:
+The action space is discrete.
+Every 'delta_time' seconds, each traffic signal agent can choose the next green phase configuration.
+
+E.g.: In the [2-way single intersection](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/dqn/dqn.py) there are |A| = 4 discrete actions, corresponding to the following green phase configurations:
 
 <img src="outputs/actions.png" align="center" width="75%"/>
 
+Obs: Every time a phase change occurs, the next phase is preeceded by a yellow phase lasting ```yellow_time``` seconds.
 
 ### Rewards
 The default reward function is the change in cumulative vehicle delay:
 
 <img src="outputs/reward.png" align="center" width="25%"/>
 
-You can define your own reward function changing the method 'compute_reward' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/traffic_signal.py).
+That is, the reward is how much the total delay (sum of the waiting times of all approaching vehicles) changed in relation to the previous time-step.
+
+You can define your own reward function changing the method 'compute_reward' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py).
 
 ## Examples
 
