@@ -254,9 +254,9 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.infos = {a: '' for a in self.agents}
 
     def observe(self, agent):
-        # do
-        obs = self.env.observe()
-        return obs
+        # Can this be done faster?
+        observations = self._compute_observations()
+        return observations[agent]
 
     def state(self):
         state = self.env.state()
