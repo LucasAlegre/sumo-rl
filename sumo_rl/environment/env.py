@@ -234,6 +234,10 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.action_spaces = dict(zip(self.agents, [self.env.action_space]))
         self.observation_spaces = dict(zip(self.agents, [self.env.observation_space]))
 
+        print(self.agents)
+        print(self.action_spaces)
+        print(self.observation_spaces)
+
         # dicts
         self.observations = {}
         self.rewards = {a: 0 for a in self.agents}
