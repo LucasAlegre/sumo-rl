@@ -236,8 +236,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         # dicts
         self.observations = {}
-        self.rewards = self.env._compute_rewards()
-        self.dones = self.env._compute_done()  # fix for last
+        self.rewards = {a: 0 for a in self.agents}
+        self.dones = {a: False for a in self.agents}  # fix for last
         self.infos = {a: '' for a in self.agents}
 
     def seed(self, seed=None):
