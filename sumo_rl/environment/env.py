@@ -233,12 +233,14 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         # spaces
         self.action_spaces = {a: self.env.action_space for a in self.agents}
         self.observation_spaces = {a: self.env.observation_space for a in self.agents}
-        
+
         # dicts
         self.observations = {}
         self.rewards = {a: 0 for a in self.agents}
         self.dones = {a: False for a in self.agents}  # fix for last
-        self.infos = {a: '' for a in self.agents}
+        self.infos = {a: None for a in self.agents}
+
+        print(self.infos)
 
     def seed(self, seed=None):
         self.randomizer, seed = seeding.np_random(seed)
