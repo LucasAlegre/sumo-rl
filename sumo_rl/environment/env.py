@@ -253,7 +253,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.rewards = self.env._compute_rewards()
         self._cumulative_rewards = {a: 0 for a in self.agents}
         self.dones = self.env._compute_dones()  # fix for last
-        self.infos = {a: '' for a in self.agents}
+        self.infos = dict(zip(self.agents, [{}] * len(self.agents)))
 
     def observe(self, agent):
         # Can this be done faster?
