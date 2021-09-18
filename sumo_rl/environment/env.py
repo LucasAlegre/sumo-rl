@@ -61,17 +61,17 @@ class SumoEnvironment(MultiAgentEnv):
         self.single_agent = single_agent
         self.ts_ids = traci.trafficlight.getIDList()
         self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
+        traci.close()
+        
         self.vehicles = dict()
-
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
         self.spec = EnvSpec('SUMORL-v0')
-
         self.run = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
-
-        traci.close()
+        self.observations = None
+        self.rewards = None
         
     def reset(self):
         if self.run != 0:
@@ -158,10 +158,12 @@ class SumoEnvironment(MultiAgentEnv):
         return {ts_id: False for ts_id in self.ts_ids}
     
     def _compute_observations(self):
-        return {ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
+        self.observations = {ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
+        return {ts: self.observations[ts].copy() for ts in self.observations.keys()}
 
     def _compute_rewards(self):
-        return {ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
+        self.rewards = {ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
+        return {ts: self.rewards[ts].copy() for ts in self.rewards.keys()}
 
     @property
     def observation_space(self):
@@ -231,8 +233,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self._agent_selector = agent_selector(self.agents)
         self.agent_selection = self._agent_selector.reset()
         # spaces
-        self.action_spaces = {a: self.env.action_space for a in self.agents}
-        self.observation_spaces = {a: self.env.observation_space for a in self.agents}
+        self.action_spaces = {a: self.env.action_spaces(a) for a in self.agents}
+        self.observation_spaces = {a: self.env.observation_spaces(a) for a in self.agents}
 
         # dicts
         self.observations = {}
@@ -257,7 +259,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
     def observe(self, agent):
         # Can this be done faster?
-        observations = self.env._compute_observations()
+        observations = self.env.observations[agent]
         return observations[agent]
 
     def state(self):
