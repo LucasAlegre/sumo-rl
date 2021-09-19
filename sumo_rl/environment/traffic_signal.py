@@ -93,7 +93,7 @@ class TrafficSignal:
         #elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
         density = self.get_lanes_density()
         queue = self.get_lanes_queue()
-        observation = np.array(phase_id + density + queue)
+        observation = np.array(phase_id + density + queue, dtype=np.float32)
         return observation
             
     def compute_reward(self):

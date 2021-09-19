@@ -55,10 +55,9 @@ class SumoEnvironment(MultiAgentEnv):
         self.min_green = min_green
         self.max_green = max_green
         self.yellow_time = yellow_time
+        self.single_agent = single_agent
 
         traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # start only to retrieve information
-
-        self.single_agent = single_agent
         self.ts_ids = traci.trafficlight.getIDList()
         self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
         traci.close()
@@ -70,8 +69,8 @@ class SumoEnvironment(MultiAgentEnv):
         self.run = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
-        self.observations = None
-        self.rewards = None
+        self.observations = {ts: None for ts in self.ts_ids}
+        self.rewards = {ts: None for ts in self.ts_ids}
         
     def reset(self):
         if self.run != 0:
@@ -89,11 +88,9 @@ class SumoEnvironment(MultiAgentEnv):
                      '--random']
         if self.use_gui:
             sumo_cmd.append('--start')
-
         traci.start(sumo_cmd)
 
         self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
-
         self.vehicles = dict()
 
         if self.single_agent:
@@ -118,29 +115,31 @@ class SumoEnvironment(MultiAgentEnv):
                     self.metrics.append(info)
         else:
             self._apply_actions(action)
-
-            time_to_act = False
-            while not time_to_act:
-                self._sumo_step()
-
-                for ts in self.ts_ids:
-                    self.traffic_signals[ts].update()
-                    if self.traffic_signals[ts].time_to_act:
-                        time_to_act = True
-
-                if self.sim_step % 5 == 0:
-                    info = self._compute_step_info()
-                    self.metrics.append(info)
+            self._run_steps()
 
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
-        dones.update({'__all__': self.sim_step > self.sim_max_time})
+        dones['__all__'] = self.sim_step > self.sim_max_time
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
         else:
             return observations, rewards, dones, {}
+
+    def _run_steps(self):
+        time_to_act = False
+        while not time_to_act:
+            self._sumo_step()
+
+            for ts in self.ts_ids:
+                self.traffic_signals[ts].update()
+                if self.traffic_signals[ts].time_to_act:
+                    time_to_act = True
+
+            if self.sim_step % 5 == 0:
+                info = self._compute_step_info()
+                self.metrics.append(info)
 
     def _apply_actions(self, actions):
         """
@@ -158,12 +157,12 @@ class SumoEnvironment(MultiAgentEnv):
         return {ts_id: False for ts_id in self.ts_ids}
     
     def _compute_observations(self):
-        self.observations = {ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
-        return {ts: self.observations[ts].copy() for ts in self.observations.keys()}
+        self.observations.update({ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
+        return {ts: self.observations[ts].copy() for ts in self.observations.keys() if self.traffic_signals[ts].time_to_act}
 
     def _compute_rewards(self):
-        self.rewards = {ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
-        return {ts: self.rewards[ts].copy() for ts in self.rewards.keys()}
+        self.rewards.update({ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
+        return {ts: self.rewards[ts] for ts in self.rewards.keys() if self.traffic_signals[ts].time_to_act}
 
     @property
     def observation_space(self):
@@ -193,6 +192,9 @@ class SumoEnvironment(MultiAgentEnv):
     def close(self):
         traci.close()
     
+    def render(self, mode=None):
+        pass
+    
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
@@ -220,7 +222,7 @@ class SumoEnvironment(MultiAgentEnv):
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
-    metadata = {'render.modes': ['human', "rgb_array"], 'name': "sumo"}  # fix
+    metadata = {'render.modes': ['human', "rgb_array"], 'name': "sumo-rl"}  # fix
 
     def __init__(self, **kwargs):
         EzPickle.__init__(self, **kwargs)
@@ -242,8 +244,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.dones = {a: False for a in self.agents}  # fix for last
         self.infos = {a: None for a in self.agents}
 
-        print(self.infos)
-
     def seed(self, seed=None):
         self.randomizer, seed = seeding.np_random(seed)
         self.env = SumoEnvironment(**self._kwargs)
@@ -252,15 +252,14 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.env.reset()
         self.agents = self.possible_agents[:]
         self.agent_selection = self._agent_selector.reset()
-        self.rewards = self.env._compute_rewards()
-        self._cumulative_rewards = {a: 0 for a in self.agents}
-        self.dones = self.env._compute_dones()  # fix for last
-        self.infos = dict(zip(self.agents, [{}] * len(self.agents)))
+        self.rewards = {agent: 0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.dones = {agent: False for agent in self.agents}
+        self.infos = {agent: {} for agent in self.agents}
 
     def observe(self, agent):
-        # Can this be done faster?
-        observations = self.env.observations[agent]
-        return observations[agent]
+        obs = self.env.observations[agent]
+        return obs
 
     def state(self):
         state = self.env.state()
@@ -272,7 +271,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
     def render(self, mode='human'):
         return self.env.render(mode)
 
-    def step(self, action, agent):
+    def step(self, action):
         # do
         if self.dones[self.agent_selection]:
             return self._was_done_step(action)
@@ -281,56 +280,18 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
             raise Exception('Action for agent {} must be in Discrete({}).'
                             'It is currently {}'.format(agent, self.action_spaces[agent].n, action))
 
-        self.env.step(action, agent)
-        # select next agent and observe
+        self.env._apply_actions({agent: action})
+
+        if self._agent_selector.is_last():
+            self.env._run_steps()
+            self.env._compute_observations()
+            self.env._compute_rewards()
+            self.rewards = self.env.rewards.copy()
+        else:
+            self._clear_rewards()
+
+        self.dones = self.env._compute_dones()
+
         self.agent_selection = self._agent_selector.next()
-        self.rewards = self.env._compute_rewards()
-        self.dones = self.env.dones
-        self.infos = self.env.infos
-
-        self.score = self.env.score
-
         self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
-
-
-        # def step(self, action, agent):
-
-        # # update p0, p1 accordingly
-        # # action: 0: do nothing,
-        # # action: 1: p[i] move up
-        # # action: 2: p[i] move down
-        #     if agent == self.agents[0]:
-        #         self.rewards = {a: 0 for a in self.agents}
-        #         self.p0.update(self.area, action)
-        #     elif agent == self.agents[-1]:
-        #         self.p1.update(self.area, action)
-
-        #         # do the rest if not done
-        #         if not self.done:
-        #             # update ball position
-        #             self.done = self.ball.update2(self.area, self.p0, self.p1)
-
-        #             # do the miscellaneous stuff after the last agent has moved
-        #             # reward is the length of time ball is in play
-        #             reward = 0
-        #             # ball is out-of-bounds
-        #             if self.done:
-        #                 reward = -100
-        #                 self.score += reward
-        #             if not self.done:
-        #                 self.num_frames += 1
-        #                 # scaling reward so that the max reward is 100
-        #                 reward = 100 / self.max_cycles
-        #                 self.score += reward
-        #                 if self.num_frames == self.max_cycles:
-        #                     self.done = True
-
-        #             for ag in self.agents:
-        #                 self.rewards[ag] = reward / self.num_agents
-        #                 self.dones[ag] = self.done
-        #                 self.infos[ag] = {}
-
-        #     if self.renderOn:
-        #         pygame.event.pump()
-        #     self.draw()
