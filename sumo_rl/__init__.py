@@ -1,2 +1,2 @@
 from sumo_rl.environment.env import SumoEnvironment
-from sumo_rl.environment.env import SumoEnvironmentPZ
+from sumo_rl.environment.env import SumoEnvironmentPZ, make_env

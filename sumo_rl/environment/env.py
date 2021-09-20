@@ -18,6 +18,8 @@ from .traffic_signal import TrafficSignal
 from gym.utils import EzPickle, seeding
 from pettingzoo import AECEnv
 from pettingzoo.utils.agent_selector import agent_selector
+from pettingzoo import AECEnv
+from pettingzoo.utils import agent_selector, wrappers
 
 
 class SumoEnvironment(MultiAgentEnv):
@@ -295,3 +297,10 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
+
+def make_env(**kwargs):
+    env = SumoEnvironmentPZ(**kwargs)
+    env = wrappers.CaptureStdoutWrapper(env)
+    env = wrappers.AssertOutOfBoundsWrapper(env)
+    env = wrappers.OrderEnforcingWrapper(env)
+    return env
