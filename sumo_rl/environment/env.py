@@ -319,6 +319,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.dones = self.env._compute_dones()
         if self.dones['__all__']:
             self.agents = ()
+        del self.dones['__all__']
 
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0
