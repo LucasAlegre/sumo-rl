@@ -8,8 +8,9 @@
 
 SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
-The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
+The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
+[SumoEnvironmentPZ](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) adds [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) support.  
 [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
 Goals of this repository:
@@ -73,7 +74,7 @@ E.g.: In the [2-way single intersection](https://github.com/DLR-RM/stable-baseli
 
 <img src="outputs/actions.png" align="center" width="75%"/>
 
-Obs: Every time a phase change occurs, the next phase is preeceded by a yellow phase lasting ```yellow_time``` seconds.
+Important: every time a phase change occurs, the next phase is preeceded by a yellow phase lasting ```yellow_time``` seconds.
 
 ### Rewards
 The default reward function is the change in cumulative vehicle delay:

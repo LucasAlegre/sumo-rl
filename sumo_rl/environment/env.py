@@ -28,20 +28,19 @@ class SumoEnvironment(MultiAgentEnv):
 
     :param net_file: (str) SUMO .net.xml file
     :param route_file: (str) SUMO .rou.xml file
-    :param phases: (traci.trafficlight.Phase list) Traffic Signal phases definition
     :param out_csv_name: (str) name of the .csv output with simulation results. If None no output is generated
     :param use_gui: (bool) Wheter to run SUMO simulation with GUI visualisation
-    :param num_seconds: (int) Number of simulated seconds on SUMO
+    :param begin_time: (int) The time step (in seconds) the simulation starts
+    :param num_seconds: (int) Number of simulated seconds on SUMO. The time in seconds the simulation must end.
     :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
     :param delta_time: (int) Simulation seconds between actions
     :param min_green: (int) Minimum green time in a phase
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
+    :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     """
-
-    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
-                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False):
-
+    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
+                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random'):
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
@@ -50,6 +49,9 @@ class SumoEnvironment(MultiAgentEnv):
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
 
+        assert delta_time > yellow_time, "Time between actions must be at least greater than yellow time."
+
+        self.begin_time = begin_time
         self.sim_max_time = num_seconds
         self.delta_time = delta_time  # seconds on sumo at each step
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
@@ -58,10 +60,17 @@ class SumoEnvironment(MultiAgentEnv):
         self.max_green = max_green
         self.yellow_time = yellow_time
         self.single_agent = single_agent
+        self.sumo_seed = sumo_seed
 
         traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # start only to retrieve information
         self.ts_ids = traci.trafficlight.getIDList()
-        self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
+        self.traffic_signals = {ts: TrafficSignal(self, 
+                                                  ts, 
+                                                  self.delta_time, 
+                                                  self.yellow_time, 
+                                                  self.min_green, 
+                                                  self.max_green, 
+                                                  self.begin_time) for ts in self.ts_ids}
         traci.close()
         
         self.vehicles = dict()
@@ -73,7 +82,24 @@ class SumoEnvironment(MultiAgentEnv):
         self.out_csv_name = out_csv_name
         self.observations = {ts: None for ts in self.ts_ids}
         self.rewards = {ts: None for ts in self.ts_ids}
-        
+    
+    def _start_simulation(self):
+        sumo_cmd = [self._sumo_binary,
+                     '-n', self._net,
+                     '-r', self._route,
+                     '--max-depart-delay', str(self.max_depart_delay), 
+                     '--waiting-time-memory', '10000',
+                     '--time-to-teleport', str(self.time_to_teleport)]
+        if self.begin_time > 0:
+            sumo_cmd.append('-b {}'.format(self.begin_time))
+        if self.sumo_seed == 'random':
+            sumo_cmd.append('--random')
+        else:
+            sumo_cmd.append('--seed {}'.format(self.sumo_seed))
+        if self.use_gui:
+            sumo_cmd.extend(['--start', '--quit-on-end'])
+        traci.start(sumo_cmd)
+
     def reset(self):
         if self.run != 0:
             traci.close()
@@ -81,18 +107,15 @@ class SumoEnvironment(MultiAgentEnv):
         self.run += 1
         self.metrics = []
 
-        sumo_cmd = [self._sumo_binary,
-                     '-n', self._net,
-                     '-r', self._route,
-                     '--max-depart-delay', str(self.max_depart_delay), 
-                     '--waiting-time-memory', '10000',
-                     '--time-to-teleport', str(self.time_to_teleport),
-                     '--random']
-        if self.use_gui:
-            sumo_cmd.append('--start')
-        traci.start(sumo_cmd)
+        self._start_simulation()
 
-        self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
+        self.traffic_signals = {ts: TrafficSignal(self, 
+                                                  ts, 
+                                                  self.delta_time, 
+                                                  self.yellow_time, 
+                                                  self.min_green, 
+                                                  self.max_green, 
+                                                  self.begin_time) for ts in self.ts_ids}
         self.vehicles = dict()
 
         if self.single_agent:
@@ -122,7 +145,6 @@ class SumoEnvironment(MultiAgentEnv):
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
-        dones['__all__'] = self.sim_step > self.sim_max_time
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
@@ -150,13 +172,17 @@ class SumoEnvironment(MultiAgentEnv):
                         If multiagent, actions is a dict {ts_id : greenPhase}
         """   
         if self.single_agent:
-            self.traffic_signals[self.ts_ids[0]].set_next_phase(actions)
+            if self.traffic_signals[self.ts_ids[0]].time_to_act:
+                self.traffic_signals[self.ts_ids[0]].set_next_phase(actions)
         else:
             for ts, action in actions.items():
-                self.traffic_signals[ts].set_next_phase(action)
+                if self.traffic_signals[ts].time_to_act:
+                    self.traffic_signals[ts].set_next_phase(action)
 
     def _compute_dones(self):
-        return {ts_id: False for ts_id in self.ts_ids}
+        dones = {ts_id: False for ts_id in self.ts_ids}
+        dones['__all__'] = self.sim_step > self.sim_max_time
+        return dones
     
     def _compute_observations(self):
         self.observations.update({ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
@@ -224,7 +250,7 @@ class SumoEnvironment(MultiAgentEnv):
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
-    metadata = {'render.modes': ['human', "rgb_array"], 'name': "sumo-rl"}  # fix
+    metadata = {'render.modes': [], 'name': "sumo_rl_v0"}
 
     def __init__(self, **kwargs):
         EzPickle.__init__(self, **kwargs)
@@ -241,13 +267,12 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.observation_spaces = {a: self.env.observation_spaces(a) for a in self.agents}
 
         # dicts
-        self.observations = {}
         self.rewards = {a: 0 for a in self.agents}
-        self.dones = {a: False for a in self.agents}  # fix for last
-        self.infos = {a: None for a in self.agents}
+        self.dones = {a: False for a in self.agents}
+        self.infos = {a: {} for a in self.agents}
 
     def seed(self, seed=None):
-        self.randomizer, seed = seeding.np_random(seed)
+        #self.randomizer, seed = seeding.np_random(seed)
         self.env = SumoEnvironment(**self._kwargs)
 
     def reset(self):
@@ -258,14 +283,14 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.dones = {agent: False for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
+        return self.env.observations.copy()
 
     def observe(self, agent):
-        obs = self.env.observations[agent]
+        obs = self.env.observations[agent].copy()
         return obs
 
     def state(self):
-        state = self.env.state()
-        return state
+        raise NotImplementedError('Method state() currently not implemented.')
 
     def close(self):
         self.env.close()
@@ -274,7 +299,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         return self.env.render(mode)
 
     def step(self, action):
-        # do
         if self.dones[self.agent_selection]:
             return self._was_done_step(action)
         agent = self.agent_selection
@@ -287,12 +311,14 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         if self._agent_selector.is_last():
             self.env._run_steps()
             self.env._compute_observations()
-            self.env._compute_rewards()
-            self.rewards = self.env.rewards.copy()
+            new_rewards = self.env._compute_rewards()
+            self.rewards.update(new_rewards)
         else:
             self._clear_rewards()
-
+        
         self.dones = self.env._compute_dones()
+        if self.dones['__all__']:
+            self.agents = ()
 
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0

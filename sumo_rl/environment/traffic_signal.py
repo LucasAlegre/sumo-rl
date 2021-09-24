@@ -14,9 +14,18 @@ class TrafficSignal:
     """
     This class represents a Traffic Signal of an intersection
     It is responsible for retrieving information and changing the traffic phase using Traci API
-    """
 
-    def __init__(self, env, ts_id, delta_time, yellow_time, min_green, max_green):
+    IMPORTANT: It assumes that the traffic phases defined in the .net file are of the form:
+        [green_phase, yellow_phase, green_phase, yellow_phase, ...]
+    Currently it is not supporting all-red phases (but should be easy to implement it).
+
+    Default observation space is a vector R^(#greenPhases + 2 * #lanes)
+    s = [current phase one-hot encoded, density for each lane, queue for each lane]
+    You can change this by modifing self.observation_space and the method _compute_observations()
+
+    Action space is which green phase is going to be open for the next delta_time seconds
+    """
+    def __init__(self, env, ts_id, delta_time, yellow_time, min_green, max_green, begin_time):
         self.id = ts_id
         self.env = env
         self.delta_time = delta_time
@@ -26,7 +35,7 @@ class TrafficSignal:
         self.green_phase = 0
         self.is_yellow = False
         self.time_since_last_phase_change = 0
-        self.next_action_time = 0
+        self.next_action_time = begin_time
         self.last_measure = 0.0
         self.last_reward = None
         self.phases = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0].phases
@@ -35,13 +44,6 @@ class TrafficSignal:
         self.out_lanes = [link[0][1] for link in traci.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
 
-        """
-        Default observation space is a vector R^(#greenPhases + 2 * #lanes)
-        s = [current phase one-hot encoded, density for each lane, queue for each lane]
-        You can change this by modifing self.observation_space and the method _compute_observations()
-
-        Action space is which green phase is going to be open for the next delta_time seconds
-        """
         self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases + 2*len(self.lanes), dtype=np.float32))
         self.discrete_observation_space = spaces.Tuple((
             spaces.Discrete(self.num_green_phases),                       # Green Phase
@@ -77,14 +79,14 @@ class TrafficSignal:
         :param new_phase: (int) Number between [0..num_green_phases] 
         """
         new_phase *= 2
-        if self.phase == new_phase or self.time_since_last_phase_change < self.min_green + self.yellow_time:
+        if self.phase == new_phase: #or self.time_since_last_phase_change < self.yellow_time + self.min_green:
             self.green_phase = self.phase
             traci.trafficlight.setPhase(self.id, self.green_phase)
             self.next_action_time = self.env.sim_step + self.delta_time
         else:
             self.green_phase = new_phase
             traci.trafficlight.setPhase(self.id, self.phase + 1)  # turns yellow
-            self.next_action_time = self.env.sim_step + self.delta_time + self.yellow_time
+            self.next_action_time = self.env.sim_step + self.min_green + self.yellow_time
             self.is_yellow = True
             self.time_since_last_phase_change = 0
     
