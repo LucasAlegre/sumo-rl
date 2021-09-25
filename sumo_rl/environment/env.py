@@ -283,7 +283,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.dones = {agent: False for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
-        return self.env.observations.copy()
 
     def observe(self, agent):
         obs = self.env.observations[agent].copy()
