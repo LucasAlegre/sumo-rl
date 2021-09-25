@@ -326,7 +326,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
 def make_env(**kwargs):
     env = SumoEnvironmentPZ(**kwargs)
-    env = wrappers.CaptureStdoutWrapper(env)
     env = wrappers.AssertOutOfBoundsWrapper(env)
     env = wrappers.OrderEnforcingWrapper(env)
     return env
