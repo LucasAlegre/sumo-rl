@@ -47,10 +47,10 @@ if __name__ == '__main__':
             if ql_agents[agent].action is not None:
                 ql_agents[agent].learn(next_state=env.unwrapped.env.encode(s, agent), reward=r)
 
-            action = ql_agents[agent].act()
+            action = ql_agents[agent].act() if not done else None
             env.step(action)
 
-        env.unwrapped.env.save_csv('outputs/4x4/pz_ql-bla', run)
+        env.unwrapped.env.save_csv('outputs/4x4/pz_ql', run)
         env.close()
 
 

@@ -63,7 +63,7 @@ class SumoEnvironment(MultiAgentEnv):
         self.sumo_seed = sumo_seed
 
         traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # start only to retrieve information
-        self.ts_ids = traci.trafficlight.getIDList()
+        self.ts_ids = list(traci.trafficlight.getIDList())
         self.traffic_signals = {ts: TrafficSignal(self, 
                                                   ts, 
                                                   self.delta_time, 
@@ -272,7 +272,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.infos = {a: {} for a in self.agents}
 
     def seed(self, seed=None):
-        #self.randomizer, seed = seeding.np_random(seed)
+        self.randomizer, seed = seeding.np_random(seed)
         self.env = SumoEnvironment(**self._kwargs)
 
     def reset(self):
@@ -317,7 +317,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         
         self.dones = self.env._compute_dones()
         if self.dones['__all__']:
-            self.agents = ()
+            self.dones.update({a: True for a in self.agents})
         del self.dones['__all__']
 
         self.agent_selection = self._agent_selector.next()
