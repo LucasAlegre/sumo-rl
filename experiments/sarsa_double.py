@@ -25,9 +25,7 @@ def run(use_gui=True, runs=1):
                           num_seconds=86400,
                           yellow_time=3,
                           min_green=5,
-                          max_green=60,
-                          max_depart_delay=300,
-                          time_to_load_vehicles=0)
+                          max_green=60)
 
     fixed_tl = False
     agents = {ts_id: TrueOnlineSarsaLambda(env.observation_spaces(ts_id), env.action_spaces(ts_id), alpha=0.000000001, gamma=0.95, epsilon=0.05, lamb=0.1, fourier_order=7) 

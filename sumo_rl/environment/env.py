@@ -8,7 +8,6 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import traci
 import sumolib
-from ray.rllib.env.multi_agent_env import MultiAgentEnv
 from gym.envs.registration import EnvSpec
 import numpy as np
 import pandas as pd
@@ -22,7 +21,7 @@ from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
 
 
-class SumoEnvironment(MultiAgentEnv):
+class SumoEnvironment:
     """
     SUMO Environment for Traffic Signal Control
 
@@ -233,20 +232,13 @@ class SumoEnvironment(MultiAgentEnv):
 
     def encode(self, state, ts_id):
         phase = int(np.where(state[:self.traffic_signals[ts_id].num_green_phases] == 1)[0])
-        #elapsed = self._discretize_elapsed_time(state[self.num_green_phases])
-        density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases:]]
+        min_green = state[self.traffic_signals[ts_id].num_green_phases]
+        density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases + 1:]]
         # tuples are hashable and can be used as key in python dictionary
-        return tuple([phase] + density_queue)
+        return tuple([phase, min_green] + density_queue)
 
     def _discretize_density(self, density):
         return min(int(density*10), 9)
-
-    def _discretize_elapsed_time(self, elapsed):
-        elapsed *= self.max_green
-        for i in range(self.max_green//self.delta_time):
-            if elapsed <= self.delta_time + i*self.delta_time:
-                return i
-        return self.max_green//self.delta_time - 1
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
@@ -310,15 +302,12 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         if self._agent_selector.is_last():
             self.env._run_steps()
             self.env._compute_observations()
-            new_rewards = self.env._compute_rewards()
-            self.rewards.update(new_rewards)
+            self.rewards = self.env._compute_rewards()
         else:
             self._clear_rewards()
         
-        self.dones = self.env._compute_dones()
-        if self.dones['__all__']:
-            self.dones.update({a: True for a in self.agents})
-        del self.dones['__all__']
+        done = self.env._compute_dones()['__all__']
+        self.dones = {a : done for a in self.agents}
 
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0

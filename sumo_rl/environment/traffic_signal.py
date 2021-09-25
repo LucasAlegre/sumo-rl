@@ -44,10 +44,10 @@ class TrafficSignal:
         self.out_lanes = [link[0][1] for link in traci.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
 
-        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases + 2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases + 2*len(self.lanes), dtype=np.float32))
+        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32))
         self.discrete_observation_space = spaces.Tuple((
             spaces.Discrete(self.num_green_phases),                       # Green Phase
-            #spaces.Discrete(self.max_green//self.delta_time),            # Elapsed time of phase
+            spaces.Discrete(2),                                           # Binary variable active if min_green seconds already elapsed
             *(spaces.Discrete(10) for _ in range(2*len(self.lanes)))      # Density and stopped-density for each lane
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
@@ -79,23 +79,23 @@ class TrafficSignal:
         :param new_phase: (int) Number between [0..num_green_phases] 
         """
         new_phase *= 2
-        if self.phase == new_phase: #or self.time_since_last_phase_change < self.yellow_time + self.min_green:
+        if self.phase == new_phase or self.time_since_last_phase_change < self.yellow_time + self.min_green:
             self.green_phase = self.phase
             traci.trafficlight.setPhase(self.id, self.green_phase)
             self.next_action_time = self.env.sim_step + self.delta_time
         else:
             self.green_phase = new_phase
             traci.trafficlight.setPhase(self.id, self.phase + 1)  # turns yellow
-            self.next_action_time = self.env.sim_step + self.min_green + self.yellow_time
+            self.next_action_time = self.env.sim_step + self.delta_time
             self.is_yellow = True
             self.time_since_last_phase_change = 0
     
     def compute_observation(self):
         phase_id = [1 if self.phase//2 == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
-        #elapsed = self.traffic_signals[ts].time_on_phase / self.max_green
+        min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
         density = self.get_lanes_density()
         queue = self.get_lanes_queue()
-        observation = np.array(phase_id + density + queue, dtype=np.float32)
+        observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
         return observation
             
     def compute_reward(self):

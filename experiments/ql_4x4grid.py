@@ -48,7 +48,7 @@ if __name__ == '__main__':
             for agent_id in s.keys():
                 ql_agents[agent_id].learn(next_state=env.encode(s[agent_id], agent_id), reward=r[agent_id])
 
-        env.save_csv('outputs/4x4/ql-bla3', run)
+        env.save_csv('outputs/4x4/ql-test!', run)
         env.close()
 
 

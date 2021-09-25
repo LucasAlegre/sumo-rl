@@ -41,9 +41,7 @@ if __name__ == '__main__':
                                  exploration_strategy=EpsilonGreedy(initial_epsilon=0.05, min_epsilon=0.005, decay=decay)) for ts in env.agents}
         infos = []
         for agent in env.agent_iter():
-            #print(env.unwrapped.env.encode(s, agent),r, env.unwrapped.env.rewards[agent])
             s, r, done, info = env.last()
-            
             if ql_agents[agent].action is not None:
                 ql_agents[agent].learn(next_state=env.unwrapped.env.encode(s, agent), reward=r)
 

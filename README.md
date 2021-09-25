@@ -8,7 +8,7 @@
 
 SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
-The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) inherits [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
+The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) behaves like a [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
 [SumoEnvironmentPZ](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) adds [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) support.  
 [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
@@ -58,9 +58,10 @@ pip install -e .
 ### Observation
 The default observation for each traffic signal agent is a vector:
 ```
-    obs = [phase_one_hot, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
+    obs = [phase_one_hot, min_green_elapsed, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
 ```
 - ```phase_one_hot``` is a one-hot encoded vector indicating the current active green phase
+- ```min_green_elapsed``` is a binary variable indicating whether min_green seconds have already passed in the current phase
 - ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
 - ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
 

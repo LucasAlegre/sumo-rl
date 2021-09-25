@@ -3,14 +3,9 @@ from setuptools import setup, find_packages
 REQUIRED = ['gym', 'numpy', 'pandas']
 
 extras = {
-    "rllib": ['ray[rllib]'],
     "pettingzoo": ["pettingzoo"],
 }
-
-extras["all"] = extras["rllib"]+extras["pettingzoo"]
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+extras["all"] = extras["pettingzoo"]
 
 setup(
     name='sumo-rl',
@@ -25,5 +20,5 @@ setup(
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     license="MIT",
-    description='RL environment wrappers and learning code traffic signal Control in SUMO.'
+    description='RL environments and learning code for traffic signal control in SUMO.'
 )
