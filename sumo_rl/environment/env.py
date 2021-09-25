@@ -95,7 +95,7 @@ class SumoEnvironment(MultiAgentEnv):
         if self.sumo_seed == 'random':
             sumo_cmd.append('--random')
         else:
-            sumo_cmd.append('--seed {}'.format(self.sumo_seed))
+            sumo_cmd.extend(['--seed', str(self.sumo_seed)])
         if self.use_gui:
             sumo_cmd.extend(['--start', '--quit-on-end'])
         traci.start(sumo_cmd)
@@ -257,6 +257,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self._kwargs = kwargs
 
         self.seed()
+        self.env = SumoEnvironment(**self._kwargs)
 
         self.agents = self.env.ts_ids
         self.possible_agents = self.env.ts_ids
@@ -273,7 +274,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
     def seed(self, seed=None):
         self.randomizer, seed = seeding.np_random(seed)
-        self.env = SumoEnvironment(**self._kwargs)
 
     def reset(self):
         self.env.reset()
