@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-REQUIRED = ['gym', 'numpy', 'pandas']
+REQUIRED = ['gym', 'numpy', 'pandas', 'PIL']
 
 extras = {
     "pettingzoo": ["pettingzoo"],
