@@ -50,5 +50,3 @@ if __name__ == '__main__':
 
         env.unwrapped.env.save_csv('outputs/4x4/pz_ql', run)
         env.close()
-
-
