@@ -12,9 +12,6 @@ n_agents = 2
 n_envs = 4
 n_timesteps = 8000000
 
-# n agents, n timesteps, docs, make, PZ import in test file
-# The main class SumoEnvironment inherits MultiAgentEnv from RLlib.
-
 env = make_env(net_file='nets/4x4-Lucas/4x4.net.xml',
                route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                out_csv_name='outputs/4x4grid/test',
