@@ -58,10 +58,10 @@ pip install -e .
 ### Observation
 The default observation for each traffic signal agent is a vector:
 ```
-    obs = [phase_one_hot, min_green_elapsed, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
+    obs = [phase_one_hot, min_green, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
 ```
 - ```phase_one_hot``` is a one-hot encoded vector indicating the current active green phase
-- ```min_green_elapsed``` is a binary variable indicating whether min_green seconds have already passed in the current phase
+- ```min_green``` is a binary variable indicating whether min_green seconds have already passed in the current phase
 - ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
 - ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
 
@@ -101,7 +101,15 @@ for agent in env.agent_iter():
     env.step(action)
 ```
 
-Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate a SumoEnvironment and use it with your RL algorithm.
+### RESCO Benchmarks
+
+In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/master/nets/RESCO) you can find the network and route files from [RESCO](https://github.com/jault/RESCO) (Reinforcement Learning Benchmarks for Traffic Signal Control), which was built on top of SUMO-RL. See their [paper](https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf) for results.
+
+<img src="nets/RESCO/maps.png" align="center" width="40%"/>
+
+### Experiments
+
+Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate an environment and use it with your RL algorithm.
 
 ### [Q-learning](https://github.com/LucasAlegre/sumo-rl/blob/master/agents/ql_agent.py) in a one-way single intersection:
 ```
