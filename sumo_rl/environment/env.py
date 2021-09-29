@@ -19,6 +19,16 @@ from pettingzoo import AECEnv
 from pettingzoo.utils.agent_selector import agent_selector
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils.conversions import parallel_wrapper_fn
+
+
+def env(**kwargs):
+    env = SumoEnvironmentPZ(**kwargs)
+    env = wrappers.AssertOutOfBoundsWrapper(env)
+    env = wrappers.OrderEnforcingWrapper(env)
+    return env
+
+parallel_env = parallel_wrapper_fn(env)
 
 
 class SumoEnvironment:
@@ -312,9 +322,3 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
-
-def make_env(**kwargs):
-    env = SumoEnvironmentPZ(**kwargs)
-    env = wrappers.AssertOutOfBoundsWrapper(env)
-    env = wrappers.OrderEnforcingWrapper(env)
-    return env

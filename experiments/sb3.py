@@ -1,5 +1,5 @@
 from stable_baselines3 import PPO
-from sumo_rl import SumoEnvironmentPZ, make_env
+import sumo_rl
 import supersuit as ss
 from stable_baselines3.common.vec_env import VecMonitor
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -12,7 +12,7 @@ n_agents = 2
 n_envs = 4
 n_timesteps = 8000000
 
-env = make_env(net_file='nets/4x4-Lucas/4x4.net.xml',
+env = sumo_rl.env(net_file='nets/4x4-Lucas/4x4.net.xml',
                route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                out_csv_name='outputs/4x4grid/test',
                use_gui=False,
@@ -24,7 +24,7 @@ env = ss.pettingzoo_env_to_vec_env_v0(env)
 env = ss.concat_vec_envs_v0(env, n_envs, num_cpus=1, base_class='stable_baselines3')
 env = VecMonitor(env)
 
-eval_env = make_env(net_file='nets/4x4-Lucas/4x4.net.xml',
+eval_env = sumo_rl.env(net_file='nets/4x4-Lucas/4x4.net.xml',
                     route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                     out_csv_name='outputs/4x4grid/test',
                     use_gui=False,
@@ -50,7 +50,7 @@ mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
 print(mean_reward)
 print(std_reward)
 
-render_env = make_env(net_file='nets/4x4-Lucas/4x4.net.xml',
+render_env = sumo_rl.env(net_file='nets/4x4-Lucas/4x4.net.xml',
                       route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                       out_csv_name='outputs/4x4grid/test',
                       use_gui=False,

@@ -10,7 +10,7 @@ SUMO-RL provides a simple interface to instantiate Reinforcement Learning enviro
 
 The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) behaves like a [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
-[SumoEnvironmentPZ](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) adds [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) support.  
+Call [env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) or [parallel_env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) for [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) environment support.  
 [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
 Goals of this repository:
@@ -87,6 +87,19 @@ That is, the reward is how much the total delay (sum of the waiting times of all
 You can define your own reward function changing the method 'compute_reward' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py).
 
 ## Examples
+
+### PettingZoo API
+```python
+env = sumo_rl.env(net_file='sumo_net_file.net.xml',
+                  route_file='sumo_route_file.rou.xml',
+                  use_gui=True,
+                  num_seconds=3600)  
+env.reset()
+for agent in env.agent_iter():
+    observation, reward, done, info = env.last()
+    action = policy(observation)
+    env.step(action)
+```
 
 Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate a SumoEnvironment and use it with your RL algorithm.
 

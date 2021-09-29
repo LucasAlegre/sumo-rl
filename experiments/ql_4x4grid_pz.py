@@ -10,7 +10,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 import traci
-from sumo_rl import make_env
+import sumo_rl
 from sumo_rl.agents import QLAgent
 from sumo_rl.exploration import EpsilonGreedy
 
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     decay = 1
     runs = 1
 
-    env = make_env(net_file='nets/4x4-Lucas/4x4.net.xml',
+    env = sumo_rl.env(net_file='nets/4x4-Lucas/4x4.net.xml',
                           route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                           use_gui=False,
                           min_green=8,

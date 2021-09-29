@@ -13,14 +13,14 @@ from ray.rllib.env import PettingZooEnv
 from ray.tune.registry import register_env
 from gym import spaces
 import numpy as np
-from sumo_rl import SumoEnvironmentPZ
+import sumo_rl
 import traci
 
 
 if __name__ == '__main__':
     ray.init()
 
-    register_env("4x4grid", lambda _: PettingZooEnv(SumoEnvironmentPZ(net_file='nets/4x4-Lucas/4x4.net.xml',
+    register_env("4x4grid", lambda _: PettingZooEnv(sumo_rl.env(net_file='nets/4x4-Lucas/4x4.net.xml',
                                                     route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                                                     out_csv_name='outputs/4x4grid/a3c',
                                                     use_gui=False,
