@@ -8,34 +8,48 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import traci
 import sumolib
-from ray.rllib.env.multi_agent_env import MultiAgentEnv
 from gym.envs.registration import EnvSpec
 import numpy as np
 import pandas as pd
 
 from .traffic_signal import TrafficSignal
 
+from gym.utils import EzPickle, seeding
+from pettingzoo import AECEnv
+from pettingzoo.utils.agent_selector import agent_selector
+from pettingzoo import AECEnv
+from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils.conversions import parallel_wrapper_fn
 
-class SumoEnvironment(MultiAgentEnv):
+
+def env(**kwargs):
+    env = SumoEnvironmentPZ(**kwargs)
+    env = wrappers.AssertOutOfBoundsWrapper(env)
+    env = wrappers.OrderEnforcingWrapper(env)
+    return env
+
+parallel_env = parallel_wrapper_fn(env)
+
+
+class SumoEnvironment:
     """
     SUMO Environment for Traffic Signal Control
 
     :param net_file: (str) SUMO .net.xml file
     :param route_file: (str) SUMO .rou.xml file
-    :param phases: (traci.trafficlight.Phase list) Traffic Signal phases definition
     :param out_csv_name: (str) name of the .csv output with simulation results. If None no output is generated
     :param use_gui: (bool) Wheter to run SUMO simulation with GUI visualisation
-    :param num_seconds: (int) Number of simulated seconds on SUMO
+    :param begin_time: (int) The time step (in seconds) the simulation starts
+    :param num_seconds: (int) Number of simulated seconds on SUMO. The time in seconds the simulation must end.
     :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
     :param delta_time: (int) Simulation seconds between actions
     :param min_green: (int) Minimum green time in a phase
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
+    :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     """
-
-    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, num_seconds=20000, max_depart_delay=100000,
-                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False):
-
+    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
+                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random'):
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
@@ -44,6 +58,9 @@ class SumoEnvironment(MultiAgentEnv):
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
 
+        assert delta_time > yellow_time, "Time between actions must be at least greater than yellow time."
+
+        self.begin_time = begin_time
         self.sim_max_time = num_seconds
         self.delta_time = delta_time  # seconds on sumo at each step
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
@@ -51,24 +68,47 @@ class SumoEnvironment(MultiAgentEnv):
         self.min_green = min_green
         self.max_green = max_green
         self.yellow_time = yellow_time
+        self.single_agent = single_agent
+        self.sumo_seed = sumo_seed
 
         traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # start only to retrieve information
-
-        self.single_agent = single_agent
-        self.ts_ids = traci.trafficlight.getIDList()
-        self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
+        self.ts_ids = list(traci.trafficlight.getIDList())
+        self.traffic_signals = {ts: TrafficSignal(self, 
+                                                  ts, 
+                                                  self.delta_time, 
+                                                  self.yellow_time, 
+                                                  self.min_green, 
+                                                  self.max_green, 
+                                                  self.begin_time) for ts in self.ts_ids}
+        traci.close()
+        
         self.vehicles = dict()
-
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
         self.spec = EnvSpec('SUMORL-v0')
-
         self.run = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
+        self.observations = {ts: None for ts in self.ts_ids}
+        self.rewards = {ts: None for ts in self.ts_ids}
+    
+    def _start_simulation(self):
+        sumo_cmd = [self._sumo_binary,
+                     '-n', self._net,
+                     '-r', self._route,
+                     '--max-depart-delay', str(self.max_depart_delay), 
+                     '--waiting-time-memory', '10000',
+                     '--time-to-teleport', str(self.time_to_teleport)]
+        if self.begin_time > 0:
+            sumo_cmd.append('-b {}'.format(self.begin_time))
+        if self.sumo_seed == 'random':
+            sumo_cmd.append('--random')
+        else:
+            sumo_cmd.extend(['--seed', str(self.sumo_seed)])
+        if self.use_gui:
+            sumo_cmd.extend(['--start', '--quit-on-end'])
+        traci.start(sumo_cmd)
 
-        traci.close()
-        
     def reset(self):
         if self.run != 0:
             traci.close()
@@ -76,20 +116,15 @@ class SumoEnvironment(MultiAgentEnv):
         self.run += 1
         self.metrics = []
 
-        sumo_cmd = [self._sumo_binary,
-                     '-n', self._net,
-                     '-r', self._route,
-                     '--max-depart-delay', str(self.max_depart_delay), 
-                     '--waiting-time-memory', '10000',
-                     '--time-to-teleport', str(self.time_to_teleport),
-                     '--random']
-        if self.use_gui:
-            sumo_cmd.append('--start')
+        self._start_simulation()
 
-        traci.start(sumo_cmd)
-
-        self.traffic_signals = {ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green) for ts in self.ts_ids}
-
+        self.traffic_signals = {ts: TrafficSignal(self, 
+                                                  ts, 
+                                                  self.delta_time, 
+                                                  self.yellow_time, 
+                                                  self.min_green, 
+                                                  self.max_green, 
+                                                  self.begin_time) for ts in self.ts_ids}
         self.vehicles = dict()
 
         if self.single_agent:
@@ -114,29 +149,30 @@ class SumoEnvironment(MultiAgentEnv):
                     self.metrics.append(info)
         else:
             self._apply_actions(action)
-
-            time_to_act = False
-            while not time_to_act:
-                self._sumo_step()
-
-                for ts in self.ts_ids:
-                    self.traffic_signals[ts].update()
-                    if self.traffic_signals[ts].time_to_act:
-                        time_to_act = True
-
-                if self.sim_step % 5 == 0:
-                    info = self._compute_step_info()
-                    self.metrics.append(info)
+            self._run_steps()
 
         observations = self._compute_observations()
         rewards = self._compute_rewards()
-        done = {'__all__': self.sim_step > self.sim_max_time}
-        done.update({ts_id: False for ts_id in self.ts_ids})
+        dones = self._compute_dones()
 
         if self.single_agent:
-            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], done['__all__'], {}
+            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
         else:
-            return observations, rewards, done, {}
+            return observations, rewards, dones, {}
+
+    def _run_steps(self):
+        time_to_act = False
+        while not time_to_act:
+            self._sumo_step()
+
+            for ts in self.ts_ids:
+                self.traffic_signals[ts].update()
+                if self.traffic_signals[ts].time_to_act:
+                    time_to_act = True
+
+            if self.sim_step % 5 == 0:
+                info = self._compute_step_info()
+                self.metrics.append(info)
 
     def _apply_actions(self, actions):
         """
@@ -145,16 +181,25 @@ class SumoEnvironment(MultiAgentEnv):
                         If multiagent, actions is a dict {ts_id : greenPhase}
         """   
         if self.single_agent:
-            self.traffic_signals[self.ts_ids[0]].set_next_phase(actions)
+            if self.traffic_signals[self.ts_ids[0]].time_to_act:
+                self.traffic_signals[self.ts_ids[0]].set_next_phase(actions)
         else:
             for ts, action in actions.items():
-                self.traffic_signals[ts].set_next_phase(action)
+                if self.traffic_signals[ts].time_to_act:
+                    self.traffic_signals[ts].set_next_phase(action)
+
+    def _compute_dones(self):
+        dones = {ts_id: False for ts_id in self.ts_ids}
+        dones['__all__'] = self.sim_step > self.sim_max_time
+        return dones
     
     def _compute_observations(self):
-        return {ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
+        self.observations.update({ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
+        return {ts: self.observations[ts].copy() for ts in self.observations.keys() if self.traffic_signals[ts].time_to_act}
 
     def _compute_rewards(self):
-        return {ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act}
+        self.rewards.update({ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
+        return {ts: self.rewards[ts] for ts in self.rewards.keys() if self.traffic_signals[ts].time_to_act}
 
     @property
     def observation_space(self):
@@ -184,6 +229,9 @@ class SumoEnvironment(MultiAgentEnv):
     def close(self):
         traci.close()
     
+    def render(self, mode=None):
+        pass
+    
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
@@ -194,20 +242,83 @@ class SumoEnvironment(MultiAgentEnv):
 
     def encode(self, state, ts_id):
         phase = int(np.where(state[:self.traffic_signals[ts_id].num_green_phases] == 1)[0])
-        #elapsed = self._discretize_elapsed_time(state[self.num_green_phases])
-        density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases:]]
+        min_green = state[self.traffic_signals[ts_id].num_green_phases]
+        density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases + 1:]]
         # tuples are hashable and can be used as key in python dictionary
-        return tuple([phase] + density_queue)
+        return tuple([phase, min_green] + density_queue)
 
     def _discretize_density(self, density):
         return min(int(density*10), 9)
 
-    def _discretize_elapsed_time(self, elapsed):
-        elapsed *= self.max_green
-        for i in range(self.max_green//self.delta_time):
-            if elapsed <= self.delta_time + i*self.delta_time:
-                return i
-        return self.max_green//self.delta_time -1
 
+class SumoEnvironmentPZ(AECEnv, EzPickle):
+    metadata = {'render.modes': [], 'name': "sumo_rl_v0"}
 
-    
+    def __init__(self, **kwargs):
+        EzPickle.__init__(self, **kwargs)
+        self._kwargs = kwargs
+
+        self.seed()
+        self.env = SumoEnvironment(**self._kwargs)
+
+        self.agents = self.env.ts_ids
+        self.possible_agents = self.env.ts_ids
+        self._agent_selector = agent_selector(self.agents)
+        self.agent_selection = self._agent_selector.reset()
+        # spaces
+        self.action_spaces = {a: self.env.action_spaces(a) for a in self.agents}
+        self.observation_spaces = {a: self.env.observation_spaces(a) for a in self.agents}
+
+        # dicts
+        self.rewards = {a: 0 for a in self.agents}
+        self.dones = {a: False for a in self.agents}
+        self.infos = {a: {} for a in self.agents}
+
+    def seed(self, seed=None):
+        self.randomizer, seed = seeding.np_random(seed)
+
+    def reset(self):
+        self.env.reset()
+        self.agents = self.possible_agents[:]
+        self.agent_selection = self._agent_selector.reset()
+        self.rewards = {agent: 0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.dones = {agent: False for agent in self.agents}
+        self.infos = {agent: {} for agent in self.agents}
+
+    def observe(self, agent):
+        obs = self.env.observations[agent].copy()
+        return obs
+
+    def state(self):
+        raise NotImplementedError('Method state() currently not implemented.')
+
+    def close(self):
+        self.env.close()
+
+    def render(self, mode='human'):
+        return self.env.render(mode)
+
+    def step(self, action):
+        if self.dones[self.agent_selection]:
+            return self._was_done_step(action)
+        agent = self.agent_selection
+        if not self.action_spaces[agent].contains(action):
+            raise Exception('Action for agent {} must be in Discrete({}).'
+                            'It is currently {}'.format(agent, self.action_spaces[agent].n, action))
+
+        self.env._apply_actions({agent: action})
+
+        if self._agent_selector.is_last():
+            self.env._run_steps()
+            self.env._compute_observations()
+            self.rewards = self.env._compute_rewards()
+        else:
+            self._clear_rewards()
+        
+        done = self.env._compute_dones()['__all__']
+        self.dones = {a : done for a in self.agents}
+
+        self.agent_selection = self._agent_selector.next()
+        self._cumulative_rewards[agent] = 0
+        self._accumulate_rewards()

@@ -18,8 +18,6 @@ if __name__ == '__main__':
 
     write_route_file('nets/2way-single-intersection/single-intersection-gen.rou.xml', 400000, 100000)
 
-    # multiprocess environment
-    n_cpu = 1
     env = SubprocVecEnv([lambda: SumoEnvironment(net_file='nets/2way-single-intersection/single-intersection.net.xml',
                                         route_file='nets/2way-single-intersection/single-intersection-gen.rou.xml',
                                         out_csv_name='outputs/2way-single-intersection/a2c',
@@ -27,7 +25,7 @@ if __name__ == '__main__':
                                         use_gui=False,
                                         num_seconds=100000,
                                         min_green=5,
-                                        max_depart_delay=0) for _ in range(n_cpu)])
+                                        max_depart_delay=0)])
 
     model = A2C(MlpPolicy, env, verbose=1, learning_rate=0.001, lr_schedule='constant')
     model.learn(total_timesteps=100000)

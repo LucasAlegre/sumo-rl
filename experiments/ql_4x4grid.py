@@ -24,8 +24,10 @@ if __name__ == '__main__':
 
     env = SumoEnvironment(net_file='nets/4x4-Lucas/4x4.net.xml',
                           route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
-                          use_gui=True,
+                          use_gui=False,
                           num_seconds=80000,
+                          min_green=8,
+                          delta_time=5,
                           max_depart_delay=0)
 
     for run in range(1, runs+1):
@@ -42,11 +44,11 @@ if __name__ == '__main__':
             actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
             s, r, done, info = env.step(action=actions)
-
+            
             for agent_id in s.keys():
                 ql_agents[agent_id].learn(next_state=env.encode(s[agent_id], agent_id), reward=r[agent_id])
 
-        env.save_csv('outputs/4x4/ql_test', run)
+        env.save_csv('outputs/4x4/ql-test!', run)
         env.close()
 
 
