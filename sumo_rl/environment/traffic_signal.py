@@ -25,7 +25,7 @@ class TrafficSignal:
 
     Action space is which green phase is going to be open for the next delta_time seconds
     """
-    def __init__(self, env, ts_id, delta_time, yellow_time, min_green, max_green, begin_time):
+    def __init__(self, env, ts_id, delta_time, yellow_time, min_green, max_green, begin_time, sumo):
         self.id = ts_id
         self.env = env
         self.delta_time = delta_time
@@ -38,11 +38,13 @@ class TrafficSignal:
         self.next_action_time = begin_time
         self.last_measure = 0.0
         self.last_reward = None
-        self.phases = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0].phases
+        self.sumo = sumo
+        self.phases = self.sumo.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0].phases
         self.num_green_phases = len(self.phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
-        self.lanes = list(dict.fromkeys(traci.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
-        self.out_lanes = [link[0][1] for link in traci.trafficlight.getControlledLinks(self.id) if link]
+        self.lanes = list(dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
+        self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
+        self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes}
 
         self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32))
         self.discrete_observation_space = spaces.Tuple((
@@ -52,15 +54,15 @@ class TrafficSignal:
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
 
-        programs = traci.trafficlight.getAllProgramLogics(self.id)
+        programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
         logic = programs[0]
         logic.type = 0
         logic.phases = self.phases
-        traci.trafficlight.setProgramLogic(self.id, logic)
+        self.sumo.trafficlight.setProgramLogic(self.id, logic)
 
     @property
     def phase(self):
-        return traci.trafficlight.getPhase(self.id)
+        return self.sumo.trafficlight.getPhase(self.id)
 
     @property
     def time_to_act(self):
@@ -69,7 +71,7 @@ class TrafficSignal:
     def update(self):
         self.time_since_last_phase_change += 1
         if self.is_yellow and self.time_since_last_phase_change == self.yellow_time:
-            traci.trafficlight.setPhase(self.id, int(self.green_phase))
+            self.sumo.trafficlight.setPhase(self.id, int(self.green_phase))
             self.is_yellow = False
 
     def set_next_phase(self, new_phase):
@@ -81,11 +83,11 @@ class TrafficSignal:
         new_phase *= 2
         if self.phase == new_phase or self.time_since_last_phase_change < self.yellow_time + self.min_green:
             self.green_phase = self.phase
-            traci.trafficlight.setPhase(self.id, self.green_phase)
+            self.sumo.trafficlight.setPhase(self.id, self.green_phase)
             self.next_action_time = self.env.sim_step + self.delta_time
         else:
             self.green_phase = new_phase
-            traci.trafficlight.setPhase(self.id, self.phase + 1)  # turns yellow
+            self.sumo.trafficlight.setPhase(self.id, self.phase + 1)  # turns yellow
             self.next_action_time = self.env.sim_step + self.delta_time
             self.is_yellow = True
             self.time_since_last_phase_change = 0
@@ -138,11 +140,11 @@ class TrafficSignal:
     def get_waiting_time_per_lane(self):
         wait_time_per_lane = []
         for lane in self.lanes:
-            veh_list = traci.lane.getLastStepVehicleIDs(lane)
+            veh_list = self.sumo.lane.getLastStepVehicleIDs(lane)
             wait_time = 0.0
             for veh in veh_list:
-                veh_lane = traci.vehicle.getLaneID(veh)
-                acc = traci.vehicle.getAccumulatedWaitingTime(veh)
+                veh_lane = self.sumo.vehicle.getLaneID(veh)
+                acc = self.sumo.vehicle.getAccumulatedWaitingTime(veh)
                 if veh not in self.env.vehicles:
                     self.env.vehicles[veh] = {veh_lane: acc}
                 else:
@@ -152,25 +154,25 @@ class TrafficSignal:
         return wait_time_per_lane
 
     def get_pressure(self):
-        return abs(sum(traci.lane.getLastStepVehicleNumber(lane) for lane in self.lanes) - sum(traci.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes))
+        return abs(sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes))
 
     def get_out_lanes_density(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, traci.lane.getLastStepVehicleNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.out_lanes]
+        return [min(1, self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.out_lanes]
 
     def get_lanes_density(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, traci.lane.getLastStepVehicleNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.lanes]
+        return [min(1, self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
 
     def get_lanes_queue(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, traci.lane.getLastStepHaltingNumber(lane) / (traci.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.lanes]
+        return [min(1, self.sumo.lane.getLastStepHaltingNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
     
     def get_total_queued(self):
-        return sum([traci.lane.getLastStepHaltingNumber(lane) for lane in self.lanes])
+        return sum([self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes])
 
     def _get_veh_list(self):
         veh_list = []
         for lane in self.lanes:
-            veh_list += traci.lane.getLastStepVehicleIDs(lane)
+            veh_list += self.sumo.lane.getLastStepVehicleIDs(lane)
         return veh_list

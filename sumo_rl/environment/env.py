@@ -21,6 +21,8 @@ from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
+LIBSUMO = 'LIBSUMO_AS_TRACI' in os.environ
+
 
 def env(**kwargs):
     env = SumoEnvironmentPZ(**kwargs)
@@ -48,6 +50,8 @@ class SumoEnvironment:
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     """
+    CONNECTION_LABEL = 0  # For traci multi-client support
+
     def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
                  time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random'):
         self._net = net_file
@@ -70,18 +74,27 @@ class SumoEnvironment:
         self.yellow_time = yellow_time
         self.single_agent = single_agent
         self.sumo_seed = sumo_seed
+        self.label = str(SumoEnvironment.CONNECTION_LABEL)
+        SumoEnvironment.CONNECTION_LABEL += 1
+        self.sumo = None
 
-        traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # start only to retrieve information
-        self.ts_ids = list(traci.trafficlight.getIDList())
+        if LIBSUMO:
+            traci.start([sumolib.checkBinary('sumo'), '-n', self._net])  # Start only to retrieve traffic light information
+            conn = traci
+        else:
+            traci.start([sumolib.checkBinary('sumo'), '-n', self._net], label='init_connection'+self.label)
+            conn = traci.getConnection('init_connection'+self.label)
+        self.ts_ids = list(conn.trafficlight.getIDList())
         self.traffic_signals = {ts: TrafficSignal(self, 
                                                   ts, 
                                                   self.delta_time, 
                                                   self.yellow_time, 
                                                   self.min_green, 
                                                   self.max_green, 
-                                                  self.begin_time) for ts in self.ts_ids}
-        traci.close()
-        
+                                                  self.begin_time,
+                                                  conn) for ts in self.ts_ids}
+        conn.close()
+
         self.vehicles = dict()
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
@@ -107,11 +120,17 @@ class SumoEnvironment:
             sumo_cmd.extend(['--seed', str(self.sumo_seed)])
         if self.use_gui:
             sumo_cmd.extend(['--start', '--quit-on-end'])
-        traci.start(sumo_cmd)
+        
+        if LIBSUMO:
+            traci.start(sumo_cmd)
+            self.sumo = traci
+        else:
+            traci.start(sumo_cmd, label=self.label)
+            self.sumo = traci.getConnection(self.label)
 
     def reset(self):
         if self.run != 0:
-            traci.close()
+            self.sumo.close()
             self.save_csv(self.out_csv_name, self.run)
         self.run += 1
         self.metrics = []
@@ -124,7 +143,8 @@ class SumoEnvironment:
                                                   self.yellow_time, 
                                                   self.min_green, 
                                                   self.max_green, 
-                                                  self.begin_time) for ts in self.ts_ids}
+                                                  self.begin_time,
+                                                  self.sumo) for ts in self.ts_ids}
         self.vehicles = dict()
 
         if self.single_agent:
@@ -137,7 +157,7 @@ class SumoEnvironment:
         """
         Return current simulation second on SUMO
         """
-        return traci.simulation.getTime()
+        return self.sumo.simulation.getTime()
 
     def step(self, action):
         # No action, follow fixed TL defined in self.phases
@@ -216,7 +236,7 @@ class SumoEnvironment:
         return self.traffic_signals[ts_id].action_space
 
     def _sumo_step(self):
-        traci.simulationStep()
+        self.sumo.simulationStep()
 
     def _compute_step_info(self):
         return {
@@ -227,7 +247,11 @@ class SumoEnvironment:
         }
 
     def close(self):
-        traci.close()
+        if self.sumo is not None:
+            self.sumo.close()
+    
+    def __del__(self):
+        self.close()
     
     def render(self, mode=None):
         pass
@@ -236,7 +260,7 @@ class SumoEnvironment:
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
             Path(Path(out_csv_name).parent).mkdir(parents=True, exist_ok=True)
-            df.to_csv(out_csv_name + '_run{}'.format(run) + '.csv', index=False)
+            df.to_csv(out_csv_name + '_conn{}_run{}'.format(self.label, run) + '.csv', index=False)
 
     # Below functions are for discrete state space
 
