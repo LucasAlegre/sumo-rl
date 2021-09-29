@@ -73,15 +73,19 @@ Every 'delta_time' seconds, each traffic signal agent can choose the next green 
 
 E.g.: In the [2-way single intersection](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/dqn/dqn.py) there are |A| = 4 discrete actions, corresponding to the following green phase configurations:
 
+<p align="center">
 <img src="outputs/actions.png" align="center" width="75%"/>
-
+</p>
+    
 Important: every time a phase change occurs, the next phase is preeceded by a yellow phase lasting ```yellow_time``` seconds.
 
 ### Rewards
 The default reward function is the change in cumulative vehicle delay:
 
+<p align="center">
 <img src="outputs/reward.png" align="center" width="25%"/>
-
+</p>
+    
 That is, the reward is how much the total delay (sum of the waiting times of all approaching vehicles) changed in relation to the previous time-step.
 
 You can define your own reward function changing the method 'compute_reward' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py).
@@ -105,8 +109,10 @@ for agent in env.agent_iter():
 
 In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/master/nets/RESCO) you can find the network and route files from [RESCO](https://github.com/jault/RESCO) (Reinforcement Learning Benchmarks for Traffic Signal Control), which was built on top of SUMO-RL. See their [paper](https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf) for results.
 
-<img src="nets/RESCO/maps.png" align="center" width="40%"/>
-
+<p align="center">
+<img src="nets/RESCO/maps.png" align="center" width="60%"/>
+</p>
+    
 ### Experiments
 
 Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate an environment and use it with your RL algorithm.
@@ -130,7 +136,9 @@ python3 experiments/dqn_2way-single-intersection.py
 ```
 python3 outputs/plot.py -f outputs/2way-single-intersection/a3c 
 ```
-<img src="outputs/result.png" align="center" width="80%"/>
+<p align="center">
+<img src="outputs/result.png" align="center" width="70%"/>
+</p>
 
 ## Citation
 If you use this repository in your research, please cite:
