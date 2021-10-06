@@ -39,8 +39,9 @@ class TrafficSignal:
         self.last_measure = 0.0
         self.last_reward = None
         self.sumo = sumo
-        self.phases = self.sumo.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0].phases
-        self.num_green_phases = len(self.phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
+
+        self.build_phases()
+
         self.lanes = list(dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
@@ -54,15 +55,39 @@ class TrafficSignal:
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
 
+    def build_phases(self):
+        phases = self.sumo.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0].phases
+        if self.env.fixed_ts:
+            self.num_green_phases = len(phases)//2  # Number of green phases == number of phases (green+yellow) divided by 2
+            return
+
+        self.green_phases = []
+        self.yellow_dict = {}
+        for phase in phases:
+            state = phase.state
+            if 'y' not in state and (state.count('r') + state.count('s') != len(state)):
+                self.green_phases.append(self.sumo.trafficlight.Phase(60, state))
+        self.num_green_phases = len(self.green_phases)
+        self.all_phases = self.green_phases.copy()
+
+        for i, p1 in enumerate(self.green_phases):
+            for j, p2 in enumerate(self.green_phases):
+                if i == j: continue
+                yellow_state = ''
+                for s in range(len(p1.state)):
+                    if (p1.state[s] == 'G' or p1.state[s] == 'g') and (p2.state[s] == 'r' or p2.state[s] == 's'):
+                        yellow_state += 'y'
+                    else:
+                        yellow_state += p1.state[s]
+                self.yellow_dict[(i,j)] = len(self.all_phases)
+                self.all_phases.append(self.sumo.trafficlight.Phase(self.yellow_time, yellow_state))
+
         programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
         logic = programs[0]
         logic.type = 0
-        logic.phases = self.phases
+        logic.phases = self.all_phases
         self.sumo.trafficlight.setProgramLogic(self.id, logic)
-
-    @property
-    def phase(self):
-        return self.sumo.trafficlight.getPhase(self.id)
+        self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[0].state)
 
     @property
     def time_to_act(self):
@@ -71,7 +96,8 @@ class TrafficSignal:
     def update(self):
         self.time_since_last_phase_change += 1
         if self.is_yellow and self.time_since_last_phase_change == self.yellow_time:
-            self.sumo.trafficlight.setPhase(self.id, int(self.green_phase))
+            #self.sumo.trafficlight.setPhase(self.id, self.green_phase)
+            self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[self.green_phase].state)
             self.is_yellow = False
 
     def set_next_phase(self, new_phase):
@@ -80,20 +106,21 @@ class TrafficSignal:
 
         :param new_phase: (int) Number between [0..num_green_phases] 
         """
-        new_phase *= 2
-        if self.phase == new_phase or self.time_since_last_phase_change < self.yellow_time + self.min_green:
-            self.green_phase = self.phase
-            self.sumo.trafficlight.setPhase(self.id, self.green_phase)
+        new_phase = int(new_phase)
+        if self.green_phase == new_phase or self.time_since_last_phase_change < self.yellow_time + self.min_green:
+            #self.sumo.trafficlight.setPhase(self.id, self.green_phase)
+            self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[self.green_phase].state)
             self.next_action_time = self.env.sim_step + self.delta_time
         else:
+            #self.sumo.trafficlight.setPhase(self.id, self.yellow_dict[(self.green_phase, new_phase)])  # turns yellow
+            self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[self.yellow_dict[(self.green_phase, new_phase)]].state)
             self.green_phase = new_phase
-            self.sumo.trafficlight.setPhase(self.id, self.phase + 1)  # turns yellow
             self.next_action_time = self.env.sim_step + self.delta_time
             self.is_yellow = True
             self.time_since_last_phase_change = 0
     
     def compute_observation(self):
-        phase_id = [1 if self.phase//2 == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
+        phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
         min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
         density = self.get_lanes_density()
         queue = self.get_lanes_queue()

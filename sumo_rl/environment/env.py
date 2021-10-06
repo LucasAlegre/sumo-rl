@@ -49,11 +49,12 @@ class SumoEnvironment:
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
+    :fixed_ts: (bool) If true, it will follow the phase configuration in the route_file and ignore the actions.
     """
     CONNECTION_LABEL = 0  # For traci multi-client support
 
     def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
-                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random'):
+                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random', fixed_ts=False):
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
@@ -74,6 +75,7 @@ class SumoEnvironment:
         self.yellow_time = yellow_time
         self.single_agent = single_agent
         self.sumo_seed = sumo_seed
+        self.fixed_ts = fixed_ts
         self.label = str(SumoEnvironment.CONNECTION_LABEL)
         SumoEnvironment.CONNECTION_LABEL += 1
         self.sumo = None
