@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+import sumo_rl
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
@@ -132,7 +133,7 @@ class SumoEnvironment:
 
     def reset(self):
         if self.run != 0:
-            self.sumo.close()
+            self.close()
             self.save_csv(self.out_csv_name, self.run)
         self.run += 1
         self.metrics = []
@@ -166,9 +167,6 @@ class SumoEnvironment:
         if action is None or action == {}:
             for _ in range(self.delta_time):
                 self._sumo_step()
-                if self.sim_step % 5 == 0:
-                    info = self._compute_step_info()
-                    self.metrics.append(info)
         else:
             self._apply_actions(action)
             self._run_steps()
@@ -176,6 +174,7 @@ class SumoEnvironment:
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
+        self._compute_info()
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
@@ -186,15 +185,10 @@ class SumoEnvironment:
         time_to_act = False
         while not time_to_act:
             self._sumo_step()
-
             for ts in self.ts_ids:
                 self.traffic_signals[ts].update()
                 if self.traffic_signals[ts].time_to_act:
                     time_to_act = True
-
-            if self.sim_step % 5 == 0:
-                info = self._compute_step_info()
-                self.metrics.append(info)
 
     def _apply_actions(self, actions):
         """
@@ -215,6 +209,10 @@ class SumoEnvironment:
         dones['__all__'] = self.sim_step > self.sim_max_time
         return dones
     
+    def _compute_info(self):
+        info = self._compute_step_info()
+        self.metrics.append(info)
+
     def _compute_observations(self):
         self.observations.update({ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
         return {ts: self.observations[ts].copy() for ts in self.observations.keys() if self.traffic_signals[ts].time_to_act}
@@ -249,8 +247,12 @@ class SumoEnvironment:
         }
 
     def close(self):
-        if self.sumo is not None:
-            self.sumo.close()
+        if self.sumo is None:
+            return
+        if not LIBSUMO:
+            traci.switch(self.label)
+        traci.close()
+        self.sumo = None
     
     def __del__(self):
         self.close()
@@ -324,6 +326,9 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
     def render(self, mode='human'):
         return self.env.render(mode)
+    
+    def save_csv(self, out_csv_name, run):
+        self.env.save_csv(out_csv_name, run)
 
     def step(self, action):
         if self.dones[self.agent_selection]:
@@ -339,6 +344,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
             self.env._run_steps()
             self.env._compute_observations()
             self.rewards = self.env._compute_rewards()
+            self.env._compute_info()
         else:
             self._clear_rewards()
         

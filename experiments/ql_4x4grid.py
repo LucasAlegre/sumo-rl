@@ -26,7 +26,7 @@ if __name__ == '__main__':
                           route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                           use_gui=False,
                           num_seconds=80000,
-                          min_green=8,
+                          min_green=5,
                           delta_time=5,
                           max_depart_delay=0)
 
@@ -48,7 +48,7 @@ if __name__ == '__main__':
             for agent_id in s.keys():
                 ql_agents[agent_id].learn(next_state=env.encode(s[agent_id], agent_id), reward=r[agent_id])
 
-        env.save_csv('outputs/4x4/ql-test!', run)
+        env.save_csv('outputs/4x4/ql-test', run)
         env.close()
 
 
