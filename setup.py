@@ -9,7 +9,7 @@ extras["all"] = extras["pettingzoo"]
 
 setup(
     name='sumo-rl',
-    version='1.0',
+    version='1.1',
     packages=['sumo_rl'],
     install_requires=REQUIRED,
     extras_require=extras,
