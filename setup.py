@@ -4,8 +4,9 @@ REQUIRED = ['gym', 'numpy', 'pandas', 'pillow']
 
 extras = {
     "pettingzoo": ["pettingzoo"],
+    "rendering": ["pyvirtualdisplay"]
 }
-extras["all"] = extras["pettingzoo"]
+extras["all"] = extras["pettingzoo"] + extras["rendering"]
 
 setup(
     name='sumo-rl',

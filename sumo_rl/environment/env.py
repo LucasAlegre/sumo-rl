@@ -54,7 +54,7 @@ class SumoEnvironment:
     """
     CONNECTION_LABEL = 0  # For traci multi-client support
 
-    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
+    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, gui_size=(600, 400), begin_time=0, num_seconds=20000, max_depart_delay=100000,
                  time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random', fixed_ts=False):
         self._net = net_file
         self._route = route_file
@@ -63,6 +63,8 @@ class SumoEnvironment:
             self._sumo_binary = sumolib.checkBinary('sumo-gui')
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
+
+        self.gui_size = gui_size
 
         assert delta_time > yellow_time, "Time between actions must be at least greater than yellow time."
 
@@ -123,6 +125,7 @@ class SumoEnvironment:
             sumo_cmd.extend(['--seed', str(self.sumo_seed)])
         if self.use_gui:
             sumo_cmd.extend(['--start', '--quit-on-end'])
+            sumo_cmd.extend(['--window-size', f'{self.gui_size[0]},{self.gui_size[1]}'])
         
         if LIBSUMO:
             traci.start(sumo_cmd)
