@@ -49,10 +49,10 @@ if __name__ == '__main__':
     model.learn(total_timesteps=100000)
 
     print("Training finished. Starting evaluation")
-    # mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
+    mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
 
-    # print(mean_reward)
-    # print(std_reward)
+    print(mean_reward)
+    print(std_reward)
 
     # Maximum number of steps before reset, +1 because I'm scared of OBOE
     print("Starting rendering")
