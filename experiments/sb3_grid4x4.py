@@ -10,6 +10,7 @@ import os
 import subprocess
 from tqdm import trange
 import shutil
+import traci
 
 if __name__ == '__main__':
 
@@ -27,8 +28,8 @@ if __name__ == '__main__':
 
     print("Environment created")
 
-    env = ss.pettingzoo_env_to_vec_env_v0(env)
-    env = ss.concat_vec_envs_v0(env, 2, num_cpus=1, base_class='stable_baselines3')
+    env = ss.pettingzoo_env_to_vec_env_v1(env)
+    env = ss.concat_vec_envs_v1(env, 2, num_cpus=1, base_class='stable_baselines3')
     env = VecMonitor(env)
 
     model = PPO("MlpPolicy",
@@ -43,10 +44,11 @@ if __name__ == '__main__':
                 gae_lambda=0.99,
                 n_epochs=5,
                 clip_range=0.3,
-                batch_size=256)
+                batch_size=256,
+                tensorboard_log="./logs/grid4x4/ppo_test",)
 
     print("Starting training")
-    model.learn(total_timesteps=100000)
+    model.learn(total_timesteps=5000000)
 
     print("Training finished. Starting evaluation")
     mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
@@ -60,20 +62,24 @@ if __name__ == '__main__':
 
     obs = env.reset()
 
-    # imgs = [disp.grab()]
     if os.path.exists("temp"):
         shutil.rmtree("temp")
 
     os.mkdir("temp")
-    img = disp.grab()
-    img.save(f"temp/img0.jpg")
+    # img = disp.grab()
+    # img.save(f"temp/img0.jpg")
+
+    traci.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")
+
+    img = traci.gui.screenshot(traci.gui.DEFAULT_VIEW, f"temp/img{0}.jpg", width=RESOLUTION[0], height=RESOLUTION[1])
 
     for t in trange(num_steps):
         actions, _ = model.predict(obs, state=None, deterministic=False)
         obs, reward, done, info = env.step(actions)
-        img = disp.grab()
-        img.save(f"temp/img{t}.jpg")
-        # imgs.append(disp.grab())
+        # img = disp.grab()
+        # img.save(f"temp/img{t}.jpg")
+        img = traci.gui.screenshot(traci.gui.DEFAULT_VIEW, f"temp/img{t}.jpg", width=RESOLUTION[0],
+                                   height=RESOLUTION[1])
 
     print("Running ffmpeg")
     subprocess.run(["ffmpeg", "-y", "-framerate", "5", "-i", "temp/img%d.jpg", "output.mp4"])
