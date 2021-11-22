@@ -16,12 +16,7 @@ if __name__ == '__main__':
 
     RESOLUTION = (3200, 1800)
 
-    print("Creating a virtual display")
-    disp = SmartDisplay(size=RESOLUTION)
-    disp.start()
-    print("Virtual display started")
-
-    env = sumo_rl.grid4x4(use_gui=True, out_csv_name='outputs/grid4x4/ppo_test', gui_size=RESOLUTION)
+    env = sumo_rl.grid4x4(use_gui=True, out_csv_name='outputs/grid4x4/ppo_test', virtual_display=RESOLUTION)
 
     max_time = env.unwrapped.env.sim_max_time
     delta_time = env.unwrapped.env.delta_time
@@ -69,17 +64,14 @@ if __name__ == '__main__':
     # img = disp.grab()
     # img.save(f"temp/img0.jpg")
 
-    traci.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")
-
-    img = traci.gui.screenshot(traci.gui.DEFAULT_VIEW, f"temp/img{0}.jpg", width=RESOLUTION[0], height=RESOLUTION[1])
+    img = env.render()
 
     for t in trange(num_steps):
         actions, _ = model.predict(obs, state=None, deterministic=False)
         obs, reward, done, info = env.step(actions)
         # img = disp.grab()
         # img.save(f"temp/img{t}.jpg")
-        img = traci.gui.screenshot(traci.gui.DEFAULT_VIEW, f"temp/img{t}.jpg", width=RESOLUTION[0],
-                                   height=RESOLUTION[1])
+        img = env.render()
 
     print("Running ffmpeg")
     subprocess.run(["ffmpeg", "-y", "-framerate", "5", "-i", "temp/img%d.jpg", "output.mp4"])
