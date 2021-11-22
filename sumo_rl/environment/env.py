@@ -9,6 +9,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import traci
 import sumolib
+import gym
 from gym.envs.registration import EnvSpec
 import numpy as np
 import pandas as pd
@@ -34,7 +35,7 @@ def env(**kwargs):
 parallel_env = parallel_wrapper_fn(env)
 
 
-class SumoEnvironment:
+class SumoEnvironment(gym.Env):
     """
     SUMO Environment for Traffic Signal Control
 
