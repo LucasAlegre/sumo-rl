@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+from typing import Optional, Union
 import sumo_rl
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -52,11 +53,30 @@ class SumoEnvironment(gym.Env):
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     :fixed_ts: (bool) If true, it will follow the phase configuration in the route_file and ignore the actions.
+    :sumo_warnings: (bool) If False, remove SUMO warnings in the terminal
     """
     CONNECTION_LABEL = 0  # For traci multi-client support
 
-    def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
-                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random', fixed_ts=False):
+    def __init__(
+        self, 
+        net_file: str, 
+        route_file: str, 
+        out_csv_name: Optional[str] = None, 
+        use_gui: bool = False, 
+        begin_time: int = 0, 
+        num_seconds: int = 20000, 
+        max_depart_delay: int = 100000,
+        time_to_teleport: int = -1, 
+        delta_time: int = 5, 
+        yellow_time: int = 2, 
+        min_green: int = 5, 
+        max_green: int = 50, 
+        single_agent: bool = False, 
+        sumo_seed: Union[str,int] = 'random', 
+        fixed_ts: bool = False,
+        sumo_warnings: bool = True,
+    ):
+
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
@@ -78,6 +98,7 @@ class SumoEnvironment(gym.Env):
         self.single_agent = single_agent
         self.sumo_seed = sumo_seed
         self.fixed_ts = fixed_ts
+        self.sumo_warnings = sumo_warnings
         self.label = str(SumoEnvironment.CONNECTION_LABEL)
         SumoEnvironment.CONNECTION_LABEL += 1
         self.sumo = None
@@ -122,6 +143,8 @@ class SumoEnvironment(gym.Env):
             sumo_cmd.append('--random')
         else:
             sumo_cmd.extend(['--seed', str(self.sumo_seed)])
+        if not self.sumo_warnings:
+            sumo_cmd.append('--no-warnings')
         if self.use_gui:
             sumo_cmd.extend(['--start', '--quit-on-end'])
         
