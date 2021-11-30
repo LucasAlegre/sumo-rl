@@ -130,8 +130,8 @@ class SumoEnvironment:
                 sumo_cmd.extend(['--window-size', f'{self.virtual_display[0]},{self.virtual_display[1]}'])
                 from pyvirtualdisplay.smartdisplay import SmartDisplay
                 print("Creating a virtual display.")
-                disp = SmartDisplay(size=self.virtual_display)
-                disp.start()
+                self.disp = SmartDisplay(size=self.virtual_display)
+                self.disp.start()
                 print("Virtual display started.")
 
         if LIBSUMO:
@@ -270,12 +270,13 @@ class SumoEnvironment:
     def __del__(self):
         self.close()
     
-    def render(self, mode=None):
+    def render(self, mode='human'):
         if self.virtual_display:
-            img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
-                                      f"temp/img{self.sim_step}.jpg", 
-                                      width=self.virtual_display[0],
-                                      height=self.virtual_display[1])
+            #img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
+            #                          f"temp/img{self.sim_step}.jpg", 
+            #                          width=self.virtual_display[0],
+            #                          height=self.virtual_display[1])
+            img = self.disp.grab()
             return img                   
     
     def save_csv(self, out_csv_name, run):
@@ -298,7 +299,7 @@ class SumoEnvironment:
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
-    metadata = {'render.modes': [], 'name': "sumo_rl_v0"}
+    metadata = {'render.modes': ['human'], 'name': "sumo_rl_v0"}
 
     def __init__(self, **kwargs):
         EzPickle.__init__(self, **kwargs)

@@ -43,10 +43,10 @@ if __name__ == '__main__':
                 tensorboard_log="./logs/grid4x4/ppo_test",)
 
     print("Starting training")
-    model.learn(total_timesteps=5000000)
+    model.learn(total_timesteps=50000)
 
     print("Training finished. Starting evaluation")
-    mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=10)
+    mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=1)
 
     print(mean_reward)
     print(std_reward)
@@ -65,15 +65,12 @@ if __name__ == '__main__':
     # img.save(f"temp/img0.jpg")
 
     img = env.render()
-
     for t in trange(num_steps):
         actions, _ = model.predict(obs, state=None, deterministic=False)
         obs, reward, done, info = env.step(actions)
-        # img = disp.grab()
-        # img.save(f"temp/img{t}.jpg")
         img = env.render()
-
-    print("Running ffmpeg")
+        img.save(f"temp/img{t}.jpg")
+    
     subprocess.run(["ffmpeg", "-y", "-framerate", "5", "-i", "temp/img%d.jpg", "output.mp4"])
 
     print("All done, cleaning up")
