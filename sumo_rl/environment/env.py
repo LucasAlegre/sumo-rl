@@ -1,7 +1,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 import sumo_rl
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -42,8 +42,9 @@ class SumoEnvironment(gym.Env):
 
     :param net_file: (str) SUMO .net.xml file
     :param route_file: (str) SUMO .rou.xml file
-    :param out_csv_name: (str) name of the .csv output with simulation results. If None no output is generated
+    :param out_csv_name: (Optional[str]) name of the .csv output with simulation results. If None no output is generated
     :param use_gui: (bool) Wheter to run SUMO simulation with GUI visualisation
+    :param virtual_display: (Optional[Tuple[int,int]]) Resolution of a virtual display for rendering
     :param begin_time: (int) The time step (in seconds) the simulation starts
     :param num_seconds: (int) Number of simulated seconds on SUMO. The time in seconds the simulation must end.
     :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
@@ -63,6 +64,7 @@ class SumoEnvironment(gym.Env):
         route_file: str, 
         out_csv_name: Optional[str] = None, 
         use_gui: bool = False, 
+        virtual_display: Optional[Tuple[int,int]] = None,
         begin_time: int = 0, 
         num_seconds: int = 20000, 
         max_depart_delay: int = 100000,
@@ -76,7 +78,6 @@ class SumoEnvironment(gym.Env):
         fixed_ts: bool = False,
         sumo_warnings: bool = True,
     ):
-
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
@@ -84,6 +85,8 @@ class SumoEnvironment(gym.Env):
             self._sumo_binary = sumolib.checkBinary('sumo-gui')
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
+
+        self.virtual_display = virtual_display
 
         assert delta_time > yellow_time, "Time between actions must be at least greater than yellow time."
 
@@ -147,13 +150,23 @@ class SumoEnvironment(gym.Env):
             sumo_cmd.append('--no-warnings')
         if self.use_gui:
             sumo_cmd.extend(['--start', '--quit-on-end'])
-        
+            if self.virtual_display is not None:
+                sumo_cmd.extend(['--window-size', f'{self.virtual_display[0]},{self.virtual_display[1]}'])
+                from pyvirtualdisplay.smartdisplay import SmartDisplay
+                print("Creating a virtual display.")
+                self.disp = SmartDisplay(size=self.virtual_display)
+                self.disp.start()
+                print("Virtual display started.")
+
         if LIBSUMO:
             traci.start(sumo_cmd)
             self.sumo = traci
         else:
             traci.start(sumo_cmd, label=self.label)
             self.sumo = traci.getConnection(self.label)
+        
+        if self.use_gui:
+            self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
 
     def reset(self):
         if self.run != 0:
@@ -281,8 +294,16 @@ class SumoEnvironment(gym.Env):
     def __del__(self):
         self.close()
     
-    def render(self, mode=None):
-        pass
+    def render(self, mode='human'):
+        if self.virtual_display:
+            #img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
+            #                          f"temp/img{self.sim_step}.jpg", 
+            #                          width=self.virtual_display[0],
+            #                          height=self.virtual_display[1])
+            img = self.disp.grab()
+            if mode == 'rgb_array':
+                return np.array(img)
+            return img         
     
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
@@ -304,7 +325,7 @@ class SumoEnvironment(gym.Env):
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
-    metadata = {'render.modes': [], 'name': "sumo_rl_v0"}
+    metadata = {'render.modes': ['human', 'rgb_array'], 'name': "sumo_rl_v0"}
 
     def __init__(self, **kwargs):
         EzPickle.__init__(self, **kwargs)
