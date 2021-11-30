@@ -301,7 +301,9 @@ class SumoEnvironment(gym.Env):
             #                          width=self.virtual_display[0],
             #                          height=self.virtual_display[1])
             img = self.disp.grab()
-            return img                   
+            if mode == 'rgb_array':
+                return np.array(img)
+            return img         
     
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
@@ -323,7 +325,7 @@ class SumoEnvironment(gym.Env):
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
-    metadata = {'render.modes': ['human'], 'name': "sumo_rl_v0"}
+    metadata = {'render.modes': ['human', 'rgb_array'], 'name': "sumo_rl_v0"}
 
     def __init__(self, **kwargs):
         EzPickle.__init__(self, **kwargs)
