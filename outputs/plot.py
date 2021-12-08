@@ -7,16 +7,16 @@ import glob
 from itertools import cycle
 
 sns.set(style='darkgrid', rc={'figure.figsize': (7.2, 4.45),
-                            'text.usetex': True,
-                            'xtick.labelsize': 16,
-                            'ytick.labelsize': 16,
-                            'font.size': 15,
+                            'text.usetex': False,
+                            'xtick.labelsize': 12,
+                            'ytick.labelsize': 12,
+                            'font.size': 12,
                             'figure.autolayout': True,
-                            'axes.titlesize' : 16,
-                            'axes.labelsize' : 17,
+                            'axes.titlesize' : 12,
+                            'axes.labelsize' : 12,
                             'lines.linewidth' : 2,
                             'lines.markersize' : 6,
-                            'legend.fontsize': 15})
+                            'legend.fontsize': 12})
 colors = sns.color_palette("colorblind", 4)
 #colors = sns.color_palette("Set1", 2)
 #colors = ['#FF4500','#e31a1c','#329932', 'b', 'b', '#6a3d9a','#fb9a99']
@@ -43,7 +43,7 @@ def plot_df(df, color, xaxis, yaxis, ma=1, label=''):
     x = df.groupby(xaxis)[xaxis].mean().keys().values
     plt.plot(x, mean, label=label, color=color, linestyle=next(dashes_styles))
     plt.fill_between(x, mean + std, mean - std, alpha=0.25, color=color, rasterized=True)
-    
+    #plt.show()
     #plt.ylim([0,200])
     #plt.xlim([40000, 70000])
 
@@ -70,6 +70,7 @@ if __name__ == '__main__':
 
     # File reading and grouping
     for file in args.f:
+        #print(file)
         main_df = pd.DataFrame()
         for f in glob.glob(file+'*'):
             df = pd.read_csv(f, sep=args.sep)
@@ -79,6 +80,7 @@ if __name__ == '__main__':
                 main_df = pd.concat((main_df, df))
 
         # Plot DataFrame
+        #print(main_df)
         plot_df(main_df,
                 xaxis=args.xaxis,
                 yaxis=args.yaxis,
