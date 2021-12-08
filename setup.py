@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-REQUIRED = ['gym', 'numpy', 'pandas', 'pillow']
+REQUIRED = ['gym', 'numpy', 'pandas', 'pillow', 'pettingzoo']
 
 extras = {
-    "pettingzoo": ["pettingzoo"],
+    "rendering": ["pyvirtualdisplay"]
 }
-extras["all"] = extras["pettingzoo"]
+extras["all"] = extras["rendering"]
 
 setup(
     name='sumo-rl',
