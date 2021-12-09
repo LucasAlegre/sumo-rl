@@ -34,8 +34,8 @@ if __name__ == '__main__':
         env.reset()
         initial_states = {ts: env.observe(ts) for ts in env.agents}
         ql_agents = {ts: QLAgent(starting_state=env.unwrapped.env.encode(initial_states[ts], ts),
-                                 state_space=env.observation_spaces[ts],
-                                 action_space=env.action_spaces[ts],
+                                 state_space=env.observation_space(ts),
+                                 action_space=env.action_space(ts),
                                  alpha=alpha,
                                  gamma=gamma,
                                  exploration_strategy=EpsilonGreedy(initial_epsilon=0.05, min_epsilon=0.005, decay=decay)) for ts in env.agents}
