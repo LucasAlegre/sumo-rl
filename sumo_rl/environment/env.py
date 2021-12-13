@@ -289,6 +289,10 @@ class SumoEnvironment(gym.Env):
         if not LIBSUMO:
             traci.switch(self.label)
         traci.close()
+        try:
+            self.disp.stop()
+        except AttributeError:
+            pass
         self.sumo = None
     
     def __del__(self):
