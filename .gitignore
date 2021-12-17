@@ -124,6 +124,7 @@ outputs/single-intersection/2021-12-05 01:49:52_alpha0.1_gamma0.99_eps0.05_decay
 outputs/single-intersection/2021-12-06 22:42:15_alpha0.1_gamma0.99_eps0.05_decay1.0_conn0_run1.csv
 outputs/single-intersection/results1.csv
 notebooks/develop-trso.ipynb
-LOG/events.out.tfevents.1638898641.lenovo-ideapad-520-ankdip.26844.0
+LOG/*
 nets/single-intersection/temp.rou.xml
 outputs/plot.py
+experiments/dqn-adv-single-intersection.py

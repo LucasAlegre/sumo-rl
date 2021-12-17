@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     prs = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                   description="""Q-Learning Single-Intersection""")
-    prs.add_argument("-route", dest="route", type=str, default='nets/my-single-intersection/temp.rou.xml', help="Route definition xml file.\n")
+    prs.add_argument("-route", dest="route", type=str, default='nets/adv-single-intersection/adv-single-intersection.rou.xml', help="Route definition xml file.\n")
     prs.add_argument("-a", dest="alpha", type=float, default=0.1, required=False, help="Alpha learning rate.\n")
     prs.add_argument("-g", dest="gamma", type=float, default=0.99, required=False, help="Gamma discount rate.\n")
     prs.add_argument("-e", dest="epsilon", type=float, default=0.05, required=False, help="Epsilon.\n")
@@ -34,20 +34,18 @@ if __name__ == '__main__':
     prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
-    prs.add_argument("-log", dest="logdir", type=str, default = "LOG", required =False, help="The path to log directory\n")
     args = prs.parse_args()
     experiment_time = str(datetime.now()).split('.')[0]
-    out_csv = 'outputs/my-single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}'.format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay)
+    out_csv = 'outputs/adv-single-intersection/{}_alpha{}_gamma{}_eps{}_decay{}'.format(experiment_time, args.alpha, args.gamma, args.epsilon, args.decay)
 
-    env = SumoEnvironment(net_file='nets/my-single-intersection/single-intersection.net.xml',
+    env = SumoEnvironment(net_file='nets/adv-single-intersection/adv-single-intersection.net.xml',
                           route_file=args.route,
                           out_csv_name=out_csv,
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green,
-                          max_depart_delay=0,
-                          logDirName = args.logdir)
+                          max_depart_delay=0)
 
     for run in range(1, args.runs+1):
         initial_states = env.reset()

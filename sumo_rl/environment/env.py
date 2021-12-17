@@ -14,8 +14,6 @@ import gym
 from gym.envs.registration import EnvSpec
 import numpy as np
 import pandas as pd
-from torch.utils.tensorboard import SummaryWriter
-
 from .traffic_signal import TrafficSignal
 
 from gym.utils import EzPickle, seeding
@@ -60,7 +58,7 @@ class SumoEnvironment(gym.Env):
     CONNECTION_LABEL = 0  # For traci multi-client support
 
     def __init__(self, net_file, route_file, out_csv_name=None, use_gui=False, begin_time=0, num_seconds=20000, max_depart_delay=100000,
-                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random', fixed_ts=False,logDirName = "runs"):
+                 time_to_teleport=-1, delta_time=5, yellow_time=2, min_green=5, max_green=50, single_agent=False, sumo_seed='random', fixed_ts=False,virtual_display = None,sumo_warnings = None):
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
@@ -115,7 +113,6 @@ class SumoEnvironment(gym.Env):
         self.out_csv_name = out_csv_name
         self.observations = {ts: None for ts in self.ts_ids}
         self.rewards = {ts: None for ts in self.ts_ids}
-        self.writer = SummaryWriter(logDirName)
     
     def _start_simulation(self):
         sumo_cmd = [self._sumo_binary,
@@ -233,11 +230,7 @@ class SumoEnvironment(gym.Env):
     def _compute_info(self):
         info = self._compute_step_info()
         self.metrics.append(info)
-        epoch = info["step_time"]
-        self.writer.add_scalar('reward',info["reward"],epoch)
-        self.writer.add_scalar('total_stopped',info['total_stopped'],epoch)
-        self.writer.add_scalar('total_wait_time',info["total_wait_time"],epoch)
-
+                
     def _compute_observations(self):
         self.observations.update({ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
         return {ts: self.observations[ts].copy() for ts in self.observations.keys() if self.traffic_signals[ts].time_to_act}
@@ -277,7 +270,6 @@ class SumoEnvironment(gym.Env):
         if not LIBSUMO:
             traci.switch(self.label)
         traci.close()
-        self.writer.close()
         self.sumo = None
     
     def __del__(self):
