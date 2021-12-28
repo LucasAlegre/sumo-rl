@@ -56,7 +56,7 @@ class TrafficSignal:
         self.action_space = spaces.Discrete(self.num_green_phases)
 
     def build_phases(self):
-        phases = self.sumo.trafficlight.getCompleteRedYellowGreenDefinition(self.id)[0].phases
+        phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
         if self.env.fixed_ts:
             self.num_green_phases = len(phases)//2  # Number of green phases == number of phases (green+yellow) divided by 2
             return

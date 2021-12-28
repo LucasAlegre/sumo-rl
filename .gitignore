@@ -110,3 +110,7 @@ venv.bak/
 settings.json
 
 stable_baselines2
+
+# output files
+*.csv
+/logs
