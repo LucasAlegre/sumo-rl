@@ -2,49 +2,49 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
 	<vType id="bus" vClass="bus" color="green"/>
 	<vType id="default_017" vClass="passenger" color="red"/>
-    <vType id="random_017" vClass="passenger" color="blue"/>
+    <vType id="random_017" vClass="passenger" color="red"/>
 	<vType id="default_016" vClass="passenger" color="red"/>
-    <vType id="random_016" vClass="passenger" color="blue"/>
+    <vType id="random_016" vClass="passenger" color="red"/>
 	<vType id="default_015" vClass="passenger" color="red"/>
-    <vType id="random_015" vClass="passenger" color="blue"/>
+    <vType id="random_015" vClass="passenger" color="red"/>
 	<vType id="default_014" vClass="passenger" color="red"/>
-    <vType id="random_014" vClass="passenger" color="blue"/>
+    <vType id="random_014" vClass="passenger" color="red"/>
 	<vType id="default_013" vClass="passenger" color="red"/>
-    <vType id="random_013" vClass="passenger" color="blue"/>
+    <vType id="random_013" vClass="passenger" color="red"/>
     <vType id="default_012" vClass="passenger" color="red"/>
-    <vType id="random_012" vClass="passenger" color="blue"/>
+    <vType id="random_012" vClass="passenger" color="red"/>
 	<vType id="default_011" vClass="passenger" color="red"/>
-    <vType id="random_011" vClass="passenger" color="blue"/>
+    <vType id="random_011" vClass="passenger" color="red"/>
 	<vType id="default_010" vClass="passenger" color="red"/>
-    <vType id="random_010" vClass="passenger" color="blue"/>
+    <vType id="random_010" vClass="passenger" color="red"/>
 	<vType id="default_009" vClass="passenger" color="red"/>
-    <vType id="random_009" vClass="passenger" color="blue"/>
+    <vType id="random_009" vClass="passenger" color="red"/>
 	<vType id="default_008" vClass="passenger" color="red"/>
-    <vType id="random_008" vClass="passenger" color="blue"/>
+    <vType id="random_008" vClass="passenger" color="red"/>
 	<vType id="default_007" vClass="passenger" color="red"/>
-    <vType id="random_007" vClass="passenger" color="blue"/>
+    <vType id="random_007" vClass="passenger" color="red"/>
 	<vType id="default_006" vClass="passenger" color="red"/>
-    <vType id="random_006" vClass="passenger" color="blue"/>
+    <vType id="random_006" vClass="passenger" color="red"/>
 	<vType id="default_005" vClass="passenger" color="red"/>
-    <vType id="random_005" vClass="passenger" color="blue"/>
+    <vType id="random_005" vClass="passenger" color="red"/>
 	<vType id="default_004" vClass="passenger" color="red"/>
-    <vType id="random_004" vClass="passenger" color="blue"/>
+    <vType id="random_004" vClass="passenger" color="red"/>
 	<vType id="default_003" vClass="passenger" color="red"/>
-    <vType id="random_003" vClass="passenger" color="blue"/>
+    <vType id="random_003" vClass="passenger" color="red"/>
 	<vType id="default_022" vClass="passenger" color="red"/>
-    <vType id="random_022" vClass="passenger" color="blue"/>
+    <vType id="random_022" vClass="passenger" color="red"/>
 	<vType id="default_021" vClass="passenger" color="red"/>
-    <vType id="random_021" vClass="passenger" color="blue"/>
+    <vType id="random_021" vClass="passenger" color="red"/>
 	<vType id="default_020" vClass="passenger" color="red"/>
-    <vType id="random_020" vClass="passenger" color="blue"/>
+    <vType id="random_020" vClass="passenger" color="red"/>
 	<vType id="default_019" vClass="passenger" color="red"/>
-    <vType id="random_019" vClass="passenger" color="blue"/>
+    <vType id="random_019" vClass="passenger" color="red"/>
 	<vType id="default_018" vClass="passenger" color="red"/>
-    <vType id="random_018" vClass="passenger" color="blue"/>
+    <vType id="random_018" vClass="passenger" color="red"/>
 	<vType id="default_002" vClass="passenger" color="red"/>
-    <vType id="random_002" vClass="passenger" color="blue"/>
+    <vType id="random_002" vClass="passenger" color="red"/>
 	<vType id="default_001" vClass="passenger" color="red"/>
-    <vType id="random_001" vClass="passenger" color="blue"/>
+    <vType id="random_001" vClass="passenger" color="red"/>
 	<trip id="carIn105842:1" type="default_016" depart="57600.20" from="653473569#5" to="124812857#0"/>
 	<trip id="h8750c1:1" type="default_016" depart="57608.50" from="104010354" to="124812857#0"/>
 	<trip id="carIn28488:1" type="default_016" depart="57610.20" from="653473569#5" to="124812857#0"/>
