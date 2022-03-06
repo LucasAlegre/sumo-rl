@@ -19,8 +19,7 @@ if __name__ == '__main__':
                           single_agent=True,
                           use_gui=False,
                           num_seconds=100000,
-                          max_depart_delay=0,
-                          logDirName = "LOG/dqn")
+                          max_depart_delay=0)
 
     model = DQN(
         env=env,
