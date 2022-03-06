@@ -109,8 +109,6 @@ venv.bak/
 # vscode
 settings.json
 
-stable_baselines2
-
 # output files
 *.csv
 /logs
