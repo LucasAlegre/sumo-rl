@@ -168,13 +168,15 @@ class SumoEnvironment(gym.Env):
         if self.use_gui:
             self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, **kwargs):
         if self.run != 0:
             self.close()
             self.save_csv(self.out_csv_name, self.run)
         self.run += 1
         self.metrics = []
 
+        if seed is not None:
+            self.sumo_seed = seed
         self._start_simulation()
 
         self.traffic_signals = {ts: TrafficSignal(self, 
