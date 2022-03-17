@@ -128,11 +128,14 @@ class TrafficSignal:
         return observation
             
     def compute_reward(self):
-        self.last_reward = self._waiting_time_reward()
+        self.last_reward = self._waiting_time_reward() # self._average_speed_reward()
         return self.last_reward
     
     def _pressure_reward(self):
         return -self.get_pressure()
+    
+    def _average_speed_reward(self):
+        return self.get_average_speed()
 
     def _queue_average_reward(self):
         new_average = np.mean(self.get_stopped_vehicles_num())
@@ -179,6 +182,13 @@ class TrafficSignal:
                 wait_time += self.env.vehicles[veh][veh_lane]
             wait_time_per_lane.append(wait_time)
         return wait_time_per_lane
+
+    def get_average_speed(self):
+        avg_speed = 0.0
+        vehs = self._get_veh_list()
+        for v in vehs:
+            avg_speed += self.sumo.vehicle.getSpeed(v) / self.sumo.vehicle.getAllowedSpeed(v)
+        return avg_speed / len(vehs)
 
     def get_pressure(self):
         return abs(sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes))
