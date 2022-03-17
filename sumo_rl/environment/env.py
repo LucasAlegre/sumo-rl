@@ -213,12 +213,12 @@ class SumoEnvironment(gym.Env):
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
-        self._compute_info()
+        info = self._compute_info()
 
         if self.single_agent:
-            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], {}
+            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], info
         else:
-            return observations, rewards, dones, {}
+            return observations, rewards, dones, info
 
     def _run_steps(self):
         time_to_act = False
@@ -251,6 +251,7 @@ class SumoEnvironment(gym.Env):
     def _compute_info(self):
         info = self._compute_step_info()
         self.metrics.append(info)
+        return info
 
     def _compute_observations(self):
         self.observations.update({ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act})
