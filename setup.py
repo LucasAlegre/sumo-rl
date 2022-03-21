@@ -9,14 +9,14 @@ extras["all"] = extras["rendering"]
 
 setup(
     name='sumo-rl',
-    version='1.1',
+    version='1.2',
     packages=['sumo_rl'],
     install_requires=REQUIRED,
     extras_require=extras,
     author='LucasAlegre',
     author_email='lucasnale@gmail.com',
     url='https://github.com/LucasAlegre/sumo-rl',
-    download_url='https://github.com/LucasAlegre/sumo-rl/archive/v1.0.tar.gz',
+    download_url='https://github.com/LucasAlegre/sumo-rl/archive/v1.2.tar.gz',
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     license="MIT",
