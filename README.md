@@ -117,34 +117,34 @@ In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/master/ne
     
 ### Experiments
 
-Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) to see how to instantiate an environment and use it with your RL algorithm.
+Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) for examples on how to instantiate an environment and train your RL agent.
 
 ### [Q-learning](https://github.com/LucasAlegre/sumo-rl/blob/master/agents/ql_agent.py) in a one-way single intersection:
-```
-python3 experiments/ql_single-intersection.py 
+```bash
+python experiments/ql_single-intersection.py 
 ```
 
 ### [RLlib A3C](https://github.com/ray-project/ray/tree/master/python/ray/rllib/agents/a3c) multiagent in a 4x4 grid:
-```
-python3 experiments/a3c_4x4grid.py
+```bash
+python experiments/a3c_4x4grid.py
 ```
 
 ### [stable-baselines3 DQN](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/dqn/dqn.py) in a 2-way single intersection:
-```
-python3 experiments/dqn_2way-single-intersection.py
+```bash
+python experiments/dqn_2way-single-intersection.py
 ```
 
 ### Plotting results:
-```
-python3 outputs/plot.py -f outputs/2way-single-intersection/a3c 
+```bash
+python outputs/plot.py -f outputs/2way-single-intersection/a3c 
 ```
 <p align="center">
-<img src="outputs/result.png" align="center" width="70%"/>
+<img src="outputs/result.png" align="center" width="50%"/>
 </p>
 
-## Citation
+## Citing
 If you use this repository in your research, please cite:
-```
+```bibtex
 @misc{sumorl,
     author = {Lucas N. Alegre},
     title = {{SUMO-RL}},
