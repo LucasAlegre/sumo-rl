@@ -332,7 +332,7 @@ class SumoEnvironment(gym.Env):
 
 
 class SumoEnvironmentPZ(AECEnv, EzPickle):
-    metadata = {'render.modes': ['human', 'rgb_array'], 'name': "sumo_rl_v0"}
+    metadata = {'render.modes': ['human', 'rgb_array'], 'name': "sumo_rl_v0", 'is_parallelizable': True}
 
     def __init__(self, **kwargs):
         EzPickle.__init__(self, **kwargs)
