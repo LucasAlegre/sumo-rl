@@ -357,8 +357,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
     def seed(self, seed=None):
         self.randomizer, seed = seeding.np_random(seed)
 
-    def reset(self):
-        self.env.reset()
+    def reset(self, seed=None):
+        self.env.reset(seed=seed)
         self.agents = self.possible_agents[:]
         self.agent_selection = self._agent_selector.reset()
         self.rewards = {agent: 0 for agent in self.agents}
