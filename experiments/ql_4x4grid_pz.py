@@ -27,8 +27,7 @@ if __name__ == '__main__':
                           use_gui=False,
                           min_green=8,
                           delta_time=5,
-                          num_seconds=80000,
-                          max_depart_delay=0)
+                          num_seconds=80000)
 
     for run in range(1, runs+1):
         env.reset()

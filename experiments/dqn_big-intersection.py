@@ -21,8 +21,7 @@ env = SumoEnvironment(net_file='nets/big-intersection/big-intersection.net.xml',
                         num_seconds=5400,
                         yellow_time=4,
                         min_green=5,
-                        max_green=60,
-                        max_depart_delay=0)
+                        max_green=60)
 
 model = DQN(
     env=env,

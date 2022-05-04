@@ -24,8 +24,7 @@ if __name__ == '__main__':
                                         single_agent=True,
                                         use_gui=False,
                                         num_seconds=100000,
-                                        min_green=5,
-                                        max_depart_delay=0)])
+                                        min_green=5)])
 
     model = A2C(MlpPolicy, env, verbose=1, learning_rate=0.001, lr_schedule='constant')
     model.learn(total_timesteps=100000)
