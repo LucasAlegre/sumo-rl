@@ -169,7 +169,7 @@ class SumoEnvironment(gym.Env):
         if self.use_gui:
             self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
 
-    def reset(self, seed: Optional[int] = None, **kwargs):
+    def reset(self, seed: Optional[int] = None, return_info=False, **kwargs):
         if self.run != 0:
             self.close()
             self.save_csv(self.out_csv_name, self.run)
@@ -192,7 +192,10 @@ class SumoEnvironment(gym.Env):
         self.vehicles = dict()
 
         if self.single_agent:
-            return self._compute_observations()[self.ts_ids[0]]
+            if return_info:
+                return self._compute_observations()[self.ts_ids[0]], self._compute_info()
+            else:
+                return self._compute_observations()[self.ts_ids[0]]
         else:
             return self._compute_observations()
 
