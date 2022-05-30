@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Callable, List, Union
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
@@ -25,7 +26,16 @@ class TrafficSignal:
 
     Action space is which green phase is going to be open for the next delta_time seconds
     """
-    def __init__(self, env, ts_id, delta_time, yellow_time, min_green, max_green, begin_time, sumo):
+    def __init__(self, 
+                env,
+                ts_id: List[str],
+                delta_time: int, 
+                yellow_time: int, 
+                min_green: int, 
+                max_green: int,
+                begin_time: int,
+                reward_fn: Union[str,Callable], 
+                sumo):
         self.id = ts_id
         self.env = env
         self.delta_time = delta_time
@@ -38,6 +48,7 @@ class TrafficSignal:
         self.next_action_time = begin_time
         self.last_measure = 0.0
         self.last_reward = None
+        self.reward_fn = reward_fn
         self.sumo = sumo
 
         self.build_phases()
@@ -128,7 +139,19 @@ class TrafficSignal:
         return observation
             
     def compute_reward(self):
-        self.last_reward = self._waiting_time_reward() # self._average_speed_reward()
+        if type(self.reward_fn) is str:
+            if self.reward_fn == 'diff-waiting-time':
+                self.last_reward = self._diff_waiting_time_reward()
+            elif self.reward_fn == 'average-speed':
+                self.last_reward = self._average_speed_reward()
+            elif self.reward_fn == 'queue':
+                self.last_reward = self._queue_reward()
+            elif self.reward_fn == 'pressure':
+                self.last_reward = self._pressure_reward()
+            else:
+                raise NotImplementedError(f'Reward function {self.reward_fn} not implemented')
+        else:
+            self.last_reward = self.reward_fn(self)
         return self.last_reward
     
     def _pressure_reward(self):
@@ -137,16 +160,10 @@ class TrafficSignal:
     def _average_speed_reward(self):
         return self.get_average_speed()
 
-    def _queue_average_reward(self):
-        new_average = np.mean(self.get_stopped_vehicles_num())
-        reward = self.last_measure - new_average
-        self.last_measure = new_average
-        return reward
-
     def _queue_reward(self):
-        return - (sum(self.get_stopped_vehicles_num()))**2
+        return -self.get_total_queued()
 
-    def _waiting_time_reward(self):
+    def _diff_waiting_time_reward(self):
         ts_wait = sum(self.get_waiting_time_per_lane()) / 100.0
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
@@ -186,12 +203,14 @@ class TrafficSignal:
     def get_average_speed(self):
         avg_speed = 0.0
         vehs = self._get_veh_list()
+        if len(vehs) == 0:
+            return 1.0
         for v in vehs:
             avg_speed += self.sumo.vehicle.getSpeed(v) / self.sumo.vehicle.getAllowedSpeed(v)
         return avg_speed / len(vehs)
 
     def get_pressure(self):
-        return abs(sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes))
+        return sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes)
 
     def get_out_lanes_density(self):
         vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
@@ -206,7 +225,7 @@ class TrafficSignal:
         return [min(1, self.sumo.lane.getLastStepHaltingNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
     
     def get_total_queued(self):
-        return sum([self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes])
+        return sum(self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes)
 
     def _get_veh_list(self):
         veh_list = []

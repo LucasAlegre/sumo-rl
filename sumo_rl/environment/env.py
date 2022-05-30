@@ -1,28 +1,25 @@
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Union, Tuple
-import sumo_rl
+from typing import Callable, Optional, Tuple, Union
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
-import traci
-import sumolib
 import gym
-from gym.envs.registration import EnvSpec
 import numpy as np
 import pandas as pd
-
-from .traffic_signal import TrafficSignal
-
+import sumolib
+import traci
+from gym.envs.registration import EnvSpec
 from gym.utils import EzPickle, seeding
 from pettingzoo import AECEnv
-from pettingzoo.utils.agent_selector import agent_selector
-from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils.agent_selector import agent_selector
 from pettingzoo.utils.conversions import parallel_wrapper_fn
+
+from .traffic_signal import TrafficSignal
 
 LIBSUMO = 'LIBSUMO_AS_TRACI' in os.environ
 
@@ -52,6 +49,7 @@ class SumoEnvironment(gym.Env):
     :param min_green: (int) Minimum green time in a phase
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
+    :reward_fn: (str/function) String with the name of the reward function used by the agents, or a reward function.
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     :fixed_ts: (bool) If true, it will follow the phase configuration in the route_file and ignore the actions.
     :sumo_warnings: (bool) If False, remove SUMO warnings in the terminal
@@ -73,7 +71,8 @@ class SumoEnvironment(gym.Env):
         yellow_time: int = 2, 
         min_green: int = 5, 
         max_green: int = 50, 
-        single_agent: bool = False, 
+        single_agent: bool = False,
+        reward_fn: Union[str,Callable] = 'diff-waiting-time',
         sumo_seed: Union[str,int] = 'random', 
         fixed_ts: bool = False,
         sumo_warnings: bool = True,
@@ -99,6 +98,7 @@ class SumoEnvironment(gym.Env):
         self.max_green = max_green
         self.yellow_time = yellow_time
         self.single_agent = single_agent
+        self.reward_fn = reward_fn
         self.sumo_seed = sumo_seed
         self.fixed_ts = fixed_ts
         self.sumo_warnings = sumo_warnings
@@ -120,6 +120,7 @@ class SumoEnvironment(gym.Env):
                                                   self.min_green, 
                                                   self.max_green, 
                                                   self.begin_time,
+                                                  self.reward_fn,
                                                   conn) for ts in self.ts_ids}
         conn.close()
 
@@ -186,6 +187,7 @@ class SumoEnvironment(gym.Env):
                                                   self.min_green, 
                                                   self.max_green, 
                                                   self.begin_time,
+                                                  self.reward_fn,
                                                   self.sumo) for ts in self.ts_ids}
         self.vehicles = dict()
 
