@@ -170,6 +170,8 @@ class SumoEnvironment(gym.Env):
             self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
 
     def reset(self, seed: Optional[int] = None, return_info=False, **kwargs):
+        super().reset(seed=seed, return_info=return_info, **kwargs)
+        
         if self.run != 0:
             self.close()
             self.save_csv(self.out_csv_name, self.run)
