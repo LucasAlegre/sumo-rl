@@ -21,6 +21,8 @@ from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .traffic_signal import TrafficSignal
 
+import random
+
 LIBSUMO = 'LIBSUMO_AS_TRACI' in os.environ
 
 
@@ -61,7 +63,7 @@ class SumoEnvironment(gym.Env):
         net_file: str, 
         route_file: str, 
         out_csv_name: Optional[str] = None, 
-        use_gui: bool = False, 
+        use_gui: bool = True,
         virtual_display: Optional[Tuple[int,int]] = None,
         begin_time: int = 0, 
         num_seconds: int = 20000, 
@@ -216,6 +218,7 @@ class SumoEnvironment(gym.Env):
         else:
             self._apply_actions(action)
             self._run_steps()
+
 
         observations = self._compute_observations()
         rewards = self._compute_rewards()

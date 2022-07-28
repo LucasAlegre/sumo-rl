@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 from datetime import datetime
+import random
+import sumo_rl.environment.traffic_signal
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -27,11 +29,11 @@ if __name__ == '__main__':
     prs.add_argument("-d", dest="decay", type=float, default=1.0, required=False, help="Epsilon decay.\n")
     prs.add_argument("-mingreen", dest="min_green", type=int, default=10, required=False, help="Minimum green time.\n")
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=50, required=False, help="Maximum green time.\n")
-    prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
+    prs.add_argument("-gui", action="store_true", default=True, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
     prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
     prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=100000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=1000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
@@ -45,6 +47,8 @@ if __name__ == '__main__':
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green)
+
+
 
     for run in range(1, args.runs+1):
         initial_states = env.reset()
@@ -67,7 +71,10 @@ if __name__ == '__main__':
                 s, r, done, _ = env.step(action=actions)
 
                 for agent_id in ql_agents.keys():
+                    traci.vehicle.setStop(vehID='flow_ns.0', edgeID='t_s', pos=0.5, duration=180)
+                    #print(traci.vehicle.getIDList())
                     ql_agents[agent_id].learn(next_state=env.encode(s[agent_id], agent_id), reward=r[agent_id])
+
         env.save_csv(out_csv, run)
         env.close()
 
