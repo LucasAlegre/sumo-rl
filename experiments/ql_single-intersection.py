@@ -36,7 +36,7 @@ if __name__ == '__main__':
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
     prs.add_argument("-ns", dest="ns", type=int, default=42, required=False, help="Fixed green time for NS.\n")
     prs.add_argument("-we", dest="we", type=int, default=42, required=False, help="Fixed green time for WE.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=1000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=100, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-v", action="store_true", default=False, help="Print experience tuple.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
@@ -84,7 +84,7 @@ if __name__ == '__main__':
                 # if 'flow_we.500' in traci.vehicle.getIDList():
                 #     traci.vehicle.resume(vehID='flow_we.100')
 
-                #print(actions)
+                print(actions)
 
                 for agent_id in ql_agents.keys():
 
