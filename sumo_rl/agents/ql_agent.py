@@ -30,3 +30,4 @@ class QLAgent:
         self.q_table[s][a] = self.q_table[s][a] + self.alpha*(reward + self.gamma*max(self.q_table[s1]) - self.q_table[s][a])
         self.state = s1
         self.acc_reward += reward
+

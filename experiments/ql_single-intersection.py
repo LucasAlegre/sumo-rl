@@ -15,6 +15,9 @@ import traci
 from sumo_rl import SumoEnvironment
 from sumo_rl.agents import QLAgent
 from sumo_rl.exploration import EpsilonGreedy
+import csv
+import pandas as pd
+from pathlib import Path
 
 
 if __name__ == '__main__':
@@ -47,17 +50,19 @@ if __name__ == '__main__':
                           num_seconds=args.seconds,
                           min_green=args.min_green,
                           max_green=args.max_green)
-
-
-
+    counter = 0
     for run in range(1, args.runs+1):
         initial_states = env.reset()
-        ql_agents = {ts: QLAgent(starting_state=env.encode(initial_states[ts], ts),
+
+        for ts in env.ts_ids:
+            a = QLAgent(starting_state=env.encode(initial_states[ts], ts),
                                  state_space=env.observation_space,
                                  action_space=env.action_space,
                                  alpha=args.alpha,
                                  gamma=args.gamma,
-                                 exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay)) for ts in env.ts_ids}
+                                 exploration_strategy=EpsilonGreedy(initial_epsilon=args.epsilon, min_epsilon=args.min_epsilon, decay=args.decay))
+
+        ql_agents = {ts: a for ts in env.ts_ids}
 
         done = {'__all__': False}
         infos = []
@@ -68,15 +73,34 @@ if __name__ == '__main__':
             while not done['__all__']:
                 actions = {ts: ql_agents[ts].act() for ts in ql_agents.keys()}
 
+                if 'flow_we.100' in traci.vehicle.getIDList() and counter < 100:
+                    traci.vehicle.setStop(vehID='flow_we.100', edgeID='w_t', pos=70, duration=10)
+                    counter += 1
+                    # t = traci.vehicle.getWaitingTime(vehID='flow_we.100')
+                    # print(t)
+                else:
+                    pass
                 s, r, done, _ = env.step(action=actions)
+                # if 'flow_we.500' in traci.vehicle.getIDList():
+                #     traci.vehicle.resume(vehID='flow_we.100')
+
+                #print(actions)
 
                 for agent_id in ql_agents.keys():
-                    traci.vehicle.setStop(vehID='flow_ns.0', edgeID='t_s', pos=0.5, duration=180)
+
                     #print(traci.vehicle.getIDList())
                     ql_agents[agent_id].learn(next_state=env.encode(s[agent_id], agent_id), reward=r[agent_id])
+                #print(traci.trafficlight.getIDList())
+        #print(a.q_table)
 
-        env.save_csv(out_csv, run)
+        # df = pd.DataFrame(a.q_table)
+        #
+        # filepath = Path('Users/yang/Documents/GitHub/sumo-rl/experiments/out.csv')
+        # filepath.parent.mkdir(parents=True, exist_ok=True)
+        # df.to_csv(filepath)
+        #env.save_csv(out_csv, run)
         env.close()
+
 
 
 

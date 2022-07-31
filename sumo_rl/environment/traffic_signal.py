@@ -66,8 +66,11 @@ class TrafficSignal:
         ))
         self.action_space = spaces.Discrete(self.num_green_phases)
 
+
     def build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
+
+        #print(phases)
         if self.env.fixed_ts:
             self.num_green_phases = len(phases)//2  # Number of green phases == number of phases (green+yellow) divided by 2
             return
@@ -76,10 +79,16 @@ class TrafficSignal:
         self.yellow_dict = {}
         for phase in phases:
             state = phase.state
+            # print('phases', phases)
+            # print('state', state)
             if 'y' not in state and (state.count('r') + state.count('s') != len(state)):
-                self.green_phases.append(self.sumo.trafficlight.Phase(60, state))
+                self.green_phases.append(self.sumo.trafficlight.Phase(60, state=state))  # elimintae y and change each GGrr to 60s
+                #green phase GGrr, rrGG
+        print('green phase', self.green_phases)
         self.num_green_phases = len(self.green_phases)
+        #print(self.num_green_phases)
         self.all_phases = self.green_phases.copy()
+        #print('this', self.all_phases)
 
         for i, p1 in enumerate(self.green_phases):
             for j, p2 in enumerate(self.green_phases):
@@ -88,12 +97,16 @@ class TrafficSignal:
                 for s in range(len(p1.state)):
                     if (p1.state[s] == 'G' or p1.state[s] == 'g') and (p2.state[s] == 'r' or p2.state[s] == 's'):
                         yellow_state += 'y'
+                        #print("here", p1.state, p2.state)
                     else:
                         yellow_state += p1.state[s]
                 self.yellow_dict[(i,j)] = len(self.all_phases)
                 self.all_phases.append(self.sumo.trafficlight.Phase(self.yellow_time, yellow_state))
+                #print('yellow time', self.yellow_time, 'yellow state', yellow_state)
+                #print('all phase', self.green_phase,'slice', self.all_phases[self.green_phase])
 
-        programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
+        for p in self.all_phases:
+            programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
         logic = programs[0]
         logic.type = 0
         logic.phases = self.all_phases
@@ -109,6 +122,7 @@ class TrafficSignal:
         if self.is_yellow and self.time_since_last_phase_change == self.yellow_time:
             #self.sumo.trafficlight.setPhase(self.id, self.green_phase)
             self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[self.green_phase].state)
+            #print('test', self.all_phases[self.green_phase], 'break', self.all_phases)
             self.is_yellow = False
 
     def set_next_phase(self, new_phase):
@@ -118,6 +132,7 @@ class TrafficSignal:
         :param new_phase: (int) Number between [0..num_green_phases] 
         """
         new_phase = int(new_phase)
+        #print('new phase', new_phase)
         if self.green_phase == new_phase or self.time_since_last_phase_change < self.yellow_time + self.min_green:
             #self.sumo.trafficlight.setPhase(self.id, self.green_phase)
             self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[self.green_phase].state)

@@ -21,7 +21,7 @@ from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .traffic_signal import TrafficSignal
 
-import random
+import sumo_rl.agents.ql_agent
 
 LIBSUMO = 'LIBSUMO_AS_TRACI' in os.environ
 
@@ -160,16 +160,18 @@ class SumoEnvironment(gym.Env):
                 self.disp = SmartDisplay(size=self.virtual_display)
                 self.disp.start()
                 print("Virtual display started.")
-
         if LIBSUMO:
             traci.start(sumo_cmd)
             self.sumo = traci
+
         else:
             traci.start(sumo_cmd, label=self.label)
             self.sumo = traci.getConnection(self.label)
         
         if self.use_gui:
-            self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
+            self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")
+
+
 
     def reset(self, seed: Optional[int] = None, return_info=False, **kwargs):
         super().reset(seed=seed, return_info=return_info, **kwargs)
@@ -236,6 +238,7 @@ class SumoEnvironment(gym.Env):
             self._sumo_step()
             for ts in self.ts_ids:
                 self.traffic_signals[ts].update()
+
                 if self.traffic_signals[ts].time_to_act:
                     time_to_act = True
 
