@@ -53,6 +53,7 @@ class SumoEnvironment(gym.Env):
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     :fixed_ts: (bool) If true, it will follow the phase configuration in the route_file and ignore the actions.
     :sumo_warnings: (bool) If False, remove SUMO warnings in the terminal
+    :additional_sumo_cmd: (list) Additional command line arguments for SUMO
     """
     CONNECTION_LABEL = 0  # For traci multi-client support
 
@@ -76,6 +77,7 @@ class SumoEnvironment(gym.Env):
         sumo_seed: Union[str,int] = 'random', 
         fixed_ts: bool = False,
         sumo_warnings: bool = True,
+        additional_sumo_cmd: Optional[str] = None,
     ):
         self._net = net_file
         self._route = route_file
@@ -102,6 +104,7 @@ class SumoEnvironment(gym.Env):
         self.sumo_seed = sumo_seed
         self.fixed_ts = fixed_ts
         self.sumo_warnings = sumo_warnings
+        self.additional_sumo_cmd = additional_sumo_cmd
         self.label = str(SumoEnvironment.CONNECTION_LABEL)
         SumoEnvironment.CONNECTION_LABEL += 1
         self.sumo = None
@@ -149,6 +152,8 @@ class SumoEnvironment(gym.Env):
             sumo_cmd.extend(['--seed', str(self.sumo_seed)])
         if not self.sumo_warnings:
             sumo_cmd.append('--no-warnings')
+        if self.additional_sumo_cmd is not None:
+            sumo_cmd.extend(self.additional_sumo_cmd.split())
         if self.use_gui:
             sumo_cmd.extend(['--start', '--quit-on-end'])
             if self.virtual_display is not None:
