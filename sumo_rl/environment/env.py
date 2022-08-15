@@ -45,6 +45,7 @@ class SumoEnvironment(gym.Env):
     :param begin_time: (int) The time step (in seconds) the simulation starts
     :param num_seconds: (int) Number of simulated seconds on SUMO. The time in seconds the simulation must end.
     :param max_depart_delay: (int) Vehicles are discarded if they could not be inserted after max_depart_delay seconds
+    :param waiting_time_memory: (int) Number of seconds to remember the waiting time of a vehicle (see https://sumo.dlr.de/pydoc/traci._vehicle.html#VehicleDomain-getAccumulatedWaitingTime)
     :param delta_time: (int) Simulation seconds between actions
     :param min_green: (int) Minimum green time in a phase
     :param max_green: (int) Max green time in a phase
@@ -67,6 +68,7 @@ class SumoEnvironment(gym.Env):
         begin_time: int = 0, 
         num_seconds: int = 20000, 
         max_depart_delay: int = 100000,
+        waiting_time_memory: int = 1000,
         time_to_teleport: int = -1, 
         delta_time: int = 5, 
         yellow_time: int = 2, 
@@ -95,6 +97,7 @@ class SumoEnvironment(gym.Env):
         self.sim_max_time = num_seconds
         self.delta_time = delta_time  # seconds on sumo at each step
         self.max_depart_delay = max_depart_delay  # Max wait time to insert a vehicle
+        self.waiting_time_memory = waiting_time_memory  # Number of seconds to remember the waiting time of a vehicle (see https://sumo.dlr.de/pydoc/traci._vehicle.html#VehicleDomain-getAccumulatedWaitingTime)
         self.time_to_teleport = time_to_teleport
         self.min_green = min_green
         self.max_green = max_green
@@ -142,7 +145,7 @@ class SumoEnvironment(gym.Env):
                      '-n', self._net,
                      '-r', self._route,
                      '--max-depart-delay', str(self.max_depart_delay), 
-                     '--waiting-time-memory', '10000',
+                     '--waiting-time-memory', str(self.waiting_time_memory),
                      '--time-to-teleport', str(self.time_to_teleport)]
         if self.begin_time > 0:
             sumo_cmd.append('-b {}'.format(self.begin_time))
