@@ -169,21 +169,6 @@ class TrafficSignal:
         self.last_measure = ts_wait
         return reward
 
-    def _waiting_time_reward2(self):
-        ts_wait = sum(self.get_waiting_time())
-        self.last_measure = ts_wait
-        if ts_wait == 0:
-            reward = 1.0
-        else:
-            reward = 1.0/ts_wait
-        return reward
-
-    def _waiting_time_reward3(self):
-        ts_wait = sum(self.get_waiting_time())
-        reward = -ts_wait
-        self.last_measure = ts_wait
-        return reward
-
     def get_waiting_time_per_lane(self):
         wait_time_per_lane = []
         for lane in self.lanes:
