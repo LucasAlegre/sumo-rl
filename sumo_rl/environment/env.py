@@ -51,6 +51,8 @@ class SumoEnvironment(gym.Env):
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :reward_fn: (str/function) String with the name of the reward function used by the agents, or a reward function.
+    :add_system_info: (bool) If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary
+    :add_per_agent_info: (bool) If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
     :fixed_ts: (bool) If true, it will follow the phase configuration in the route_file and ignore the actions.
     :sumo_warnings: (bool) If False, remove SUMO warnings in the terminal
@@ -62,7 +64,7 @@ class SumoEnvironment(gym.Env):
         self, 
         net_file: str, 
         route_file: str, 
-        out_csv_name: Optional[str] = None, 
+        out_csv_name: Optional[str] = None,
         use_gui: bool = False, 
         virtual_display: Optional[Tuple[int,int]] = None,
         begin_time: int = 0, 
@@ -76,6 +78,8 @@ class SumoEnvironment(gym.Env):
         max_green: int = 50, 
         single_agent: bool = False,
         reward_fn: Union[str,Callable] = 'diff-waiting-time',
+        add_system_info: bool = True,
+        add_per_agent_info: bool = True,
         sumo_seed: Union[str,int] = 'random', 
         fixed_ts: bool = False,
         sumo_warnings: bool = True,
@@ -108,6 +112,8 @@ class SumoEnvironment(gym.Env):
         self.fixed_ts = fixed_ts
         self.sumo_warnings = sumo_warnings
         self.additional_sumo_cmd = additional_sumo_cmd
+        self.add_system_info = add_system_info
+        self.add_per_agent_info = add_per_agent_info
         self.label = str(SumoEnvironment.CONNECTION_LABEL)
         SumoEnvironment.CONNECTION_LABEL += 1
         self.sumo = None
@@ -264,7 +270,11 @@ class SumoEnvironment(gym.Env):
         return dones
     
     def _compute_info(self):
-        info = self._compute_step_info()
+        info = {'step': self.sim_step}
+        if self.add_system_info:
+            info.update(self._compute_system_info())
+        if self.add_per_agent_info:
+            info.update(self._compute_per_agent_info())
         self.metrics.append(info)
         return info
 
@@ -292,14 +302,28 @@ class SumoEnvironment(gym.Env):
 
     def _sumo_step(self):
         self.sumo.simulationStep()
-
-    def _compute_step_info(self):
+    
+    def get_system_info(self):
+        vehicles = self.sumo.vehicle.getIDList()
         return {
-            'step_time': self.sim_step,
-            'reward': self.traffic_signals[self.ts_ids[0]].last_reward,
-            'total_stopped': sum(self.traffic_signals[ts].get_total_queued() for ts in self.ts_ids),
-            'total_wait_time': sum(sum(self.traffic_signals[ts].get_waiting_time_per_lane()) for ts in self.ts_ids)
+            # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
+            'system_total_stopped': sum(int(self.sumo.vehicle.getSpeed(veh) < 0.1) for veh in vehicles),
+            'system_total_waiting_time': sum(self.sumo.vehicle.getWaitingTime(veh) for veh in vehicles),
+            'system_mean_speed': 0.0 if len(vehicles) == 0 else sum(self.sumo.vehicle.getSpeed(veh) for veh in vehicles) / len(vehicles)
         }
+    
+    def get_per_agent_info(self):
+        stopped = [self.traffic_signals[ts].get_total_queued() for ts in self.ts_ids]
+        accumulated_waiting_time = [sum(self.traffic_signals[ts].get_accumulated_waiting_time_per_lane()) for ts in self.ts_ids]
+        average_speed = [self.traffic_signals[ts].get_average_speed() for ts in self.ts_ids]
+        info = {}
+        for i, ts in enumerate(self.ts_ids):
+            info[f'{ts}_stopped'] = stopped[i]
+            info[f'{ts}_accumulated_waiting_time'] = accumulated_waiting_time[i]
+            info[f'{ts}_average_speed'] = average_speed[i]
+        info['agents_total_stopped'] = sum(stopped)
+        info['agents_total_accumulated_waiting_time'] = sum(accumulated_waiting_time)
+        return info
 
     def close(self):
         if self.sumo is None:

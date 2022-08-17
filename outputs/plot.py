@@ -55,7 +55,7 @@ if __name__ == '__main__':
     prs.add_argument('-f', nargs='+', required=True, help="Measures files\n")            
     prs.add_argument('-l', nargs='+', default=None, help="File's legends\n")
     prs.add_argument('-t', type=str, default="", help="Plot title\n")
-    prs.add_argument("-yaxis", type=str, default='total_wait_time', help="The column to plot.\n")
+    prs.add_argument("-yaxis", type=str, default='system_total_waiting_time', help="The column to plot.\n")
     prs.add_argument("-xaxis", type=str, default='step_time', help="The x axis.\n")
     prs.add_argument("-ma", type=int, default=1, help="Moving Average Window.\n")
     prs.add_argument('-sep', type=str, default=',', help="Values separator on file.\n")

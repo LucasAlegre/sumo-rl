@@ -164,12 +164,12 @@ class TrafficSignal:
         return -self.get_total_queued()
 
     def _diff_waiting_time_reward(self):
-        ts_wait = sum(self.get_waiting_time_per_lane()) / 100.0
+        ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
         return reward
 
-    def get_waiting_time_per_lane(self):
+    def get_accumulated_waiting_time_per_lane(self):
         wait_time_per_lane = []
         for lane in self.lanes:
             veh_list = self.sumo.lane.getLastStepVehicleIDs(lane)
