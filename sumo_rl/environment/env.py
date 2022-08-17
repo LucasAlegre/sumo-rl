@@ -272,9 +272,9 @@ class SumoEnvironment(gym.Env):
     def _compute_info(self):
         info = {'step': self.sim_step}
         if self.add_system_info:
-            info.update(self._compute_system_info())
+            info.update(self._get_system_info())
         if self.add_per_agent_info:
-            info.update(self._compute_per_agent_info())
+            info.update(self._get_per_agent_info())
         self.metrics.append(info)
         return info
 
@@ -303,7 +303,7 @@ class SumoEnvironment(gym.Env):
     def _sumo_step(self):
         self.sumo.simulationStep()
     
-    def get_system_info(self):
+    def _get_system_info(self):
         vehicles = self.sumo.vehicle.getIDList()
         return {
             # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
@@ -312,7 +312,7 @@ class SumoEnvironment(gym.Env):
             'system_mean_speed': 0.0 if len(vehicles) == 0 else sum(self.sumo.vehicle.getSpeed(veh) for veh in vehicles) / len(vehicles)
         }
     
-    def get_per_agent_info(self):
+    def _get_per_agent_info(self):
         stopped = [self.traffic_signals[ts].get_total_queued() for ts in self.ts_ids]
         accumulated_waiting_time = [sum(self.traffic_signals[ts].get_accumulated_waiting_time_per_lane()) for ts in self.ts_ids]
         average_speed = [self.traffic_signals[ts].get_average_speed() for ts in self.ts_ids]
