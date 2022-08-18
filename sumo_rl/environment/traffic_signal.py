@@ -59,7 +59,7 @@ class TrafficSignal:
         self.lanes = list(dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
-        self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes}
+        self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
 
         self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32))
         self.discrete_observation_space = spaces.Tuple((
@@ -201,15 +201,15 @@ class TrafficSignal:
         return sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes)
 
     def get_out_lanes_density(self):
-        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.out_lanes]
+        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.out_lanes]
         return [min(1, density) for density in lanes_density]
 
     def get_lanes_density(self):
-        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
+        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
         return [min(1, density) for density in lanes_density]
 
     def get_lanes_queue(self):
-        lanes_queue = [self.sumo.lane.getLastStepHaltingNumber(lane) / (self.sumo.lane.getLength(lane) / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
+        lanes_queue = [self.sumo.lane.getLastStepHaltingNumber(lane) / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
         return [min(1, queue) for queue in lanes_queue]
 
     def get_total_queued(self):
