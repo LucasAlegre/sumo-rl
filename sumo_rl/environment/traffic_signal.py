@@ -26,6 +26,9 @@ class TrafficSignal:
 
     Action space is which green phase is going to be open for the next delta_time seconds
     """
+    # Default min gap of SUMO (see https://sumo.dlr.de/docs/Simulation/Safety.html). Should this be parameterized? 
+    MIN_GAP = 2.5
+
     def __init__(self, 
                 env,
                 ts_id: List[str],
@@ -198,17 +201,17 @@ class TrafficSignal:
         return sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes)
 
     def get_out_lanes_density(self):
-        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.out_lanes]
+        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.out_lanes]
+        return [min(1, density) for density in lanes_density]
 
     def get_lanes_density(self):
-        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
+        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
+        return [min(1, density) for density in lanes_density]
 
     def get_lanes_queue(self):
-        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, self.sumo.lane.getLastStepHaltingNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
-    
+        lanes_queue = [self.sumo.lane.getLastStepHaltingNumber(lane) / (self.sumo.lane.getLength(lane) / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
+        return [min(1, queue) for queue in lanes_queue]
+
     def get_total_queued(self):
         return sum(self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes)
 
