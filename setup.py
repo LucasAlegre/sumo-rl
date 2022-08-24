@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 REQUIRED = ['gym==0.24.0', 'numpy', 'pandas', 'pillow', 'pettingzoo==1.18.1', 'sumolib', 'traci']
 
@@ -9,8 +9,8 @@ extras["all"] = extras["rendering"]
 
 setup(
     name='sumo-rl',
-    version='1.2',
-    packages=['sumo_rl'],
+    version='1.3.0',
+    packages=[package for package in find_packages() if package.startswith("sumo_rl")] + ["nets"],
     install_requires=REQUIRED,
     extras_require=extras,
     author='LucasAlegre',
