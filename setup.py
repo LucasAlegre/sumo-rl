@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-REQUIRED = ['gym==0.24.0', 'numpy', 'pandas', 'pillow', 'pettingzoo==1.18.1', 'sumolib', 'traci']
+REQUIRED = ['gym>=0.25', 'numpy', 'pandas', 'pillow', 'pettingzoo==1.18.1', 'sumolib', 'traci']
 
 extras = {
     "rendering": ["pyvirtualdisplay"]

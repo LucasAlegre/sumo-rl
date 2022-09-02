@@ -8,6 +8,7 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import gym
+from gym.utils.renderer import Renderer
 import numpy as np
 import pandas as pd
 import sumolib
@@ -57,7 +58,12 @@ class SumoEnvironment(gym.Env):
     :fixed_ts: (bool) If true, it will follow the phase configuration in the route_file and ignore the actions.
     :sumo_warnings: (bool) If False, remove SUMO warnings in the terminal
     :additional_sumo_cmd: (list) Additional command line arguments for SUMO
+    :render_mode: (str) Mode of rendering. Can be 'human' or 'rgb_array'
     """
+    metadata = {
+        'render_modes': ['human', 'rgb_array'],
+    }
+
     CONNECTION_LABEL = 0  # For traci multi-client support
 
     def __init__(
@@ -66,7 +72,7 @@ class SumoEnvironment(gym.Env):
         route_file: str, 
         out_csv_name: Optional[str] = None,
         use_gui: bool = False, 
-        virtual_display: Optional[Tuple[int,int]] = None,
+        virtual_display: Tuple[int,int] = (3200, 1800),
         begin_time: int = 0, 
         num_seconds: int = 20000, 
         max_depart_delay: int = 100000,
@@ -84,16 +90,21 @@ class SumoEnvironment(gym.Env):
         fixed_ts: bool = False,
         sumo_warnings: bool = True,
         additional_sumo_cmd: Optional[str] = None,
-    ):
+        render_mode: Optional[str] = None,
+    ) -> None:
+        assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
+        self.render_mode = render_mode  
+        self.renderer = Renderer(self.render_mode, self._render_frame)
+        self.virtual_display = virtual_display
+        self.disp = None
+
         self._net = net_file
         self._route = route_file
         self.use_gui = use_gui
-        if self.use_gui:
+        if self.use_gui or self.render_mode is not None:
             self._sumo_binary = sumolib.checkBinary('sumo-gui')
         else:
             self._sumo_binary = sumolib.checkBinary('sumo')
-
-        self.virtual_display = virtual_display
 
         assert delta_time > yellow_time, "Time between actions must be at least greater than yellow time."
 
@@ -163,9 +174,9 @@ class SumoEnvironment(gym.Env):
             sumo_cmd.append('--no-warnings')
         if self.additional_sumo_cmd is not None:
             sumo_cmd.extend(self.additional_sumo_cmd.split())
-        if self.use_gui:
+        if self.use_gui or self.render_mode is not None:
             sumo_cmd.extend(['--start', '--quit-on-end'])
-            if self.virtual_display is not None:
+            if self.render_mode == 'rgb_array':
                 sumo_cmd.extend(['--window-size', f'{self.virtual_display[0]},{self.virtual_display[1]}'])
                 from pyvirtualdisplay.smartdisplay import SmartDisplay
                 print("Creating a virtual display.")
@@ -180,7 +191,7 @@ class SumoEnvironment(gym.Env):
             traci.start(sumo_cmd, label=self.label)
             self.sumo = traci.getConnection(self.label)
         
-        if self.use_gui:
+        if self.use_gui or self.render_mode is not None:
             self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
 
     def reset(self, seed: Optional[int] = None, return_info=False, **kwargs):
@@ -206,6 +217,9 @@ class SumoEnvironment(gym.Env):
                                                   self.reward_fn,
                                                   self.sumo) for ts in self.ts_ids}
         self.vehicles = dict()
+
+        self.renderer.reset()
+        self.renderer.render_step()
 
         if self.single_agent:
             if return_info:
@@ -234,7 +248,11 @@ class SumoEnvironment(gym.Env):
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
+        #terminated = False
+        #truncated = dones['__all__']  # episode ends when sim_step >= max_steps
         info = self._compute_info()
+
+        self.renderer.render_step()
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], info
@@ -334,25 +352,28 @@ class SumoEnvironment(gym.Env):
         if not LIBSUMO:
             traci.switch(self.label)
         traci.close()
-        try:
+        if self.disp is not None:
             self.disp.stop()
-        except AttributeError:
-            pass
+            self.disp = None
         self.sumo = None
     
     def __del__(self):
         self.close()
     
-    def render(self, mode='human'):
-        if self.virtual_display:
+    def _render_frame(self, mode: str):
+        if mode == 'human':
+            return # sumo-gui will already be rendering the frame
+        elif mode == 'rgb_array':
             #img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
             #                          f"temp/img{self.sim_step}.jpg", 
             #                          width=self.virtual_display[0],
             #                          height=self.virtual_display[1])
             img = self.disp.grab()
-            if mode == 'rgb_array':
-                return np.array(img)
-            return img         
+            return np.array(img)
+
+    def render(self, mode='human'):
+        # Just return the list of render frames collected by the Renderer.
+        return self.renderer.get_renders()                
     
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
