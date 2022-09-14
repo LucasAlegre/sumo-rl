@@ -8,12 +8,10 @@ if 'SUMO_HOME' in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import gym
-from gym.utils.renderer import Renderer
 import numpy as np
 import pandas as pd
 import sumolib
 import traci
-from gym.envs.registration import EnvSpec
 from gym.utils import EzPickle, seeding
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
@@ -94,7 +92,6 @@ class SumoEnvironment(gym.Env):
     ) -> None:
         assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
         self.render_mode = render_mode  
-        self.renderer = Renderer(self.render_mode, self._render_frame)
         self.virtual_display = virtual_display
         self.disp = None
 
@@ -150,7 +147,6 @@ class SumoEnvironment(gym.Env):
         self.vehicles = dict()
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
-        self.spec = EnvSpec('SUMORL-v0')
         self.run = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
@@ -194,8 +190,8 @@ class SumoEnvironment(gym.Env):
         if self.use_gui or self.render_mode is not None:
             self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")                
 
-    def reset(self, seed: Optional[int] = None, return_info=False, **kwargs):
-        super().reset(seed=seed, return_info=return_info, **kwargs)
+    def reset(self, seed: Optional[int] = None, **kwargs):
+        super().reset(seed=seed, **kwargs)
         
         if self.run != 0:
             self.close()
@@ -218,14 +214,8 @@ class SumoEnvironment(gym.Env):
                                                   self.sumo) for ts in self.ts_ids}
         self.vehicles = dict()
 
-        self.renderer.reset()
-        self.renderer.render_step()
-
         if self.single_agent:
-            if return_info:
-                return self._compute_observations()[self.ts_ids[0]], self._compute_info()
-            else:
-                return self._compute_observations()[self.ts_ids[0]]
+            return self._compute_observations()[self.ts_ids[0]], self._compute_info()
         else:
             return self._compute_observations()
 
@@ -248,14 +238,12 @@ class SumoEnvironment(gym.Env):
         observations = self._compute_observations()
         rewards = self._compute_rewards()
         dones = self._compute_dones()
-        #terminated = False
-        #truncated = dones['__all__']  # episode ends when sim_step >= max_steps
+        terminated = False  # there are no 'terminal' states in this environment
+        truncated = dones['__all__']  # episode ends when sim_step >= max_steps
         info = self._compute_info()
 
-        self.renderer.render_step()
-
         if self.single_agent:
-            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], dones['__all__'], info
+            return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], terminated, truncated, info
         else:
             return observations, rewards, dones, info
 
@@ -358,22 +346,18 @@ class SumoEnvironment(gym.Env):
         self.sumo = None
     
     def __del__(self):
-        self.close()
-    
-    def _render_frame(self, mode: str):
-        if mode == 'human':
+        self.close()        
+
+    def render(self):
+        if self.render_mode == 'human':
             return # sumo-gui will already be rendering the frame
-        elif mode == 'rgb_array':
+        elif self.render_mode == 'rgb_array':
             #img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
             #                          f"temp/img{self.sim_step}.jpg", 
             #                          width=self.virtual_display[0],
             #                          height=self.virtual_display[1])
             img = self.disp.grab()
-            return np.array(img)
-
-    def render(self, mode='human'):
-        # Just return the list of render frames collected by the Renderer.
-        return self.renderer.get_renders()                
+            return np.array(img)                
     
     def save_csv(self, out_csv_name, run):
         if out_csv_name is not None:
@@ -420,8 +404,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
     def seed(self, seed=None):
         self.randomizer, seed = seeding.np_random(seed)
 
-    def reset(self, seed: Optional[int] = None, return_info: bool = False, options: Optional[dict] = None):
-        self.env.reset(seed=seed, return_info=return_info, options=options)
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
+        self.env.reset(seed=seed, options=options)
         self.agents = self.possible_agents[:]
         self.agent_selection = self._agent_selector.reset()
         self.rewards = {agent: 0 for agent in self.agents}

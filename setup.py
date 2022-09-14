@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-REQUIRED = ['gym>=0.25', 'numpy', 'pandas', 'pillow', 'pettingzoo==1.18.1', 'sumolib', 'traci']
+REQUIRED = ['gym>=0.26', 'numpy', 'pandas', 'pillow', 'pettingzoo==1.20.1', 'sumolib>=1.14.0', 'traci>=1.14.0']
 
 extras = {
     "rendering": ["pyvirtualdisplay"]
@@ -13,6 +13,7 @@ setup(
     packages=[package for package in find_packages() if package.startswith("sumo_rl")] + ["nets"],
     install_requires=REQUIRED,
     extras_require=extras,
+    python_requires=">=3.7",
     author='LucasAlegre',
     author_email='lucasnale@gmail.com',
     url='https://github.com/LucasAlegre/sumo-rl',

@@ -47,7 +47,7 @@ Stable release version is available through pip
 pip install sumo-rl
 ```
 
-Alternatively you can install using the latest (unreleased) version
+Recommended: alternatively you can install using the latest (unreleased) version
 ```bash
 git clone https://github.com/LucasAlegre/sumo-rl
 cd sumo-rl
@@ -102,8 +102,32 @@ env = SumoEnvironment(..., reward_fn=my_reward_fn)
 
 ## Examples
 
-### PettingZoo API
+Please see [SumoEnvironment docstring](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) for details on all constructor parameters.
+
+### Single Agent Environment
+
+If your network only has ONE traffic light, then you can instantiate a standard Gym env (see [Gym API](https://www.gymlibrary.dev/content/basic_usage/)):
 ```python
+import gym
+import sumo_rl
+env = gym.make('sumo-rl-v0',
+                net_file='path_to_your_network.net.xml',
+                route_file='path_to_your_routefile.rou.xml',
+                out_csv_name='path_to_output.csv',
+                use_gui=True,
+                num_seconds=100000)
+obs, info = env.reset()
+done = False
+while not done:
+    next_obs, reward, terminated, truncated, info = env.step(env.action_space.sample())
+    done = terminated or truncated
+```
+
+### PettingZoo Multi-Agent API
+See [Petting Zoo API](https://www.pettingzoo.ml/api) for more details.
+
+```python
+import sumo_rl
 env = sumo_rl.env(net_file='sumo_net_file.net.xml',
                   route_file='sumo_route_file.rou.xml',
                   use_gui=True,
@@ -124,6 +148,9 @@ In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/master/ne
 </p>
     
 ### Experiments
+
+WARNING: Gym 0.26 had many breaking changes, stable-baselines3 and RLlib still do not support it, but will be updated soon. See [Stable Baselines 3 PR](https://github.com/DLR-RM/stable-baselines3/pull/780) and [RLib PR](https://github.com/ray-project/ray/pull/28369).
+Hence, only the tabular Q-learning experiment is running without erros for now.
 
 Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) for examples on how to instantiate an environment and train your RL agent.
 
