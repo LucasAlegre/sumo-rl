@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Callable, List, Union
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
@@ -25,7 +26,19 @@ class TrafficSignal:
 
     Action space is which green phase is going to be open for the next delta_time seconds
     """
-    def __init__(self, env, ts_id, delta_time, yellow_time, min_green, max_green, begin_time, sumo):
+    # Default min gap of SUMO (see https://sumo.dlr.de/docs/Simulation/Safety.html). Should this be parameterized? 
+    MIN_GAP = 2.5
+
+    def __init__(self, 
+                env,
+                ts_id: List[str],
+                delta_time: int, 
+                yellow_time: int, 
+                min_green: int, 
+                max_green: int,
+                begin_time: int,
+                reward_fn: Union[str,Callable], 
+                sumo):
         self.id = ts_id
         self.env = env
         self.delta_time = delta_time
@@ -38,6 +51,7 @@ class TrafficSignal:
         self.next_action_time = begin_time
         self.last_measure = 0.0
         self.last_reward = None
+        self.reward_fn = reward_fn
         self.sumo = sumo
 
         self.build_phases()
@@ -45,7 +59,7 @@ class TrafficSignal:
         self.lanes = list(dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
-        self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes}
+        self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
 
         self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32))
         self.discrete_observation_space = spaces.Tuple((
@@ -128,43 +142,37 @@ class TrafficSignal:
         return observation
             
     def compute_reward(self):
-        self.last_reward = self._waiting_time_reward()
+        if type(self.reward_fn) is str:
+            if self.reward_fn == 'diff-waiting-time':
+                self.last_reward = self._diff_waiting_time_reward()
+            elif self.reward_fn == 'average-speed':
+                self.last_reward = self._average_speed_reward()
+            elif self.reward_fn == 'queue':
+                self.last_reward = self._queue_reward()
+            elif self.reward_fn == 'pressure':
+                self.last_reward = self._pressure_reward()
+            else:
+                raise NotImplementedError(f'Reward function {self.reward_fn} not implemented')
+        else:
+            self.last_reward = self.reward_fn(self)
         return self.last_reward
     
     def _pressure_reward(self):
         return -self.get_pressure()
-
-    def _queue_average_reward(self):
-        new_average = np.mean(self.get_stopped_vehicles_num())
-        reward = self.last_measure - new_average
-        self.last_measure = new_average
-        return reward
+    
+    def _average_speed_reward(self):
+        return self.get_average_speed()
 
     def _queue_reward(self):
-        return - (sum(self.get_stopped_vehicles_num()))**2
+        return -self.get_total_queued()
 
-    def _waiting_time_reward(self):
-        ts_wait = sum(self.get_waiting_time_per_lane()) / 100.0
+    def _diff_waiting_time_reward(self):
+        ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
         return reward
 
-    def _waiting_time_reward2(self):
-        ts_wait = sum(self.get_waiting_time())
-        self.last_measure = ts_wait
-        if ts_wait == 0:
-            reward = 1.0
-        else:
-            reward = 1.0/ts_wait
-        return reward
-
-    def _waiting_time_reward3(self):
-        ts_wait = sum(self.get_waiting_time())
-        reward = -ts_wait
-        self.last_measure = ts_wait
-        return reward
-
-    def get_waiting_time_per_lane(self):
+    def get_accumulated_waiting_time_per_lane(self):
         wait_time_per_lane = []
         for lane in self.lanes:
             veh_list = self.sumo.lane.getLastStepVehicleIDs(lane)
@@ -180,23 +188,32 @@ class TrafficSignal:
             wait_time_per_lane.append(wait_time)
         return wait_time_per_lane
 
+    def get_average_speed(self):
+        avg_speed = 0.0
+        vehs = self._get_veh_list()
+        if len(vehs) == 0:
+            return 1.0
+        for v in vehs:
+            avg_speed += self.sumo.vehicle.getSpeed(v) / self.sumo.vehicle.getAllowedSpeed(v)
+        return avg_speed / len(vehs)
+
     def get_pressure(self):
-        return abs(sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes))
+        return sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.out_lanes) - sum(self.sumo.lane.getLastStepVehicleNumber(lane) for lane in self.lanes)
 
     def get_out_lanes_density(self):
-        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, self.sumo.lane.getLastStepVehicleNumber(lane) / (self.sumo.lane.getLength(lane) / vehicle_size_min_gap)) for lane in self.out_lanes]
+        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.out_lanes]
+        return [min(1, density) for density in lanes_density]
 
     def get_lanes_density(self):
-        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
+        lanes_density = [self.sumo.lane.getLastStepVehicleNumber(lane) / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
+        return [min(1, density) for density in lanes_density]
 
     def get_lanes_queue(self):
-        vehicle_size_min_gap = 7.5  # 5(vehSize) + 2.5(minGap)
-        return [min(1, self.sumo.lane.getLastStepHaltingNumber(lane) / (self.lanes_lenght[lane] / vehicle_size_min_gap)) for lane in self.lanes]
-    
+        lanes_queue = [self.sumo.lane.getLastStepHaltingNumber(lane) / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane))) for lane in self.lanes]
+        return [min(1, queue) for queue in lanes_queue]
+
     def get_total_queued(self):
-        return sum([self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes])
+        return sum(self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes)
 
     def _get_veh_list(self):
         veh_list = []

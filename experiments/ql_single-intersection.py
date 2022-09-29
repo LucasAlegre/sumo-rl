@@ -44,8 +44,7 @@ if __name__ == '__main__':
                           use_gui=args.gui,
                           num_seconds=args.seconds,
                           min_green=args.min_green,
-                          max_green=args.max_green,
-                          max_depart_delay=0)
+                          max_green=args.max_green)
 
     for run in range(1, args.runs+1):
         initial_states = env.reset()
