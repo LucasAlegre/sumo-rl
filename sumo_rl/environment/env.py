@@ -49,7 +49,7 @@ class SumoEnvironment(gym.Env):
     :param min_green: (int) Minimum green time in a phase
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
-    :reward_fn: (str/function/dict) String with the name of the reward function used by the agents, a reward function, or dictionary with rewards functions assigned to individual traffic lights by its keys
+    :reward_fn: (str/function/dict) String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys
     :add_system_info: (bool) If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary
     :add_per_agent_info: (bool) If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
@@ -135,7 +135,7 @@ class SumoEnvironment(gym.Env):
         self.ts_ids = list(conn.trafficlight.getIDList())
 
         if isinstance(self.reward_fn, dict):
-            self.traffic_signals = {}
+            self.traffic_signals = dict()
             for key, reward_fn_value in self.reward_fn.items():
                 self.traffic_signals[key] = TrafficSignal(
                     self,
@@ -223,7 +223,7 @@ class SumoEnvironment(gym.Env):
         self._start_simulation()
 
         if isinstance(self.reward_fn, dict):
-            self.traffic_signals = {}
+            self.traffic_signals = dict()
             for key, reward_fn_value in self.reward_fn.items():
                 self.traffic_signals[key] = TrafficSignal(
                     self,
