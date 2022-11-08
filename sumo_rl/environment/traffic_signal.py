@@ -134,12 +134,15 @@ class TrafficSignal:
             self.time_since_last_phase_change = 0
     
     def compute_observation(self):
-        phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
-        min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
-        density = self.get_lanes_density()
-        queue = self.get_lanes_queue()
-        observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
-        return observation
+        if isinstance(self.env.observation_fn, Callable):
+            return self.env.observation_fn(self)
+        else:
+            if self.env.observation_fn == 'default':
+                return self._observation_fn()
+            elif self.env.observation_fn == 'drq_norm':
+                return self._drq_norm()
+            else:
+                raise NotImplementedError(f'Observation function {self.env.observation_fn} not implemented')
             
     def compute_reward(self):
         if type(self.reward_fn) is str:
@@ -171,6 +174,19 @@ class TrafficSignal:
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
         return reward
+
+    def _observation_fn(self):
+        phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
+        min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
+        density = self.get_lanes_density()
+        queue = self.get_lanes_queue()
+        observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
+        return observation
+
+    def _drq_norm(self):
+        # TODO: Add the magic
+        print("####")
+        return None
 
     def get_accumulated_waiting_time_per_lane(self):
         wait_time_per_lane = []
