@@ -50,6 +50,7 @@ class SumoEnvironment(gym.Env):
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :reward_fn: (str/function/dict) String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys
+    :observation_fn: (str/function) String with the name of the observation function or a observation function
     :add_system_info: (bool) If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary
     :add_per_agent_info: (bool) If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
@@ -82,6 +83,7 @@ class SumoEnvironment(gym.Env):
         max_green: int = 50, 
         single_agent: bool = False,
         reward_fn: Union[str,Callable,dict] = 'diff-waiting-time',
+        observation_fn: Union[str,Callable] = 'default',
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str,int] = 'random', 
@@ -135,34 +137,29 @@ class SumoEnvironment(gym.Env):
         self.ts_ids = list(conn.trafficlight.getIDList())
 
         if isinstance(self.reward_fn, dict):
-            self.traffic_signals = dict()
-            for key, reward_fn_value in self.reward_fn.items():
-                self.traffic_signals[key] = TrafficSignal(
-                    self,
-                    key,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    reward_fn_value,
-                    conn
-                )
+            self.traffic_signals = {ts: TrafficSignal(self,
+                                                      ts,
+                                                      self.delta_time,
+                                                      self.yellow_time,
+                                                      self.min_green,
+                                                      self.max_green,
+                                                      self.begin_time,
+                                                      self.reward_fn[ts],
+                                                      conn) for ts in self.reward_fn.keys()}
         else:
-            self.traffic_signals = {
-                ts: TrafficSignal(self,
-                                ts,
-                                self.delta_time,
-                                self.yellow_time,
-                                self.min_green,
-                                self.max_green,
-                                self.begin_time,
-                                self.reward_fn,
-                                conn) for ts in self.ts_ids
-            }
+            self.traffic_signals = {ts: TrafficSignal(self,
+                                                      ts,
+                                                      self.delta_time,
+                                                      self.yellow_time,
+                                                      self.min_green,
+                                                      self.max_green,
+                                                      self.begin_time,
+                                                      self.reward_fn,
+                                                      conn) for ts in self.ts_ids}
 
         conn.close()
 
+        self.observation_fn = observation_fn
         self.vehicles = dict()
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
@@ -223,19 +220,15 @@ class SumoEnvironment(gym.Env):
         self._start_simulation()
 
         if isinstance(self.reward_fn, dict):
-            self.traffic_signals = dict()
-            for key, reward_fn_value in self.reward_fn.items():
-                self.traffic_signals[key] = TrafficSignal(
-                    self,
-                    key,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    reward_fn_value,
-                    self.sumo
-                )
+            self.traffic_signals = {ts: TrafficSignal(self,
+                                                      ts,
+                                                      self.delta_time,
+                                                      self.yellow_time,
+                                                      self.min_green,
+                                                      self.max_green,
+                                                      self.begin_time,
+                                                      self.reward_fn[ts],
+                                                      self.sumo) for ts in self.reward_fn.keys()}
         else:
             self.traffic_signals = {ts: TrafficSignal(self,
                                                       ts,
