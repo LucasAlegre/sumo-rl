@@ -124,7 +124,7 @@ while not done:
 ```
 
 ### PettingZoo Multi-Agent API
-See [Petting Zoo API](https://www.pettingzoo.ml/api) for more details.
+See [Petting Zoo API](https://pettingzoo.farama.org/content/basic_usage/) for more details.
 
 ```python
 import sumo_rl
@@ -134,7 +134,7 @@ env = sumo_rl.env(net_file='sumo_net_file.net.xml',
                   num_seconds=3600)  
 env.reset()
 for agent in env.agent_iter():
-    observation, reward, done, info = env.last()
+    observation, reward, termination, truncation, info = env.last()
     action = policy(observation)
     env.step(action)
 ```
