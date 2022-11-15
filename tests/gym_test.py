@@ -1,5 +1,5 @@
 from sumo_rl import SumoEnvironment
-from gym.utils.env_checker import check_env
+from gymnasium.utils.env_checker import check_env
 
 
 def test_api():

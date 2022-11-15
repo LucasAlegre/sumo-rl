@@ -7,12 +7,12 @@ if 'SUMO_HOME' in os.environ:
     sys.path.append(tools)
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
-import gym
+import gymnasium as gym
 import numpy as np
 import pandas as pd
 import sumolib
 import traci
-from gym.utils import EzPickle, seeding
+from gymnasium.utils import EzPickle, seeding
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
 from pettingzoo.utils.agent_selector import agent_selector
@@ -433,7 +433,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         # dicts
         self.rewards = {a: 0 for a in self.agents}
-        self.dones = {a: False for a in self.agents}
+        self.terminations = {a: False for a in self.agents}
+        self.truncations = {a: False for a in self.agents}
         self.infos = {a: {} for a in self.agents}
 
     def seed(self, seed=None):
@@ -445,7 +446,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.agent_selection = self._agent_selector.reset()
         self.rewards = {agent: 0 for agent in self.agents}
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
-        self.dones = {agent: False for agent in self.agents}
+        self.terminations = {a: False for a in self.agents}
+        self.truncations = {a: False for a in self.agents}
         self.infos = {agent: {} for agent in self.agents}
     
     def observation_space(self, agent):
@@ -471,8 +473,11 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self.env.save_csv(out_csv_name, run)
 
     def step(self, action):
-        if self.dones[self.agent_selection]:
-            return self._was_done_step(action)
+        if (
+            self.truncations[self.agent_selection]
+            or self.terminations[self.agent_selection]
+        ):
+            return self._was_dead_step(action)
         agent = self.agent_selection
         if not self.action_spaces[agent].contains(action):
             raise Exception('Action for agent {} must be in Discrete({}).'
@@ -489,7 +494,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
             self._clear_rewards()
         
         done = self.env._compute_dones()['__all__']
-        self.dones = {a : done for a in self.agents}
+        self.truncations = {a : done for a in self.agents}
 
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0
