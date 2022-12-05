@@ -135,6 +135,7 @@ class SumoEnvironment(gym.Env):
             traci.start([sumolib.checkBinary('sumo'), '-n', self._net], label='init_connection'+self.label)
             conn = traci.getConnection('init_connection'+self.label)
         self.ts_ids = list(conn.trafficlight.getIDList())
+        self.observation_fn = observation_fn
 
         if isinstance(self.reward_fn, dict):
             self.traffic_signals = {ts: TrafficSignal(self,
@@ -159,7 +160,6 @@ class SumoEnvironment(gym.Env):
 
         conn.close()
 
-        self.observation_fn = observation_fn
         self.vehicles = dict()
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}

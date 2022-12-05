@@ -54,6 +54,14 @@ class TrafficSignal:
         self.reward_fn = reward_fn
         self.sumo = sumo
 
+        if isinstance(self.env.observation_fn, Callable):
+            self.observation_fn = self.env.observation_fn
+        else:
+            if self.env.observation_fn in TrafficSignal.observation_fns.keys():
+                self.observation_fn = TrafficSignal.observation_fns[self.env.observation_fn]
+            else:
+                raise NotImplementedError(f'Observation function {self.env.observation_fn} is not implemented')
+
         self.build_phases()
 
         self.lanes = list(dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
@@ -134,15 +142,9 @@ class TrafficSignal:
             self.time_since_last_phase_change = 0
     
     def compute_observation(self):
-        if isinstance(self.env.observation_fn, Callable):
-            return self.env.observation_fn(self)
-        else:
-            if self.env.observation_fn == 'default':
-                return self._observation_fn()
-            elif self.env.observation_fn == 'drq_norm':
-                return self._drq_norm()
-            else:
-                raise NotImplementedError(f'Observation function {self.env.observation_fn} not implemented')
+        # TODO: Remove print
+        print(f"Using function: {self.observation_fn.__name__}")
+        return self.observation_fn(self)
             
     def compute_reward(self):
         if type(self.reward_fn) is str:
@@ -175,7 +177,7 @@ class TrafficSignal:
         self.last_measure = ts_wait
         return reward
 
-    def _observation_fn(self):
+    def _observation_fn_default(self):
         phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
         min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
         density = self.get_lanes_density()
@@ -183,8 +185,8 @@ class TrafficSignal:
         observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
         return observation
 
+    # TODO: Remove until implemented
     def _drq_norm(self):
-        # TODO: Add the magic
         print("####")
         return None
 
@@ -236,3 +238,16 @@ class TrafficSignal:
         for lane in self.lanes:
             veh_list += self.sumo.lane.getLastStepVehicleIDs(lane)
         return veh_list
+
+    @classmethod
+    def register_observation_fn(cls, fn):
+        if fn.__name__ in cls.observation_fns.keys():
+            # TODO: Check is expection KeyError is valid
+            raise KeyError(f'Observation function {fn.__name__} already exists')
+            
+        cls.observation_fns[fn.__name__] = fn
+
+    observation_fns = {
+        'default': _observation_fn_default,
+        'drq_norm': _drq_norm
+    }
