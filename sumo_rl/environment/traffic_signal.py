@@ -54,13 +54,19 @@ class TrafficSignal:
         self.reward_fn = reward_fn
         self.sumo = sumo
 
+        if type(self.reward_fn) is str:
+            if self.reward_fn in TrafficSignal.reward_fns.keys():
+                self.reward_fn = TrafficSignal.reward_fns[self.reward_fn]
+            else:
+                raise NotImplementedError(f'Reward function {self.reward_fn} not implemented')
+
         if isinstance(self.env.observation_fn, Callable):
             self.observation_fn = self.env.observation_fn
         else:
             if self.env.observation_fn in TrafficSignal.observation_fns.keys():
                 self.observation_fn = TrafficSignal.observation_fns[self.env.observation_fn]
             else:
-                raise NotImplementedError(f'Observation function {self.env.observation_fn} is not implemented')
+                raise NotImplementedError(f'Observation function {self.env.observation_fn} not implemented')
 
         self.build_phases()
 
@@ -142,24 +148,10 @@ class TrafficSignal:
             self.time_since_last_phase_change = 0
     
     def compute_observation(self):
-        # TODO: Remove print
-        print(f"Using function: {self.observation_fn.__name__}")
         return self.observation_fn(self)
             
     def compute_reward(self):
-        if type(self.reward_fn) is str:
-            if self.reward_fn == 'diff-waiting-time':
-                self.last_reward = self._diff_waiting_time_reward()
-            elif self.reward_fn == 'average-speed':
-                self.last_reward = self._average_speed_reward()
-            elif self.reward_fn == 'queue':
-                self.last_reward = self._queue_reward()
-            elif self.reward_fn == 'pressure':
-                self.last_reward = self._pressure_reward()
-            else:
-                raise NotImplementedError(f'Reward function {self.reward_fn} not implemented')
-        else:
-            self.last_reward = self.reward_fn(self)
+        self.last_reward = self.reward_fn(self)
         return self.last_reward
     
     def _pressure_reward(self):
@@ -184,11 +176,6 @@ class TrafficSignal:
         queue = self.get_lanes_queue()
         observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
         return observation
-
-    # TODO: Remove until implemented
-    def _drq_norm(self):
-        print("####")
-        return None
 
     def get_accumulated_waiting_time_per_lane(self):
         wait_time_per_lane = []
@@ -240,14 +227,26 @@ class TrafficSignal:
         return veh_list
 
     @classmethod
+    def register_reward_fn(cls, fn):
+        if fn.__name__ in cls.reward_fns.keys():
+            raise KeyError(f'Reward function {fn.__name__} already exists')
+
+        cls.reward_fns[fn.__name__] = fn
+
+    @classmethod
     def register_observation_fn(cls, fn):
         if fn.__name__ in cls.observation_fns.keys():
-            # TODO: Check is expection KeyError is valid
             raise KeyError(f'Observation function {fn.__name__} already exists')
-            
+
         cls.observation_fns[fn.__name__] = fn
 
+    reward_fns = {
+        'diff-waiting-time': _diff_waiting_time_reward,
+        'average-speed': _average_speed_reward,
+        'queue': _queue_reward,
+        'pressure': _pressure_reward
+    }
+
     observation_fns = {
-        'default': _observation_fn_default,
-        'drq_norm': _drq_norm
+        'default': _observation_fn_default
     }

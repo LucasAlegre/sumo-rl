@@ -50,7 +50,7 @@ class SumoEnvironment(gym.Env):
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :reward_fn: (str/function/dict) String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys
-    :observation_fn: (str/function) String with the name of the observation function or a observation function
+    :observation_fn: (str/function) String with the name of the observation function or a callable observation function itself
     :add_system_info: (bool) If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary
     :add_per_agent_info: (bool) If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
