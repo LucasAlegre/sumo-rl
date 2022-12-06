@@ -8,7 +8,7 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import traci
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
 
 
 class TrafficSignal:

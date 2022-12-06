@@ -10,14 +10,14 @@
 SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
 The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) behaves like a [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
-If instantiated with parameter 'single-agent=True', it behaves like a regular [Gym Env](https://github.com/openai/gym/blob/master/gym/core.py) from [OpenAI](https://github.com/openai).  
+If instantiated with parameter 'single-agent=True', it behaves like a regular [Gymnasium Env](https://github.com/Farama-Foundation/Gymnasium).  
 Call [env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) or [parallel_env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) to instantiate a [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) environment.
 [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
 Goals of this repository:
 - Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
 - Support Multiagent RL
-- Compatibility with gym.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/master/rllib.html)
+- Compatibility with gymnasium.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/master/rllib.html)
 - Easy customisation: state and reward definitions are easily modifiable
 
 ## Install
@@ -106,9 +106,9 @@ Please see [SumoEnvironment docstring](https://github.com/LucasAlegre/sumo-rl/bl
 
 ### Single Agent Environment
 
-If your network only has ONE traffic light, then you can instantiate a standard Gym env (see [Gym API](https://www.gymlibrary.dev/content/basic_usage/)):
+If your network only has ONE traffic light, then you can instantiate a standard Gymnasium env (see [Gymnasium API](https://gymnasium.farama.org/api/env/)):
 ```python
-import gym
+import gymnasium as gym
 import sumo_rl
 env = gym.make('sumo-rl-v0',
                 net_file='path_to_your_network.net.xml',
@@ -124,7 +124,7 @@ while not done:
 ```
 
 ### PettingZoo Multi-Agent API
-See [Petting Zoo API](https://www.pettingzoo.ml/api) for more details.
+See [Petting Zoo API](https://pettingzoo.farama.org/content/basic_usage/) for more details.
 
 ```python
 import sumo_rl
@@ -134,7 +134,7 @@ env = sumo_rl.env(net_file='sumo_net_file.net.xml',
                   num_seconds=3600)  
 env.reset()
 for agent in env.agent_iter():
-    observation, reward, done, info = env.last()
+    observation, reward, termination, truncation, info = env.last()
     action = policy(observation)
     env.step(action)
 ```

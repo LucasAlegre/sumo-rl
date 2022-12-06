@@ -7,7 +7,7 @@ def test_api():
                    route_file='nets/4x4-Lucas/4x4c1c2c1c2.rou.xml',
                    out_csv_name='outputs/4x4grid/test',
                    use_gui=False,
-                   num_seconds=80000)
+                   num_seconds=100)
     api_test(env)
     env.close()
 

@@ -59,7 +59,7 @@ if __name__ == '__main__':
     prs.add_argument("-xaxis", type=str, default='step', help="The x axis.\n")
     prs.add_argument("-ma", type=int, default=1, help="Moving Average Window.\n")
     prs.add_argument('-sep', type=str, default=',', help="Values separator on file.\n")
-    prs.add_argument('-xlabel', type=str, default='Second', help="X axis label.\n") 
+    prs.add_argument('-xlabel', type=str, default='Time step (seconds)', help="X axis label.\n") 
     prs.add_argument('-ylabel', type=str, default='Total waiting time (s)', help="Y axis label.\n")    
     prs.add_argument('-output', type=str, default=None, help="PDF output filename.\n")
    
