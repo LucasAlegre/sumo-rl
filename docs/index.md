@@ -29,6 +29,14 @@ documentation/traffic_signal
 
 ```{toctree}
 :hidden:
+:caption: Citing
+
+citing/citing
+examples/publications
+```
+
+```{toctree}
+:hidden:
 :caption: Development
 
 Github <https://github.com/LucasAlegre/sumo-rl>

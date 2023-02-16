@@ -28,8 +28,9 @@ jobs:
           pip install pytest
           pip install -e .[all]
       - name: Build
-        run: sphinx-build -b dirhtml -v docs _build
-
+        run: |
+           export SUMO_HOME="/usr/share/sumo"
+           sphinx-build -b dirhtml -v docs _build
       - name: Remove .doctrees
         run: rm -r _build/.doctrees
 
