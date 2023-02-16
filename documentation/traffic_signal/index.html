@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="prev" title="Petting Zoo Sumo Environment" href="../pz_env/" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="&lt;no title&gt;" href="../../citing/citing/" /><link rel="prev" title="Petting Zoo Sumo Environment" href="../pz_env/" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Traffic Signal - SUMO-RL 1.4.0 documentation</title>
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -163,6 +163,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../sumo_env/">Sumo Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pz_env/">Petting Zoo Sumo Environment</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Traffic Signal</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Citing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/publications/">List of Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/publications/">List of Publications</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -203,7 +208,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -211,6 +216,33 @@
         <article role="main">
           <section id="traffic-signal">
 <h1>Traffic Signal<a class="headerlink" href="#traffic-signal" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TrafficSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yellow_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal" title="Permalink to this definition">#</a></dt>
+<dd><p>This class represents a Traffic Signal of an intersection
+It is responsible for retrieving information and changing the traffic phase using Traci API</p>
+<dl class="simple">
+<dt>IMPORTANT: It assumes that the traffic phases defined in the .net file are of the form:</dt><dd><p>[green_phase, yellow_phase, green_phase, yellow_phase, …]</p>
+</dd>
+</dl>
+<p>Currently it is not supporting all-red phases (but should be easy to implement it).</p>
+<p>Default observation space is a vector R^(#greenPhases + 2 * #lanes)
+s = [current phase one-hot encoded, density for each lane, queue for each lane]
+You can change this by modifing self.observation_space and the method _compute_observations()</p>
+<p>Action space is which green phase is going to be open for the next delta_time seconds</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase">
+<span class="sig-name descname"><span class="pre">set_next_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_phase</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase" title="Permalink to this definition">#</a></dt>
+<dd><p>Sets what will be the next green phase and sets yellow phase if the next phase is different than the current</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_phase</strong> – (int) Number between [0..num_green_phases]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -218,7 +250,15 @@
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="../../citing/citing/">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">&lt;no title&gt;</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="../pz_env/">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -248,8 +288,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Traffic Signal</a><ul>
+<li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal"><code class="docutils literal notranslate"><span class="pre">TrafficSignal</span></code></a><ul>
+<li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.set_next_phase()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
