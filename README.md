@@ -7,6 +7,8 @@
 
 # SUMO-RL
 
+<!-- start intro -->
+
 SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control. 
 
 The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) behaves like a [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).  
@@ -20,7 +22,11 @@ Goals of this repository:
 - Compatibility with gymnasium.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/master/rllib.html)
 - Easy customisation: state and reward definitions are easily modifiable
 
+<!-- end intro -->
+
 ## Install
+
+<!-- start install -->
 
 ### Install SUMO latest version:
 
@@ -53,6 +59,8 @@ git clone https://github.com/LucasAlegre/sumo-rl
 cd sumo-rl
 pip install -e .
 ```
+
+<!-- end install -->
 
 ## MDP - Observations, Actions and Rewards
 
@@ -178,6 +186,9 @@ python outputs/plot.py -f outputs/2way-single-intersection/a3c
 </p>
 
 ## Citing
+
+<!-- start citation -->
+
 If you use this repository in your research, please cite:
 ```bibtex
 @misc{sumorl,
@@ -190,6 +201,10 @@ If you use this repository in your research, please cite:
 }
 ```
 
+<!-- end citation -->
+
+<!-- start list of publications -->
+
 List of publications using SUMO-RL (please open a pull request to add missing entries):
 - [Quantifying the impact of non-stationarity in reinforcement learning-based traffic signal control (Alegre et al., 2021)](https://peerj.com/articles/cs-575/)
 - [Using ontology to guide reinforcement learning agents in unseen situations (Ghanadbashi & Golpayegani, 2022)](https://link.springer.com/article/10.1007/s10489-021-02449-5)
@@ -198,3 +213,5 @@ List of publications using SUMO-RL (please open a pull request to add missing en
 - [Reinforcement Learning Benchmarks for Traffic Signal Control (Ault & Sharon, 2021)](https://openreview.net/forum?id=LqRSh6V0vR) 
 - [A Comparative Study of Algorithms for Intelligent Traffic Signal Control (Chaudhuri et al., 2022)](https://link.springer.com/chapter/10.1007/978-981-16-7996-4_19)
 - [EcoLight: Reward Shaping in Deep Reinforcement Learning for Ergonomic Traffic Signal Control (Agand et al., 2021)](https://s3.us-east-1.amazonaws.com/climate-change-ai/papers/neurips2021/43/paper.pdf)
+
+<!-- end list of publications -->

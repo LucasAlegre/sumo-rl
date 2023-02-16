@@ -6,7 +6,7 @@ if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
 else:
-    sys.exit("Please declare the environment variable 'SUMO_HOME'")
+    raise ImportError("Please declare the environment variable 'SUMO_HOME'")
 import gymnasium as gym
 import numpy as np
 import pandas as pd
