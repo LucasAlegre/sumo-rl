@@ -9,7 +9,7 @@
 project = "SUMO-RL"
 copyright = "2019, Lucas N. Alegre"
 author = "Lucas N. Alegre"
-release = "0.0.1"
+release = "1.4.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

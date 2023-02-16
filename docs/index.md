@@ -13,6 +13,13 @@ lastpage:
 
 ```{toctree}
 :hidden:
+:caption: Install
+
+install/install
+```
+
+```{toctree}
+:hidden:
 :caption: Documentation
 
 documentation/sumo_env
