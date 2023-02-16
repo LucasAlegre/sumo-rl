@@ -31,7 +31,7 @@ documentation/traffic_signal
 :hidden:
 :caption: Citing
 
-citing/citing
+examples/citation
 examples/publications
 ```
 
