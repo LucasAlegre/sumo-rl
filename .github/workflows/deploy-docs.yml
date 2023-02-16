@@ -1,0 +1,39 @@
+name: Documentation
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+
+jobs:
+  doc:
+    name: Generate and publish website
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install doc dependencies
+        run: pip install -r docs/requirements.txt
+
+      - name: Install SUMO-RL
+        run: |
+          sudo add-apt-repository ppa:sumo/stable
+          sudo apt-get update
+          sudo apt-get install sumo sumo-tools sumo-doc
+          pip install pytest
+          pip install -e .[all]
+      - name: Build
+        run: sphinx-build -b dirhtml -v docs _build
+
+      - name: Remove .doctrees
+        run: rm -r _build/.doctrees
+
+      - name: Upload to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: _build
+          branch: gh-pages
