@@ -60,13 +60,7 @@ class TrafficSignal:
             else:
                 raise NotImplementedError(f'Reward function {self.reward_fn} not implemented')
 
-        if isinstance(self.env.observation_fn, Callable):
-            self.observation_fn = self.env.observation_fn
-        else:
-            if self.env.observation_fn in TrafficSignal.observation_fns.keys():
-                self.observation_fn = TrafficSignal.observation_fns[self.env.observation_fn]
-            else:
-                raise NotImplementedError(f'Observation function {self.env.observation_fn} not implemented')
+        self.observation_fn = self.env.observation_class(self)
 
         self.build_phases()
 
@@ -75,7 +69,7 @@ class TrafficSignal:
         self.out_lanes = list(set(self.out_lanes))
         self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
 
-        self.observation_space = spaces.Box(low=np.zeros(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32), high=np.ones(self.num_green_phases+1+2*len(self.lanes), dtype=np.float32))
+        self.observation_space = self.observation_fn.observation_space()
         self.discrete_observation_space = spaces.Tuple((
             spaces.Discrete(self.num_green_phases),                       # Green Phase
             spaces.Discrete(2),                                           # Binary variable active if min_green seconds already elapsed
@@ -148,7 +142,7 @@ class TrafficSignal:
             self.time_since_last_phase_change = 0
     
     def compute_observation(self):
-        return self.observation_fn(self)
+        return self.observation_fn()
             
     def compute_reward(self):
         self.last_reward = self.reward_fn(self)
@@ -233,20 +227,9 @@ class TrafficSignal:
 
         cls.reward_fns[fn.__name__] = fn
 
-    @classmethod
-    def register_observation_fn(cls, fn):
-        if fn.__name__ in cls.observation_fns.keys():
-            raise KeyError(f'Observation function {fn.__name__} already exists')
-
-        cls.observation_fns[fn.__name__] = fn
-
     reward_fns = {
         'diff-waiting-time': _diff_waiting_time_reward,
         'average-speed': _average_speed_reward,
         'queue': _queue_reward,
         'pressure': _pressure_reward
-    }
-
-    observation_fns = {
-        'default': _observation_fn_default
     }
