@@ -65,4 +65,4 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.PYPI_API_MOGYM }}
+        password: ${{ secrets.PYPI_API_SUMO_RL }}
