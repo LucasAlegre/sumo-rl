@@ -163,7 +163,6 @@ class SumoEnvironment(gym.Env):
 
         self.vehicles = dict()
         self.reward_range = (-float('inf'), float('inf'))
-        self.metadata = {}
         self.run = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
@@ -346,7 +345,7 @@ class SumoEnvironment(gym.Env):
             # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
             'system_total_stopped': sum(int(speed < 0.1) for speed in speeds),
             'system_total_waiting_time': sum(waiting_times),
-            'system_mean_waiting_time': np.mean(waiting_times),
+            'system_mean_waiting_time': 0.0 if len(vehicles) == 0 else np.mean(waiting_times),
             'system_mean_speed': 0.0 if len(vehicles) == 0 else np.mean(speeds)
         }
     
@@ -366,12 +365,15 @@ class SumoEnvironment(gym.Env):
     def close(self):
         if self.sumo is None:
             return
+        
         if not LIBSUMO:
             traci.switch(self.label)
         traci.close()
+
         if self.disp is not None:
             self.disp.stop()
             self.disp = None
+
         self.sumo = None
     
     def __del__(self):

@@ -10,8 +10,10 @@ extras["all"] = extras["rendering"]
 setup(
     name='sumo-rl',
     version='1.4.0',
-    packages=[package for package in find_packages() if package.startswith("sumo_rl")] + ["nets"],
+    packages=[package for package in find_packages() if package.startswith("sumo_rl")],
     install_requires=REQUIRED,
+    include_package_data=True,
+    package_data={'sumo_rl': ['nets/*']},
     extras_require=extras,
     python_requires=">=3.7",
     author='LucasAlegre',
