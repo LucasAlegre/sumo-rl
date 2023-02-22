@@ -300,7 +300,7 @@ class SumoEnvironment(gym.Env):
 
     def _compute_dones(self):
         dones = {ts_id: False for ts_id in self.ts_ids}
-        dones['__all__'] = self.sim_step > self.sim_max_time
+        dones['__all__'] = self.sim_step >= self.sim_max_time
         return dones
     
     def _compute_info(self):

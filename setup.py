@@ -9,7 +9,7 @@ extras["all"] = extras["rendering"]
 
 setup(
     name='sumo-rl',
-    version='1.4.0',
+    version='1.4.1',
     packages=[package for package in find_packages() if package.startswith("sumo_rl")],
     install_requires=REQUIRED,
     include_package_data=True,
