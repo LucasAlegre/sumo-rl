@@ -19,7 +19,7 @@ from pettingzoo.utils.agent_selector import agent_selector
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .traffic_signal import TrafficSignal
-from .observations import *
+from .observations import ObservationFunction, DefaultObservationFunction
 
 LIBSUMO = 'LIBSUMO_AS_TRACI' in os.environ
 

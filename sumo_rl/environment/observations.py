@@ -1,6 +1,5 @@
 from .traffic_signal import TrafficSignal
 from abc import abstractmethod
-from typing import Callable
 from gymnasium import spaces
 import numpy as np
 
@@ -28,8 +27,7 @@ class ObservationFunction:
 
 class DefaultObservationFunction(ObservationFunction):
     def __init__(self, ts: TrafficSignal):
-        # super().__init__(ts)
-        self.ts = ts
+        super().__init__(ts)
 
     def __call__(self):
         phase_id = [1 if self.ts.green_phase == i else 0 for i in range(self.ts.num_green_phases)]  # one-hot encoding
