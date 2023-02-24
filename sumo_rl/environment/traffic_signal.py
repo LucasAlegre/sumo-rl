@@ -62,7 +62,7 @@ class TrafficSignal:
 
         self.observation_fn = self.env.observation_class(self)
 
-        self.build_phases()
+        self._build_phases()
 
         self.lanes = list(dict.fromkeys(self.sumo.trafficlight.getControlledLanes(self.id)))  # Remove duplicates and keep order
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
@@ -70,14 +70,9 @@ class TrafficSignal:
         self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
 
         self.observation_space = self.observation_fn.observation_space()
-        self.discrete_observation_space = spaces.Tuple((
-            spaces.Discrete(self.num_green_phases),                       # Green Phase
-            spaces.Discrete(2),                                           # Binary variable active if min_green seconds already elapsed
-            *(spaces.Discrete(10) for _ in range(2*len(self.lanes)))      # Density and stopped-density for each lane
-        ))
         self.action_space = spaces.Discrete(self.num_green_phases)
 
-    def build_phases(self):
+    def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
         if self.env.fixed_ts:
             self.num_green_phases = len(phases)//2  # Number of green phases == number of phases (green+yellow) divided by 2

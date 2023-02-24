@@ -135,6 +135,7 @@ class SumoEnvironment(gym.Env):
         else:
             traci.start([sumolib.checkBinary('sumo'), '-n', self._net], label='init_connection'+self.label)
             conn = traci.getConnection('init_connection'+self.label)
+
         self.ts_ids = list(conn.trafficlight.getIDList())
         self.observation_class = observation_class
 
@@ -455,9 +456,6 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
     def observe(self, agent):
         obs = self.env.observations[agent].copy()
         return obs
-
-    def state(self):
-        raise NotImplementedError('Method state() currently not implemented.')
 
     def close(self):
         self.env.close()
