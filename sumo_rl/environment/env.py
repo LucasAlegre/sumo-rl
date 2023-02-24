@@ -19,6 +19,7 @@ from pettingzoo.utils.agent_selector import agent_selector
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .traffic_signal import TrafficSignal
+from .observations import ObservationFunction, DefaultObservationFunction
 
 LIBSUMO = 'LIBSUMO_AS_TRACI' in os.environ
 
@@ -50,7 +51,7 @@ class SumoEnvironment(gym.Env):
     :param max_green: (int) Max green time in a phase
     :single_agent: (bool) If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py)
     :reward_fn: (str/function/dict) String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys
-    :observation_fn: (str/function) String with the name of the observation function or a callable observation function itself
+    :observation_class: (ObservationFunction) Inherited class which has both the observation function and observation space
     :add_system_info: (bool) If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary
     :add_per_agent_info: (bool) If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary
     :sumo_seed: (int/string) Random seed for sumo. If 'random' it uses a randomly chosen seed.
@@ -83,7 +84,7 @@ class SumoEnvironment(gym.Env):
         max_green: int = 50, 
         single_agent: bool = False,
         reward_fn: Union[str,Callable,dict] = 'diff-waiting-time',
-        observation_fn: Union[str,Callable] = 'default',
+        observation_class: ObservationFunction = DefaultObservationFunction,
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str,int] = 'random', 
@@ -135,7 +136,7 @@ class SumoEnvironment(gym.Env):
             traci.start([sumolib.checkBinary('sumo'), '-n', self._net], label='init_connection'+self.label)
             conn = traci.getConnection('init_connection'+self.label)
         self.ts_ids = list(conn.trafficlight.getIDList())
-        self.observation_fn = observation_fn
+        self.observation_class = observation_class
 
         if isinstance(self.reward_fn, dict):
             self.traffic_signals = {ts: TrafficSignal(self,
