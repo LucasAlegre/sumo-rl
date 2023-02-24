@@ -164,7 +164,7 @@ class SumoEnvironment(gym.Env):
 
         self.vehicles = dict()
         self.reward_range = (-float('inf'), float('inf'))
-        self.run = 0
+        self.episode = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
         self.observations = {ts: None for ts in self.ts_ids}
@@ -210,10 +210,10 @@ class SumoEnvironment(gym.Env):
     def reset(self, seed: Optional[int] = None, **kwargs):
         super().reset(seed=seed, **kwargs)
         
-        if self.run != 0:
+        if self.episode != 0:
             self.close()
-            self.save_csv(self.out_csv_name, self.run)
-        self.run += 1
+            self.save_csv(self.out_csv_name, self.episode)
+        self.episode += 1
         self.metrics = []
 
         if seed is not None:
@@ -391,11 +391,11 @@ class SumoEnvironment(gym.Env):
             img = self.disp.grab()
             return np.array(img)                
     
-    def save_csv(self, out_csv_name, run):
+    def save_csv(self, out_csv_name, episode):
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
             Path(Path(out_csv_name).parent).mkdir(parents=True, exist_ok=True)
-            df.to_csv(out_csv_name + '_conn{}_run{}'.format(self.label, run) + '.csv', index=False)
+            df.to_csv(out_csv_name + '_conn{}_ep{}'.format(self.label, episode) + '.csv', index=False)
 
     # Below functions are for discrete state space
 
@@ -463,8 +463,8 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
     def render(self, mode='human'):
         return self.env.render(mode)
     
-    def save_csv(self, out_csv_name, run):
-        self.env.save_csv(out_csv_name, run)
+    def save_csv(self, out_csv_name, episode):
+        self.env.save_csv(out_csv_name, episode)
 
     def step(self, action):
         if (
