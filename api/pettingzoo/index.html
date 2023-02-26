@@ -223,17 +223,14 @@
           <section id="pettingzoo-api">
 <h1>PettingZoo API<a class="headerlink" href="#pettingzoo-api" title="Permalink to this heading">#</a></h1>
 <p>For multi-agent environments, you can use the PettingZoo API (see <a class="reference external" href="https://pettingzoo.farama.org/api/parallel/">Petting Zoo API</a>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>See [Petting Zoo API](https://pettingzoo.farama.org/api/parallel/) for more details.
-
-```python
-import sumo_rl
-env = sumo_rl.parallel_env(net_file=&#39;sumo_net_file.net.xml&#39;,
-                  route_file=&#39;sumo_route_file.rou.xml&#39;,
-                  use_gui=True,
-                  num_seconds=3600)
-while env.agents:
-    actions = {agent: parallel_env.action_space(agent).sample() for agent in parallel_env.agents}  # this is where you would insert your policy
-    observations, rewards, terminations, truncations, infos = parallel_env.step(actions)
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sumo_rl</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">sumo_rl</span><span class="o">.</span><span class="n">parallel_env</span><span class="p">(</span><span class="n">net_file</span><span class="o">=</span><span class="s1">&#39;sumo_net_file.net.xml&#39;</span><span class="p">,</span>
+                  <span class="n">route_file</span><span class="o">=</span><span class="s1">&#39;sumo_route_file.rou.xml&#39;</span><span class="p">,</span>
+                  <span class="n">use_gui</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">num_seconds</span><span class="o">=</span><span class="mi">3600</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">env</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
+    <span class="n">actions</span> <span class="o">=</span> <span class="p">{</span><span class="n">agent</span><span class="p">:</span> <span class="n">parallel_env</span><span class="o">.</span><span class="n">action_space</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span><span class="p">()</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">parallel_env</span><span class="o">.</span><span class="n">agents</span><span class="p">}</span>  <span class="c1"># this is where you would insert your policy</span>
+    <span class="n">observations</span><span class="p">,</span> <span class="n">rewards</span><span class="p">,</span> <span class="n">terminations</span><span class="p">,</span> <span class="n">truncations</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">parallel_env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
