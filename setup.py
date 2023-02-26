@@ -1,27 +1,12 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
-REQUIRED = ['gymnasium>=0.26', 'pettingzoo>=1.22.2', 'numpy', 'pandas', 'pillow', 'sumolib>=1.14.0', 'traci>=1.14.0']
 
-extras = {
-    "rendering": ["pyvirtualdisplay"]
-}
-extras["all"] = extras["rendering"]
+setup(name="sumo-rl", version="1.4.1", long_description=open("README.md").read())
 
-setup(
-    name='sumo-rl',
-    version='1.4.1',
-    packages=[package for package in find_packages() if package.startswith("sumo_rl")],
-    install_requires=REQUIRED,
-    include_package_data=True,
-    package_data={'sumo_rl': ['nets/*']},
-    extras_require=extras,
-    python_requires=">=3.7",
-    author='LucasAlegre',
-    author_email='lucasnale@gmail.com',
-    url='https://github.com/LucasAlegre/sumo-rl',
-    download_url='https://github.com/LucasAlegre/sumo-rl/archive/v1.2.tar.gz',
-    long_description=open("README.md", encoding="utf-8").read(),
-    long_description_content_type="text/markdown",
-    license="MIT",
-    description='RL environments and learning code for traffic signal control in SUMO.'
-)
+# python setup.py sdist
+# python setup.py bdist_wheel
+# twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
+# twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+# twine upload dist/*
+
+# https://towardsdatascience.com/create-your-own-python-package-and-publish-it-into-pypi-9306a29bc116
