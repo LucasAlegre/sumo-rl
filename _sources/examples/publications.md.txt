@@ -9,4 +9,3 @@ firstpage:
 :start-after: <!-- start list of publications -->
 :end-before: <!-- end list of publications -->
 ```
-
