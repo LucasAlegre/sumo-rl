@@ -1,7 +1,7 @@
 from setuptools import setup
 
 
-setup(name="sumo-rl", version="1.4.1", long_description=open("README.md").read())
+setup(name="sumo-rl", version="1.4.2", long_description=open("README.md").read())
 
 # python setup.py sdist
 # python setup.py bdist_wheel
