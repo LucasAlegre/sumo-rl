@@ -230,7 +230,7 @@
 <h1>Reward<a class="headerlink" href="#reward" title="Permalink to this heading">#</a></h1>
 <p>The default reward function is the change in cumulative vehicle delay:</p>
 <p align="center">
-<img src="outputs/reward.png" align="center" width="25%"/>
+<img src="docs/_static/reward.png" align="center" width="25%"/>
 </p>
 <p>That is, the reward is how much the total delay (sum of the waiting times of all approaching vehicles) changed in relation to the previous time-step.</p>
 <p>You can choose a different reward function (see the ones implemented in <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py">TrafficSignal</a>) with the parameter <code class="docutils literal notranslate"><span class="pre">reward_fn</span></code> in the <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">SumoEnvironment</a> constructor.</p>
