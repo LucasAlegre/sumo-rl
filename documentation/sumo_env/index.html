@@ -163,6 +163,12 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Sumo Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pz_env/">Petting Zoo Sumo Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../traffic_signal/">Traffic Signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../observations/">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gymnasium/">Gymnasium API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/pettingzoo/">PettingZoo API</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Citing</span></p>
 <ul>
@@ -242,7 +248,7 @@ See <a class="reference external" href="https://gymnasium.farama.org/">https://g
 <li><p><strong>max_green</strong> (<em>int</em>) – Max green time in a phase. Default: 60 seconds. Warning: This parameter is currently ignored!</p></li>
 <li><p><strong>single_agent</strong> (<em>bool</em>) – If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (returns dict of observations, rewards, dones, infos).</p></li>
 <li><p><strong>reward_fn</strong> (<em>str/function/dict</em>) – String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys.</p></li>
-<li><p><strong>observation_class</strong> (<em>ObservationFunction</em>) – Inherited class which has both the observation function and observation space.</p></li>
+<li><p><strong>observation_class</strong> (<a class="reference internal" href="../observations/#sumo_rl.environment.observations.ObservationFunction" title="sumo_rl.environment.observations.ObservationFunction"><em>ObservationFunction</em></a>) – Inherited class which has both the observation function and observation space.</p></li>
 <li><p><strong>add_system_info</strong> (<em>bool</em>) – If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary.</p></li>
 <li><p><strong>add_per_agent_info</strong> (<em>bool</em>) – If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary.</p></li>
 <li><p><strong>sumo_seed</strong> (<em>int/string</em>) – Random seed for sumo. If ‘random’ it uses a randomly chosen seed.</p></li>

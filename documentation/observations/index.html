@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="List of Publications" href="../publications/" /><link rel="prev" title="PettingZoo API" href="../../api/pettingzoo/" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Gymnasium API" href="../../api/gymnasium/" /><link rel="prev" title="Traffic Signal" href="../traffic_signal/" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Citation - SUMO-RL 1.4.1 documentation</title>
+        <title>Observation Functions - SUMO-RL 1.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -159,11 +159,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install/install/">Install</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../documentation/sumo_env/">Sumo Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../documentation/pz_env/">Petting Zoo Sumo Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../documentation/traffic_signal/">Traffic Signal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../documentation/observations/">Observation Functions</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../sumo_env/">Sumo Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pz_env/">Petting Zoo Sumo Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../traffic_signal/">Traffic Signal</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Observation Functions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -171,9 +171,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../api/pettingzoo/">PettingZoo API</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Citing</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Citation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../publications/">List of Publications</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/citation/">Citation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/publications/">List of Publications</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
@@ -198,7 +198,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/LucasAlegre/sumo-rl/edit/master/docs/examples/citation.md" title="Edit this page">
+  <a class="muted-link" href="https://github.com/LucasAlegre/sumo-rl/edit/master/docs/documentation/observations.md" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -214,25 +214,40 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="citation">
-<h1>Citation<a class="headerlink" href="#citation" title="Permalink to this heading">#</a></h1>
-<p>If you use this repository in your research, please cite:</p>
-<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@misc</span><span class="p">{</span><span class="nl">sumorl</span><span class="p">,</span>
-<span class="w">    </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Lucas N. Alegre}</span><span class="p">,</span>
-<span class="w">    </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{{SUMO-RL}}</span><span class="p">,</span>
-<span class="w">    </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2019}</span><span class="p">,</span>
-<span class="w">    </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{GitHub}</span><span class="p">,</span>
-<span class="w">    </span><span class="na">journal</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{GitHub repository}</span><span class="p">,</span>
-<span class="w">    </span><span class="na">howpublished</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{\url{https://github.com/LucasAlegre/sumo-rl}}</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+          <section id="observation-functions">
+<h1>Observation Functions<a class="headerlink" href="#observation-functions" title="Permalink to this heading">#</a></h1>
+<p>To create a new obsevation function, you must create a class that inherits from the ObservationFunction class:</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sumo_rl.environment.observations.ObservationFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.observations.</span></span><span class="sig-name descname"><span class="pre">ObservationFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../traffic_signal/#sumo_rl.environment.traffic_signal.TrafficSignal" title="sumo_rl.environment.traffic_signal.TrafficSignal"><span class="pre">TrafficSignal</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.observations.ObservationFunction" title="Permalink to this definition">#</a></dt>
+<dd><p>Abstract base class for observation functions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sumo_rl.environment.observations.ObservationFunction.observation_space">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.observations.ObservationFunction.observation_space" title="Permalink to this definition">#</a></dt>
+<dd><p>Subclasses must override this method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>The default observation function is the DefaultObservationFunction class:</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="sumo_rl.environment.observations.DefaultObservationFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.observations.</span></span><span class="sig-name descname"><span class="pre">DefaultObservationFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../traffic_signal/#sumo_rl.environment.traffic_signal.TrafficSignal" title="sumo_rl.environment.traffic_signal.TrafficSignal"><span class="pre">TrafficSignal</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.observations.DefaultObservationFunction" title="Permalink to this definition">#</a></dt>
+<dd><p>Default observation function for traffic signals.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="sumo_rl.environment.observations.DefaultObservationFunction.observation_space">
+<span class="sig-name descname"><span class="pre">observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Box</span></span></span><a class="headerlink" href="#sumo_rl.environment.observations.DefaultObservationFunction.observation_space" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the observation space.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -240,23 +255,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../publications/">
+          <a class="next-page" href="../../api/gymnasium/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">List of Publications</div>
+                <div class="title">Gymnasium API</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../../api/pettingzoo/">
+          <a class="prev-page" href="../traffic_signal/">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">PettingZoo API</div>
+                <div class="title">Traffic Signal</div>
                 
               </div>
             </a>
@@ -278,8 +293,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Observation Functions</a><ul>
+<li><a class="reference internal" href="#sumo_rl.environment.observations.ObservationFunction"><code class="docutils literal notranslate"><span class="pre">ObservationFunction</span></code></a><ul>
+<li><a class="reference internal" href="#sumo_rl.environment.observations.ObservationFunction.observation_space"><code class="docutils literal notranslate"><span class="pre">ObservationFunction.observation_space()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sumo_rl.environment.observations.DefaultObservationFunction"><code class="docutils literal notranslate"><span class="pre">DefaultObservationFunction</span></code></a><ul>
+<li><a class="reference internal" href="#sumo_rl.environment.observations.DefaultObservationFunction.observation_space"><code class="docutils literal notranslate"><span class="pre">DefaultObservationFunction.observation_space()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

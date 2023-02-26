@@ -163,6 +163,12 @@
 <li class="toctree-l1"><a class="reference internal" href="documentation/sumo_env/">Sumo Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation/pz_env/">Petting Zoo Sumo Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="documentation/traffic_signal/">Traffic Signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="documentation/observations/">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/gymnasium/">Gymnasium API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/pettingzoo/">PettingZoo API</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Citing</span></p>
 <ul>
@@ -216,11 +222,7 @@
         <article role="main">
           <section id="sumo-rl">
 <h1>SUMO-RL<a class="headerlink" href="#sumo-rl" title="Permalink to this heading">#</a></h1>
-<p>SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with <a class="reference external" href="https://github.com/eclipse/sumo">SUMO</a> for Traffic Signal Control.</p>
-<p>The main class <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">SumoEnvironment</a> behaves like a <a class="reference external" href="https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py">MultiAgentEnv</a> from <a class="reference external" href="https://github.com/ray-project/ray/tree/master/python/ray/rllib">RLlib</a>.
-If instantiated with parameter ‘single-agent=True’, it behaves like a regular <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium Env</a>.
-Call <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">env</a> or <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">parallel_env</a> to instantiate a <a class="reference external" href="https://github.com/PettingZoo-Team/PettingZoo">PettingZoo</a> environment.
-<a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py">TrafficSignal</a> is responsible for retrieving information and actuating on traffic lights using <a class="reference external" href="https://sumo.dlr.de/wiki/TraCI">TraCI</a> API.</p>
+<p>SUMO-RL provides a simple interface to instantiate Reinforcement Learning (RL) environments with <a class="reference external" href="https://github.com/eclipse/sumo">SUMO</a> for Traffic Signal Control.</p>
 <p>Goals of this repository:</p>
 <ul class="simple">
 <li><p>Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO</p></li>
@@ -228,6 +230,15 @@ Call <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/
 <li><p>Compatibility with gymnasium.Env and popular RL libraries such as <a class="reference external" href="https://github.com/DLR-RM/stable-baselines3">stable-baselines3</a> and <a class="reference external" href="https://docs.ray.io/en/master/rllib.html">RLlib</a></p></li>
 <li><p>Easy customisation: state and reward definitions are easily modifiable</p></li>
 </ul>
+<p>The main class is <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">SumoEnvironment</a>.
+If instantiated with parameter ‘single-agent=True’, it behaves like a regular <a class="reference external" href="https://github.com/Farama-Foundation/Gymnasium">Gymnasium Env</a>.
+For multiagent environments, use <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">env</a> or <a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py">parallel_env</a> to instantiate a <a class="reference external" href="https://github.com/PettingZoo-Team/PettingZoo">PettingZoo</a> environment with AEC or Parallel API, respectively.
+<a class="reference external" href="https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py">TrafficSignal</a> is responsible for retrieving information and actuating on traffic lights using <a class="reference external" href="https://sumo.dlr.de/wiki/TraCI">TraCI</a> API.</p>
+<p>For more details, check the <a class="reference external" href="https://lucasalegre.github.io/sumo-rl/">documentation online</a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">

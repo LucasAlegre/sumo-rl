@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Citation" href="../../examples/citation/" /><link rel="prev" title="Petting Zoo Sumo Environment" href="../pz_env/" />
+<link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Observation Functions" href="../observations/" /><link rel="prev" title="Petting Zoo Sumo Environment" href="../pz_env/" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Traffic Signal - SUMO-RL 1.4.1 documentation</title>
@@ -163,6 +163,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../sumo_env/">Sumo Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pz_env/">Petting Zoo Sumo Environment</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Traffic Signal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../observations/">Observation Functions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gymnasium/">Gymnasium API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/pettingzoo/">PettingZoo API</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Citing</span></p>
 <ul>
@@ -235,7 +241,7 @@ The default observation for each traffic signal agent is a vector:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">`lane_i_density`</span></code> is the number of vehicles in incoming lane i dividided by the total capacity of the lane</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">`lane_i_queue`</span></code> is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane</p></li>
 </ul>
-<p>You can change the observation space by implementing a custom observation class. See <code class="xref py py-class docutils literal notranslate"><span class="pre">sumo_rl.environment.observations.ObservationFunction</span></code>.</p>
+<p>You can change the observation space by implementing a custom observation class. See <a class="reference internal" href="../observations/#sumo_rl.environment.observations.ObservationFunction" title="sumo_rl.environment.observations.ObservationFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">sumo_rl.environment.observations.ObservationFunction</span></code></a>.</p>
 <p># Action Space
 Action space is discrete, corresponding to which green phase is going to be open for the next delta_time seconds.</p>
 <p># Reward Function
@@ -346,12 +352,12 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../../examples/citation/">
+          <a class="next-page" href="../observations/">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Citation</div>
+                <div class="title">Observation Functions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
