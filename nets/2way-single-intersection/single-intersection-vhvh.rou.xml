@@ -40,7 +40,7 @@
     <flow id="flow_wn2" route="route_wn" begin="25000" end="50000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_we2" route="route_we" begin="25000" end="50000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_ws2" route="route_ws" begin="25000" end="50000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
-    
+
 
     <flow id="flow_ns3" route="route_ns" begin="50000" end="75000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>
     <flow id="flow_nw3" route="route_nw" begin="50000" end="75000" vehsPerHour="350" departSpeed="max" departPos="base" departLane="best"/>

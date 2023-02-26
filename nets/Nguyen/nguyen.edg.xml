@@ -7,7 +7,7 @@
 	<edge from="10" id="10to11" to="11" numLanes="2" />
 	<edge from="1" id="1to5" to="5" numLanes="2" />
 	<edge from="5" id="5to8" to="8" numLanes="2" />
-	
+
 	<edge from="5" id="5to6" to="6" numLanes="2" />
 	<edge from="6" id="6to11" to="11" numLanes="2" />
 
@@ -25,5 +25,5 @@
 	<edge from="14" id="14to17" to="17" numLanes="2" />
 	<edge from="16" id="16to17" to="17" numLanes="2" />
 	<edge from="17" id="17to4" to="4" numLanes="2" />
-	
+
 </edges>

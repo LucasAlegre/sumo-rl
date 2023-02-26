@@ -6,7 +6,7 @@
    </input>
    <output>
        <output-file value="simple.net.xml"/>
-   </output> 
+   </output>
    <processing>
        <no-turnarounds value="true"/>
    </processing>

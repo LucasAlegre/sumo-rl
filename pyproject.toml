@@ -11,12 +11,12 @@ authors = [{ name = "Lucas Alegre", email = "lucasnale@gmail.com" }]
 license = { text = "MIT License" }
 keywords = ["Reinforcement Learning", "Traffic Signal Control", "SUMO", "RL", "PettingZoo", "gymnasium"]
 dependencies = [
-    'gymnasium>=0.26', 
-    'pettingzoo>=1.22.2', 
-    'numpy', 
-    'pandas', 
-    'pillow', 
-    'sumolib>=1.14.0', 
+    'gymnasium>=0.26',
+    'pettingzoo>=1.22.2',
+    'numpy',
+    'pandas',
+    'pillow',
+    'sumolib>=1.14.0',
     'traci>=1.14.0'
 ]
 dynamic = ["version"]

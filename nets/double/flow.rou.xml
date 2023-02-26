@@ -1,5 +1,5 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-    
+
 	<vType id="car" vClass="passenger" color="255,255,255"/>
     <vType id="motorcicle" vClass="motorcycle" color="50,192,192"/>
     <vType id="bike" vClass="bicycle" color="100,100,192"/>
@@ -37,8 +37,8 @@
 	<route id="HD" edges="HE1 HE2 EB BD1 BD2" />
 	<route id="HF" edges="HE1 HE2 EF1 EF2" />
 	<route id="HG" edges="HE1 HE2 EG1 EG2" />
-	
-	
+
+
 	<!-- <flow id="bus_AC" type="bus" route="AC" begin="0" end="86400" probability="0.0001" />
 	<flow id="bus_AD" type="bus" route="AD" begin="0" end="86400" probability="0.0004" />
 	<flow id="bus_AF" type="bus" route="AF" begin="0" end="86400" probability="0.0003" />
@@ -69,7 +69,7 @@
 	<flow id="bus_HD" type="bus" route="HD" begin="0" end="86400" probability="0.0002" />
 	<flow id="bus_HF" type="bus" route="HF" begin="0" end="86400" probability="0.0006" />
 	<flow id="bus_HG" type="bus" route="HG" begin="0" end="86400" probability="0.0007" /> -->
-	
+
 	<flow id="car_AC" type="car" route="AC" begin="0" end="86400" probability="0.011" />
 	<flow id="car_AD" type="car" route="AD" begin="0" end="86400" probability="0.014" />
 	<flow id="car_AF" type="car" route="AF" begin="0" end="86400" probability="0.013" />
@@ -100,7 +100,7 @@
 	<flow id="car_HD" type="car" route="HD" begin="0" end="86400" probability="0.012" />
 	<flow id="car_HF" type="car" route="HF" begin="0" end="86400" probability="0.016" />
 	<flow id="car_HG" type="car" route="HG" begin="0" end="86400" probability="0.017" />
-	
+
 	<!-- <flow id="emergency_AC" type="emergency" route="AC" begin="0" end="86400" probability="0.00051"/>
 	<flow id="emergency_AF" type="emergency" route="AF" begin="0" end="86400" probability="0.00054" />
 	<flow id="emergency_AD" type="emergency" route="AD" begin="0" end="86400" probability="0.00053" />
@@ -132,5 +132,5 @@
 	<flow id="emergency_HF" type="emergency" route="HF" begin="0" end="86400" probability="0.00056" />
 	<flow id="emergency_HG" type="emergency" route="HG" begin="0" end="86400" probability="0.00057" /> -->
 
-	
+
 </routes>

@@ -26,7 +26,7 @@
 
 	<edge from="20" id="20to0" to="0" numLanes="2"/>
 	<edge from="0" id="0to1" to="1" numLanes="2"/>
-	<edge from="1" id="1to2" to="2" numLanes="2"/>		
+	<edge from="1" id="1to2" to="2" numLanes="2"/>
 	<edge from="2" id="2to3" to="3" numLanes="2"/>
 	<edge from="3" id="3to28" to="28" numLanes="2"/>
 
