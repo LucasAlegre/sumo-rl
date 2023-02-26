@@ -1,4 +1,4 @@
-<img src="outputs/logo.png" align="right" width="30%"/>
+<img src="docs/_static/logo.png" align="right" width="30%"/>
 
 [![tests](https://github.com/LucasAlegre/sumo-rl/actions/workflows/linux-test.yml/badge.svg)](https://github.com/LucasAlegre/sumo-rl/actions/workflows/linux-test.yml)
 [![PyPI version](https://badge.fury.io/py/sumo-rl.svg)](https://badge.fury.io/py/sumo-rl)
@@ -94,7 +94,7 @@ Every 'delta_time' seconds, each traffic signal agent can choose the next green 
 E.g.: In the [2-way single intersection](https://github.com/LucasAlegre/sumo-rl/blob/master/experiments/dqn_2way-single-intersection.py) there are |A| = 4 discrete actions, corresponding to the following green phase configurations:
 
 <p align="center">
-<img src="outputs/actions.png" align="center" width="75%"/>
+<img src="docs/_static/actions.png" align="center" width="75%"/>
 </p>
 
 Important: every time a phase change occurs, the next phase is preeceded by a yellow phase lasting ```yellow_time``` seconds.
@@ -108,7 +108,7 @@ Important: every time a phase change occurs, the next phase is preeceded by a ye
 The default reward function is the change in cumulative vehicle delay:
 
 <p align="center">
-<img src="outputs/reward.png" align="center" width="25%"/>
+<img src="docs/_static/reward.png" align="center" width="25%"/>
 </p>
 
 That is, the reward is how much the total delay (sum of the waiting times of all approaching vehicles) changed in relation to the previous time-step.
