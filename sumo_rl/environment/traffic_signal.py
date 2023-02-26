@@ -186,7 +186,7 @@ class TrafficSignal:
         return self.last_reward
 
     def _pressure_reward(self):
-        return -self.get_pressure()
+        return self.get_pressure()
 
     def _average_speed_reward(self):
         return self.get_average_speed()
