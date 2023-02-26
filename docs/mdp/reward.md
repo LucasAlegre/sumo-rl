@@ -8,7 +8,7 @@ firstpage:
 The default reward function is the change in cumulative vehicle delay:
 
 <p align="center">
-<img src="../_static/reward.png" align="center" width="25%"/>
+<img src="../../_static/reward.png" align="center" width="25%"/>
 </p>
 
 That is, the reward is how much the total delay (sum of the waiting times of all approaching vehicles) changed in relation to the previous time-step.
