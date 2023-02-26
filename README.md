@@ -10,18 +10,20 @@
 
 <!-- start intro -->
 
-SUMO-RL provides a simple interface to instantiate Reinforcement Learning environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control.
-
-The main class [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) behaves like a [MultiAgentEnv](https://github.com/ray-project/ray/blob/master/python/ray/rllib/env/multi_agent_env.py) from [RLlib](https://github.com/ray-project/ray/tree/master/python/ray/rllib).
-If instantiated with parameter 'single-agent=True', it behaves like a regular [Gymnasium Env](https://github.com/Farama-Foundation/Gymnasium).
-Call [env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) or [parallel_env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) to instantiate a [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) environment.
-[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
+SUMO-RL provides a simple interface to instantiate Reinforcement Learning (RL) environments with [SUMO](https://github.com/eclipse/sumo) for Traffic Signal Control.
 
 Goals of this repository:
 - Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
 - Support Multiagent RL
 - Compatibility with gymnasium.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/master/rllib.html)
 - Easy customisation: state and reward definitions are easily modifiable
+
+The main class is [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py).
+If instantiated with parameter 'single-agent=True', it behaves like a regular [Gymnasium Env](https://github.com/Farama-Foundation/Gymnasium).
+For multiagent environments, use [env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) or [parallel_env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) to instantiate a [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) environment with AEC or Parallel API, respectively.
+[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
+
+For more details, check the [documentation online](https://lucasalegre.github.io/sumo-rl/).
 
 <!-- end intro -->
 
@@ -66,6 +68,9 @@ pip install -e .
 ## MDP - Observations, Actions and Rewards
 
 ### Observation
+
+<!-- start observation -->
+
 The default observation for each traffic signal agent is a vector:
 ```python
     obs = [phase_one_hot, min_green, lane_1_density,...,lane_n_density, lane_1_queue,...,lane_n_queue]
@@ -75,9 +80,14 @@ The default observation for each traffic signal agent is a vector:
 - ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
 - ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
 
-You can define your own observation changing the method 'compute_observation' of [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py).
+You can define your own observation by implementing a class that inherits from [ObservationFunction](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/observations.py) and passing it to the environment constructor.
 
-### Actions
+<!-- end observation -->
+
+### Action
+
+<!-- start action -->
+
 The action space is discrete.
 Every 'delta_time' seconds, each traffic signal agent can choose the next green phase configuration.
 
@@ -89,7 +99,12 @@ E.g.: In the [2-way single intersection](https://github.com/LucasAlegre/sumo-rl/
 
 Important: every time a phase change occurs, the next phase is preeceded by a yellow phase lasting ```yellow_time``` seconds.
 
+<!-- end action -->
+
 ### Rewards
+
+<!-- start reward -->
+
 The default reward function is the change in cumulative vehicle delay:
 
 <p align="center">
@@ -109,11 +124,13 @@ def my_reward_fn(traffic_signal):
 env = SumoEnvironment(..., reward_fn=my_reward_fn)
 ```
 
-## Examples
+<!-- end reward -->
 
-Please see [SumoEnvironment docstring](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) for details on all constructor parameters.
+## API's (Gymnasium and PettingZoo)
 
-### Single Agent Environment
+### Gymnasium Single-Agent API
+
+<!-- start gymnasium -->
 
 If your network only has ONE traffic light, then you can instantiate a standard Gymnasium env (see [Gymnasium API](https://gymnasium.farama.org/api/env/)):
 ```python
@@ -132,21 +149,29 @@ while not done:
     done = terminated or truncated
 ```
 
+<!-- end gymnasium -->
+
 ### PettingZoo Multi-Agent API
-See [Petting Zoo API](https://pettingzoo.farama.org/content/basic_usage/) for more details.
+
+<!-- start pettingzoo -->
+
+For multi-agent environments, you can use the PettingZoo API (see [Petting Zoo API](https://pettingzoo.farama.org/api/parallel/)):
+
+```python
+See [Petting Zoo API](https://pettingzoo.farama.org/api/parallel/) for more details.
 
 ```python
 import sumo_rl
-env = sumo_rl.env(net_file='sumo_net_file.net.xml',
+env = sumo_rl.parallel_env(net_file='sumo_net_file.net.xml',
                   route_file='sumo_route_file.rou.xml',
                   use_gui=True,
                   num_seconds=3600)
-env.reset()
-for agent in env.agent_iter():
-    observation, reward, termination, truncation, info = env.last()
-    action = policy(observation)
-    env.step(action)
+while env.agents:
+    actions = {agent: parallel_env.action_space(agent).sample() for agent in parallel_env.agents}  # this is where you would insert your policy
+    observations, rewards, terminations, truncations, infos = parallel_env.step(actions)
 ```
+
+<!-- end pettingzoo -->
 
 ### RESCO Benchmarks
 
