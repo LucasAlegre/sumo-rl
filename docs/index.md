@@ -6,6 +6,10 @@ lastpage:
 
 # SUMO-RL
 
+```{figure} _static/logo.png
+   :alt: SUMO-RL
+```
+
 ```{include} ../README.md
 :start-after: <!-- start intro -->
 :end-before: <!-- end intro -->

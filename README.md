@@ -158,9 +158,6 @@ while not done:
 For multi-agent environments, you can use the PettingZoo API (see [Petting Zoo API](https://pettingzoo.farama.org/api/parallel/)):
 
 ```python
-See [Petting Zoo API](https://pettingzoo.farama.org/api/parallel/) for more details.
-
-```python
 import sumo_rl
 env = sumo_rl.parallel_env(net_file='sumo_net_file.net.xml',
                   route_file='sumo_route_file.rou.xml',
