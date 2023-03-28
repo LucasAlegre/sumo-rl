@@ -57,7 +57,6 @@ def plot_df(df, color, xaxis, yaxis, ma=1, label=""):
 
 
 if __name__ == "__main__":
-
     prs = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="""Plot Traffic Signal Metrics"""
     )

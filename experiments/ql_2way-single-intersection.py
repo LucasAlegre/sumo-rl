@@ -16,7 +16,6 @@ from sumo_rl.exploration import EpsilonGreedy
 
 
 if __name__ == "__main__":
-
     prs = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="""Q-Learning Single-Intersection"""
     )

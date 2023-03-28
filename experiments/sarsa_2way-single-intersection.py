@@ -18,7 +18,6 @@ from sumo_rl.util.gen_route import write_route_file
 
 
 if __name__ == "__main__":
-
     prs = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="""SarsaLambda Single-Intersection"""
     )

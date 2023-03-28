@@ -16,7 +16,6 @@ from sumo_rl import SumoEnvironment
 
 
 if __name__ == "__main__":
-
     env = SumoEnvironment(
         net_file="nets/2way-single-intersection/single-intersection.net.xml",
         route_file="nets/2way-single-intersection/single-intersection-vhvh.rou.xml",

@@ -13,7 +13,6 @@ def movingaverage(interval, window_size):
 
 
 if __name__ == "__main__":
-
     fig, ax = plt.subplots()
     a = [0, 0.1, 0.5, 0.8]
     plt.ylim([10, 40])
