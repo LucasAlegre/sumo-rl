@@ -531,7 +531,16 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.terminations = {a: False for a in self.agents}
         self.truncations = {a: False for a in self.agents}
-        self.infos = {agent: {} for agent in self.agents}
+        self.compute_info()
+
+    def compute_info(self):
+        """Compute the info for the current step."""
+        self.infos = {a: {} for a in self.agents}
+        infos = self.env._compute_info()
+        for a in self.agents:
+            for k, v in infos.items():
+                if k.startswith(a):
+                    self.infos[a][k] = v
 
     def observation_space(self, agent):
         """Return the observation space for the agent."""
@@ -550,9 +559,9 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         """Close the environment and stop the SUMO simulation."""
         self.env.close()
 
-    def render(self, mode="human"):
+    def render(self):
         """Render the environment."""
-        return self.env.render(mode)
+        return self.env.render()
 
     def save_csv(self, out_csv_name, episode):
         """Save metrics of the simulation to a .csv file."""
@@ -575,7 +584,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
             self.env._run_steps()
             self.env._compute_observations()
             self.rewards = self.env._compute_rewards()
-            self.env._compute_info()
+            self.compute_info()
         else:
             self._clear_rewards()
 

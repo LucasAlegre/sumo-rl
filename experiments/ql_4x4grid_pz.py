@@ -49,7 +49,8 @@ if __name__ == "__main__":
         }
         infos = []
         for agent in env.agent_iter():
-            s, r, done, info = env.last()
+            s, r, terminated, truncated, info = env.last()
+            done = terminated or truncated
             if ql_agents[agent].action is not None:
                 ql_agents[agent].learn(next_state=env.unwrapped.env.encode(s, agent), reward=r)
 
