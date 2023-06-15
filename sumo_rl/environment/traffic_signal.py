@@ -99,7 +99,7 @@ class TrafficSignal:
         )  # Remove duplicates and keep order
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
-        self.lanes_lenght = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
+        self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
 
         self.observation_space = self.observation_fn.observation_space()
         self.action_space = spaces.Discrete(self.num_green_phases)
@@ -254,7 +254,7 @@ class TrafficSignal:
         """Returns the density of the vehicles in the outgoing lanes of the intersection."""
         lanes_density = [
             self.sumo.lane.getLastStepVehicleNumber(lane)
-            / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
+            / (self.lanes_length[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
             for lane in self.out_lanes
         ]
         return [min(1, density) for density in lanes_density]
@@ -266,7 +266,7 @@ class TrafficSignal:
         """
         lanes_density = [
             self.sumo.lane.getLastStepVehicleNumber(lane)
-            / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
+            / (self.lanes_length[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
             for lane in self.lanes
         ]
         return [min(1, density) for density in lanes_density]
@@ -278,7 +278,7 @@ class TrafficSignal:
         """
         lanes_queue = [
             self.sumo.lane.getLastStepHaltingNumber(lane)
-            / (self.lanes_lenght[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
+            / (self.lanes_length[lane] / (self.MIN_GAP + self.sumo.lane.getLastStepLength(lane)))
             for lane in self.lanes
         ]
         return [min(1, queue) for queue in lanes_queue]
