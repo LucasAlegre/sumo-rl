@@ -38,7 +38,7 @@ napoleon_custom_sections = [("Returns", "params_style")]
 html_theme = "furo"
 html_theme_options = {
     "source_repository": "https://github.com/LucasAlegre/sumo-rl/",
-    "source_branch": "master",
+    "source_branch": "main",
     "source_directory": "docs/",
 }
 html_static_path = ["_static"]

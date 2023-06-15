@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/sumo-rl.svg)](https://badge.fury.io/py/sumo-rl)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/LucasAlegre/sumo-rl/blob/master/LICENSE)
+[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://github.com/LucasAlegre/sumo-rl/blob/main/LICENSE)
 
 # SUMO-RL
 
@@ -15,13 +15,13 @@ SUMO-RL provides a simple interface to instantiate Reinforcement Learning (RL) e
 Goals of this repository:
 - Provide a simple interface to work with Reinforcement Learning for Traffic Signal Control using SUMO
 - Support Multiagent RL
-- Compatibility with gymnasium.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/master/rllib.html)
+- Compatibility with gymnasium.Env and popular RL libraries such as [stable-baselines3](https://github.com/DLR-RM/stable-baselines3) and [RLlib](https://docs.ray.io/en/main/rllib.html)
 - Easy customisation: state and reward definitions are easily modifiable
 
-The main class is [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py).
+The main class is [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/env.py).
 If instantiated with parameter 'single-agent=True', it behaves like a regular [Gymnasium Env](https://github.com/Farama-Foundation/Gymnasium).
-For multiagent environments, use [env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) or [parallel_env](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) to instantiate a [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) environment with AEC or Parallel API, respectively.
-[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
+For multiagent environments, use [env](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/env.py) or [parallel_env](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/env.py) to instantiate a [PettingZoo](https://github.com/PettingZoo-Team/PettingZoo) environment with AEC or Parallel API, respectively.
+[TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/traffic_signal.py) is responsible for retrieving information and actuating on traffic lights using [TraCI](https://sumo.dlr.de/wiki/TraCI) API.
 
 For more details, check the [documentation online](https://lucasalegre.github.io/sumo-rl/).
 
@@ -80,7 +80,7 @@ The default observation for each traffic signal agent is a vector:
 - ```lane_i_density``` is the number of vehicles in incoming lane i dividided by the total capacity of the lane
 - ```lane_i_queue```is the number of queued (speed below 0.1 m/s) vehicles in incoming lane i divided by the total capacity of the lane
 
-You can define your own observation by implementing a class that inherits from [ObservationFunction](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/observations.py) and passing it to the environment constructor.
+You can define your own observation by implementing a class that inherits from [ObservationFunction](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/observations.py) and passing it to the environment constructor.
 
 <!-- end observation -->
 
@@ -91,7 +91,7 @@ You can define your own observation by implementing a class that inherits from [
 The action space is discrete.
 Every 'delta_time' seconds, each traffic signal agent can choose the next green phase configuration.
 
-E.g.: In the [2-way single intersection](https://github.com/LucasAlegre/sumo-rl/blob/master/experiments/dqn_2way-single-intersection.py) there are |A| = 4 discrete actions, corresponding to the following green phase configurations:
+E.g.: In the [2-way single intersection](https://github.com/LucasAlegre/sumo-rl/blob/main/experiments/dqn_2way-single-intersection.py) there are |A| = 4 discrete actions, corresponding to the following green phase configurations:
 
 <p align="center">
 <img src="docs/_static/actions.png" align="center" width="75%"/>
@@ -113,7 +113,7 @@ The default reward function is the change in cumulative vehicle delay:
 
 That is, the reward is how much the total delay (sum of the waiting times of all approaching vehicles) changed in relation to the previous time-step.
 
-You can choose a different reward function (see the ones implemented in [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/traffic_signal.py)) with the parameter `reward_fn` in the [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/master/sumo_rl/environment/env.py) constructor.
+You can choose a different reward function (see the ones implemented in [TrafficSignal](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/traffic_signal.py)) with the parameter `reward_fn` in the [SumoEnvironment](https://github.com/LucasAlegre/sumo-rl/blob/main/sumo_rl/environment/env.py) constructor.
 
 It is also possible to implement your own reward function:
 
@@ -173,7 +173,7 @@ while env.agents:
 
 ### RESCO Benchmarks
 
-In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/master/nets/RESCO) you can find the network and route files from [RESCO](https://github.com/jault/RESCO) (Reinforcement Learning Benchmarks for Traffic Signal Control), which was built on top of SUMO-RL. See their [paper](https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf) for results.
+In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/main/nets/RESCO) you can find the network and route files from [RESCO](https://github.com/jault/RESCO) (Reinforcement Learning Benchmarks for Traffic Signal Control), which was built on top of SUMO-RL. See their [paper](https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf) for results.
 
 <p align="center">
 <img src="nets/RESCO/maps.png" align="center" width="60%"/>
@@ -181,9 +181,9 @@ In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/master/ne
 
 ### Experiments
 
-Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experiments) for examples on how to instantiate an environment and train your RL agent.
+Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/main/experiments) for examples on how to instantiate an environment and train your RL agent.
 
-### [Q-learning](https://github.com/LucasAlegre/sumo-rl/blob/master/agents/ql_agent.py) in a one-way single intersection:
+### [Q-learning](https://github.com/LucasAlegre/sumo-rl/blob/main/agents/ql_agent.py) in a one-way single intersection:
 ```bash
 python experiments/ql_single-intersection.py
 ```
