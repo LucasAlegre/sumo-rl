@@ -1,7 +1,7 @@
 import os
 import sys
 
-import gym
+import gymnasium as gym
 
 
 if "SUMO_HOME" in os.environ:

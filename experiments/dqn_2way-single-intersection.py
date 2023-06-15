@@ -1,7 +1,7 @@
 import os
 import sys
 
-import gym
+import gymnasium as gym
 from stable_baselines3.dqn.dqn import DQN
 
 
