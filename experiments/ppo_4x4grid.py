@@ -1,6 +1,7 @@
 import os
 import sys
 
+
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -8,12 +9,13 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 import numpy as np
 import pandas as pd
-import traci
 import ray
+import traci
 from ray import tune
 from ray.rllib.algorithms.ppo import PPOConfig
-from ray.tune.registry import register_env
 from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
+from ray.tune.registry import register_env
+
 import sumo_rl
 
 
@@ -22,7 +24,9 @@ if __name__ == "__main__":
 
     env_name = "4x4grid"
 
-    register_env(env_name, lambda _: ParallelPettingZooEnv(
+    register_env(
+        env_name,
+        lambda _: ParallelPettingZooEnv(
             sumo_rl.parallel_env(
                 net_file="nets/4x4-Lucas/4x4.net.xml",
                 route_file="nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
@@ -30,7 +34,7 @@ if __name__ == "__main__":
                 use_gui=False,
                 num_seconds=80000,
             )
-        )
+        ),
     )
 
     config = (
