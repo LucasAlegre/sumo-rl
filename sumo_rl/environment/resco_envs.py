@@ -59,7 +59,7 @@ def cologne1(parallel=True, **kwargs):
             "net_file": PATH + "/../nets/RESCO/cologne1/cologne1.net.xml",
             "route_file": PATH + "/../nets/RESCO/cologne1/cologne1.rou.xml",
             "begin_time": 25200,
-            "num_seconds": 28800,
+            "num_seconds": 28800 - 25200,
         }
     )
     if parallel:
@@ -80,7 +80,7 @@ def cologne3(parallel=True, **kwargs):
             "net_file": PATH + "/../nets/RESCO/cologne3/cologne3.net.xml",
             "route_file": PATH + "/../nets/RESCO/cologne3/cologne3.rou.xml",
             "begin_time": 25200,
-            "num_seconds": 28800,
+            "num_seconds": 28800 - 25200,
         }
     )
     if parallel:
@@ -100,7 +100,7 @@ def cologne8(parallel=True, **kwargs):
             "net_file": PATH + "/../nets/RESCO/cologne8/cologne8.net.xml",
             "route_file": PATH + "/../nets/RESCO/cologne8/cologne8.rou.xml",
             "begin_time": 25200,
-            "num_seconds": 28800,
+            "num_seconds": 28800 - 25200,
         }
     )
     if parallel:
@@ -120,7 +120,7 @@ def ingolstadt1(parallel=True, **kwargs):
             "net_file": PATH + "/../nets/RESCO/ingolstadt1/ingolstadt1.net.xml",
             "route_file": PATH + "/../nets/RESCO/ingolstadt1/ingolstadt1.rou.xml",
             "begin_time": 57600,
-            "num_seconds": 61200,
+            "num_seconds": 61200 - 57600,
         }
     )
     if parallel:
@@ -140,7 +140,7 @@ def ingolstadt7(parallel=True, **kwargs):
             "net_file": PATH + "/../nets/RESCO/ingolstadt7/ingolstadt7.net.xml",
             "route_file": PATH + "/../nets/RESCO/ingolstadt7/ingolstadt7.rou.xml",
             "begin_time": 57600,
-            "num_seconds": 61200,
+            "num_seconds": 61200 - 57600,
         }
     )
     if parallel:
@@ -160,7 +160,7 @@ def ingolstadt21(parallel=True, **kwargs):
             "net_file": PATH + "/../nets/RESCO/ingolstadt21/ingolstadt21.net.xml",
             "route_file": PATH + "/../nets/RESCO/ingolstadt21/ingolstadt21.rou.xml",
             "begin_time": 57600,
-            "num_seconds": 61200,
+            "num_seconds": 61200 - 57600,
         }
     )
     if parallel:
