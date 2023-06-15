@@ -244,7 +244,7 @@ See <a class="reference external" href="https://gymnasium.farama.org/">https://g
 <li><p><strong>use_gui</strong> (<em>bool</em>) – Whether to run SUMO simulation with the SUMO GUI</p></li>
 <li><p><strong>virtual_display</strong> (<em>Optional</em><em>[</em><em>Tuple</em><em>[</em><em>int</em><em>,</em><em>int</em><em>]</em><em>]</em>) – Resolution of the virtual display for rendering</p></li>
 <li><p><strong>begin_time</strong> (<em>int</em>) – The time step (in seconds) the simulation starts. Default: 0</p></li>
-<li><p><strong>num_seconds</strong> (<em>int</em>) – Number of simulated seconds on SUMO. The time in seconds the simulation must end. Default: 3600</p></li>
+<li><p><strong>num_seconds</strong> (<em>int</em>) – Number of simulated seconds on SUMO. The duration in seconds of the simulation. Default: 20000</p></li>
 <li><p><strong>max_depart_delay</strong> (<em>int</em>) – Vehicles are discarded if they could not be inserted after max_depart_delay seconds. Default: -1 (no delay)</p></li>
 <li><p><strong>waiting_time_memory</strong> (<em>int</em>) – Number of seconds to remember the waiting time of a vehicle (see <a class="reference external" href="https://sumo.dlr.de/pydoc/traci._vehicle.html#VehicleDomain-getAccumulatedWaitingTime">https://sumo.dlr.de/pydoc/traci._vehicle.html#VehicleDomain-getAccumulatedWaitingTime</a>). Default: 1000</p></li>
 <li><p><strong>time_to_teleport</strong> (<em>int</em>) – Time in seconds to teleport a vehicle to the end of the edge if it is stuck. Default: -1 (no teleport)</p></li>
