@@ -191,9 +191,9 @@ Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experimen
 python experiments/ql_single-intersection.py
 ```
 
-### [RLlib A3C](https://github.com/ray-project/ray/tree/master/python/ray/rllib/agents/a3c) multiagent in a 4x4 grid:
+### [RLlib PPO]() multiagent in a 4x4 grid:
 ```bash
-python experiments/a3c_4x4grid.py
+python experiments/ppo_4x4grid.py
 ```
 
 ### [stable-baselines3 DQN](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/dqn/dqn.py) in a 2-way single intersection:
@@ -203,7 +203,7 @@ python experiments/dqn_2way-single-intersection.py
 
 ### Plotting results:
 ```bash
-python outputs/plot.py -f outputs/2way-single-intersection/a3c
+python outputs/plot.py -f outputs/4x4grid/ppo_conn0_ep2
 ```
 <p align="center">
 <img src="outputs/result.png" align="center" width="50%"/>
