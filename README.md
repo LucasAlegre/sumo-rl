@@ -191,12 +191,13 @@ Check [experiments](https://github.com/LucasAlegre/sumo-rl/tree/master/experimen
 python experiments/ql_single-intersection.py
 ```
 
-### [RLlib PPO]() multiagent in a 4x4 grid:
+### [RLlib PPO](https://docs.ray.io/en/latest/_modules/ray/rllib/algorithms/ppo/ppo.html) multiagent in a 4x4 grid:
 ```bash
 python experiments/ppo_4x4grid.py
 ```
 
 ### [stable-baselines3 DQN](https://github.com/DLR-RM/stable-baselines3/blob/master/stable_baselines3/dqn/dqn.py) in a 2-way single intersection:
+Obs: you need to install stable-baselines3 with ```pip install "stable_baselines3[extra]>=2.0.0a9"``` for [Gymnasium compatibility](https://stable-baselines3.readthedocs.io/en/master/guide/install.html).
 ```bash
 python experiments/dqn_2way-single-intersection.py
 ```
