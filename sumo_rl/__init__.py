@@ -17,3 +17,6 @@ from sumo_rl.environment.resco_envs import (
     ingolstadt7,
     ingolstadt21,
 )
+
+
+__version__ = "1.4.3"

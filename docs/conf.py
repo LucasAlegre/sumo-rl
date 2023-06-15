@@ -6,10 +6,13 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sumo_rl
+
+
 project = "SUMO-RL"
 copyright = "2019, Lucas N. Alegre"
 author = "Lucas N. Alegre"
-release = "1.4.2"
+release = sumo_rl.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
