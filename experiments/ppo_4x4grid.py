@@ -67,3 +67,13 @@ if __name__ == "__main__":
         local_dir="~/ray_results/" + env_name,
         config=config.to_dict(),
     )
+
+###
+"""
+pettingzoo_env.py
+line 139: info = self.env.reset(seed=seed, return_info=True, options=options)
+改成: info = self.env.reset(seed=seed, options=options)
+
+line 224: obs, info = self.par_env.reset(seed=seed, return_info=True, options=options)
+改成：obs, info = self.par_env.reset(seed=seed, options=options)
+"""
