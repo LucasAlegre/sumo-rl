@@ -68,7 +68,7 @@ if __name__ == "__main__":
         config=config.to_dict(),
     )
 
-###
+### 2023-7-18, 原程序运序报错，修改如下：
 """
 pettingzoo_env.py
 line 139: info = self.env.reset(seed=seed, return_info=True, options=options)
