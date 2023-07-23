@@ -539,7 +539,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
         infos = self.env._compute_info()
         for a in self.agents:
             for k, v in infos.items():
-                if k.startswith(a):
+                if k.startswith(a) or k.startswith("system"):
                     self.infos[a][k] = v
 
     def observation_space(self, agent):
