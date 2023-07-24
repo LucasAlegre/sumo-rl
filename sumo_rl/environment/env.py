@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 from typing import Callable, Optional, Tuple, Union
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -22,7 +21,6 @@ from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .observations import DefaultObservationFunction, ObservationFunction
 from .traffic_signal import TrafficSignal
-
 
 LIBSUMO = "LIBSUMO_AS_TRACI" in os.environ
 
@@ -79,31 +77,31 @@ class SumoEnvironment(gym.Env):
     CONNECTION_LABEL = 0  # For traci multi-client support
 
     def __init__(
-        self,
-        net_file: str,
-        route_file: str,
-        out_csv_name: Optional[str] = None,
-        use_gui: bool = False,
-        virtual_display: Tuple[int, int] = (3200, 1800),
-        begin_time: int = 0,
-        num_seconds: int = 20000,
-        max_depart_delay: int = -1,
-        waiting_time_memory: int = 1000,
-        time_to_teleport: int = -1,
-        delta_time: int = 5,
-        yellow_time: int = 2,
-        min_green: int = 5,
-        max_green: int = 50,
-        single_agent: bool = False,
-        reward_fn: Union[str, Callable, dict] = "diff-waiting-time",
-        observation_class: ObservationFunction = DefaultObservationFunction,
-        add_system_info: bool = True,
-        add_per_agent_info: bool = True,
-        sumo_seed: Union[str, int] = "random",
-        fixed_ts: bool = False,
-        sumo_warnings: bool = True,
-        additional_sumo_cmd: Optional[str] = None,
-        render_mode: Optional[str] = None,
+            self,
+            net_file: str,
+            route_file: str,
+            out_csv_name: Optional[str] = None,
+            use_gui: bool = False,
+            virtual_display: Tuple[int, int] = (3200, 1800),
+            begin_time: int = 0,
+            num_seconds: int = 20000,
+            max_depart_delay: int = -1,
+            waiting_time_memory: int = 1000,
+            time_to_teleport: int = -1,
+            delta_time: int = 5,
+            yellow_time: int = 2,
+            min_green: int = 5,
+            max_green: int = 50,
+            single_agent: bool = False,
+            reward_fn: Union[str, Callable, dict] = "diff-waiting-time",
+            observation_class: ObservationFunction = DefaultObservationFunction,
+            add_system_info: bool = True,
+            add_per_agent_info: bool = True,
+            sumo_seed: Union[str, int] = "random",
+            fixed_ts: bool = False,
+            sumo_warnings: bool = True,
+            additional_sumo_cmd: Optional[str] = None,
+            render_mode: Optional[str] = None,
     ) -> None:
         """Initialize the environment."""
         assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
@@ -358,6 +356,8 @@ class SumoEnvironment(gym.Env):
         if self.add_per_agent_info:
             info.update(self._get_per_agent_info())
         self.metrics.append(info)
+        print("\n=======compute_info::", info)
+        print("\n=======metrics::", self.metrics)
         return info
 
     def _compute_observations(self):
@@ -403,13 +403,15 @@ class SumoEnvironment(gym.Env):
         vehicles = self.sumo.vehicle.getIDList()
         speeds = [self.sumo.vehicle.getSpeed(vehicle) for vehicle in vehicles]
         waiting_times = [self.sumo.vehicle.getWaitingTime(vehicle) for vehicle in vehicles]
-        return {
+        _sys_info = {
             # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
             "system_total_stopped": sum(int(speed < 0.1) for speed in speeds),
             "system_total_waiting_time": sum(waiting_times),
             "system_mean_waiting_time": 0.0 if len(vehicles) == 0 else np.mean(waiting_times),
             "system_mean_speed": 0.0 if len(vehicles) == 0 else np.mean(speeds),
         }
+        print("\n=======system_info::", _sys_info)
+        return _sys_info
 
     def _get_per_agent_info(self):
         stopped = [self.traffic_signals[ts].get_total_queued() for ts in self.ts_ids]
@@ -424,6 +426,7 @@ class SumoEnvironment(gym.Env):
             info[f"{ts}_average_speed"] = average_speed[i]
         info["agents_total_stopped"] = sum(stopped)
         info["agents_total_accumulated_waiting_time"] = sum(accumulated_waiting_time)
+        print("\n=======agent_info::", info)
         return info
 
     def close(self):
@@ -478,7 +481,7 @@ class SumoEnvironment(gym.Env):
         """Encode the state of the traffic signal into a hashable object."""
         phase = int(np.where(state[: self.traffic_signals[ts_id].num_green_phases] == 1)[0])
         min_green = state[self.traffic_signals[ts_id].num_green_phases]
-        density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases + 1 :]]
+        density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases + 1:]]
         # tuples are hashable and can be used as key in python dictionary
         return tuple([phase, min_green] + density_queue)
 

@@ -32,7 +32,7 @@ if __name__ == "__main__":
                 route_file="nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
                 out_csv_name="outputs/4x4grid/ppo",
                 use_gui=False,
-                num_seconds=80000,
+                num_seconds=800,
             )
         ),
     )
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     tune.run(
         "PPO",
         name="PPO",
-        stop={"timesteps_total": 100000},
+        stop={"timesteps_total": 1000},
         checkpoint_freq=10,
         local_dir="~/ray_results/" + env_name,
         config=config.to_dict(),

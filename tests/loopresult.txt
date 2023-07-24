@@ -1,0 +1,153 @@
+Result for PPO_4x4grid_a15fd_00000:
+  agent_timesteps_total: 163840
+  connector_metrics:
+    ObsPreprocessorConnector_ms: 0.0256955623626709
+    StateBufferConnector_ms: 0.02116560935974121
+    ViewRequirementAgentConnector_ms: 1.0647118091583252
+  counters:
+    num_agent_steps_sampled: 163840
+    num_agent_steps_trained: 163840
+    num_env_steps_sampled: 10240
+    num_env_steps_trained: 10240
+  custom_metrics: {}
+  date: 2023-07-24_11-24-25
+  done: true
+  episode_len_mean: 1600.0
+  episode_media: {}
+  episode_reward_max: -2.809999999999997
+  episode_reward_mean: -3.4125000000000383
+  episode_reward_min: -4.16000000000004
+  episodes_this_iter: 0
+  episodes_total: 4
+  hostname: apen.local
+  info:
+    learner:
+      default_policy:
+        custom_metrics: {}
+        diff_num_grad_updates_vs_sampler_policy: 639.5
+        learner_stats:
+          allreduce_latency: 0.0
+          cur_kl_coeff: 0.0008789062500000001
+          cur_lr: 2.0e-05
+          entropy: 0.4038065423257649
+          entropy_coeff: 0.09999999999999999
+          grad_gnorm: 0.42797612871509044
+          kl: 0.002221074115656041
+          policy_loss: 0.00033576167552382683
+          total_loss: -0.038335414300387075
+          vf_explained_var: 0.44447361598722634
+          vf_loss: 0.006830105105109396
+        model: {}
+        num_agent_steps_trained: 64.0
+        num_grad_updates_lifetime: 24960.5
+    num_agent_steps_sampled: 163840
+    num_agent_steps_trained: 163840
+    num_env_steps_sampled: 10240
+    num_env_steps_trained: 10240
+  iterations_since_restore: 20
+  node_ip: 127.0.0.1
+  num_agent_steps_sampled: 163840
+  num_agent_steps_trained: 163840
+  num_env_steps_sampled: 10240
+  num_env_steps_sampled_this_iter: 512
+  num_env_steps_sampled_throughput_per_sec: 27.692523246776872
+  num_env_steps_trained: 10240
+  num_env_steps_trained_this_iter: 512
+  num_env_steps_trained_throughput_per_sec: 27.692523246776872
+  num_faulty_episodes: 0
+  num_healthy_workers: 4
+  num_in_flight_async_reqs: 0
+  num_remote_worker_restarts: 0
+  num_steps_trained_this_iter: 512
+  perf:
+    cpu_util_percent: 44.56538461538461
+    ram_util_percent: 67.14615384615385
+  pid: 85818
+  policy_reward_max: {}
+  policy_reward_mean: {}
+  policy_reward_min: {}
+  sampler_perf:
+    mean_action_processing_ms: 0.962180382496602
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 135.61268876622748
+    mean_inference_ms: 1.3642256324355666
+    mean_raw_obs_processing_ms: 3.2033791413178316
+  sampler_results:
+    connector_metrics:
+      ObsPreprocessorConnector_ms: 0.0256955623626709
+      StateBufferConnector_ms: 0.02116560935974121
+      ViewRequirementAgentConnector_ms: 1.0647118091583252
+    custom_metrics: {}
+    episode_len_mean: 1600.0
+    episode_media: {}
+    episode_reward_max: -2.809999999999997
+    episode_reward_mean: -3.4125000000000383
+    episode_reward_min: -4.16000000000004
+    episodes_this_iter: 0
+    hist_stats:
+      episode_lengths: [1600, 1600, 1600, 1600]
+      episode_reward: [-2.809999999999997, -3.060000000000033, -4.16000000000004, -3.620000000000084]
+    num_faulty_episodes: 0
+    policy_reward_max: {}
+    policy_reward_mean: {}
+    policy_reward_min: {}
+    sampler_perf:
+      mean_action_processing_ms: 0.962180382496602
+      mean_env_render_ms: 0.0
+      mean_env_wait_ms: 135.61268876622748
+      mean_inference_ms: 1.3642256324355666
+      mean_raw_obs_processing_ms: 3.2033791413178316
+  time_since_restore: 401.0651104450226
+  time_this_iter_s: 18.490888118743896
+  time_total_s: 401.0651104450226
+  timers:
+    learn_throughput: 226.664
+    learn_time_ms: 2258.855
+    load_throughput: 790882.646
+    load_time_ms: 0.647
+    sample_time_ms: 16912.042
+    synch_weights_time_ms: 2.217
+    training_iteration_time_ms: 19174.237
+  timestamp: 1690169065
+  timesteps_total: 10240
+  training_iteration: 20
+  trial_id: a15fd_00000
+
+Trial PPO_4x4grid_a15fd_00000 completed.
+== Status ==
+Current time: 2023-07-24 11:24:25 (running for 00:06:52.00)
+Using FIFO scheduling algorithm.
+Logical resource usage: 5.0/8 CPUs, 0/0 GPUs
+Result logdir: /Users/xnpeng/ray_results/4x4grid/PPO
+Number of trials: 1/1 (1 TERMINATED)
++-------------------------+------------+-----------------+--------+------------------+-------+----------+----------------------+----------------------+--------------------+
+| Trial name              | status     | loc             |   iter |   total time (s) |    ts |   reward |   episode_reward_max |   episode_reward_min |   episode_len_mean |
+|-------------------------+------------+-----------------+--------+------------------+-------+----------+----------------------+----------------------+--------------------|
+| PPO_4x4grid_a15fd_00000 | TERMINATED | 127.0.0.1:85818 |     20 |          401.065 | 10240 |  -3.4125 |                -2.81 |                -4.16 |               1600 |
++-------------------------+------------+-----------------+--------+------------------+-------+----------+----------------------+----------------------+--------------------+
+
+compute_info::
+{'step': 485.0,
+'system_total_stopped': 97,
+'system_total_waiting_time': 499.0,
+'system_mean_waiting_time': 1.62012987012987,
+'system_mean_speed': 6.454758385229875,
+'0_stopped': 2,
+'0_accumulated_waiting_time': 8.0,
+'0_average_speed': 0.6592062375495821,
+'1_stopped': 7,
+'1_accumulated_waiting_time': 25.0,
+'1_average_speed': 0.3440447781287391,
+'10_stopped': 7,
+'10_accumulated_waiting_time': 114.0,
+'10_average_speed': 0.26783712211197674,
+'11_stopped': 6,
+'11_accumulated_waiting_time': 77.0,
+'11_average_speed': 0.22783355898380098,
+'12_stopped': 11,
+'12_accumulated_waiting_time': 93.0,
+'12_average_speed': 0.24874343969894425,
+'13_stopped': 2,
+'13_accumulated_waiting_time': 20.0,
+'13_average_speed': 0.5866295187114805,
+'14_stopped': 3, '14_accumulated_waiting_time': 38.0, '14_average_speed': 0.639823633601603, '15_stopped': 4, '15_accumulated_waiting_time': 84.0, '15_average_speed': 0.36427829478753365, '2_stopped': 9, '2_accumulated_waiting_time': 79.0, '2_average_speed': 0.3160592105877819, '3_stopped': 8, '3_accumulated_waiting_time': 70.0, '3_average_speed': 0.5046175318836863, '4_stopped': 2, '4_accumulated_waiting_time': 10.0, '4_average_speed': 0.6160679455103313, '5_stopped': 2, '5_accumulated_waiting_time': 29.0, '5_average_speed': 0.7439932594916197, '6_stopped': 6, '6_accumulated_waiting_time': 23.0, '6_average_speed': 0.4041296584654855, '7_stopped': 7, '7_accumulated_waiting_time': 37.0, '7_average_speed': 0.3167658726868595, '8_stopped': 9, '8_accumulated_waiting_time': 34.0, '8_average_speed': 0.23084907584127742, '9_stopped': 12, '9_accumulated_waiting_time': 156.0, '9_average_speed': 0.25875232485088806, 'agents_total_stopped': 97, 'agents_total_accumulated_waiting_time': 897.0}
