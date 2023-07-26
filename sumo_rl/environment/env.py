@@ -356,8 +356,8 @@ class SumoEnvironment(gym.Env):
         if self.add_per_agent_info:
             info.update(self._get_per_agent_info())
         self.metrics.append(info)
-        print("\n=======compute_info::", info)
-        print("\n=======metrics::", self.metrics)
+        # print("\n=======compute_info::", info)
+        # print("\n=======metrics::", self.metrics)
         return info
 
     def _compute_observations(self):
@@ -410,7 +410,7 @@ class SumoEnvironment(gym.Env):
             "system_mean_waiting_time": 0.0 if len(vehicles) == 0 else np.mean(waiting_times),
             "system_mean_speed": 0.0 if len(vehicles) == 0 else np.mean(speeds),
         }
-        print("\n=======system_info::", _sys_info)
+        # print("\n=======system_info::", _sys_info)
         return _sys_info
 
     def _get_per_agent_info(self):
@@ -426,7 +426,7 @@ class SumoEnvironment(gym.Env):
             info[f"{ts}_average_speed"] = average_speed[i]
         info["agents_total_stopped"] = sum(stopped)
         info["agents_total_accumulated_waiting_time"] = sum(accumulated_waiting_time)
-        print("\n=======agent_info::", info)
+        # print("\n=======agent_info::", info)
         return info
 
     def close(self):

@@ -19,9 +19,9 @@ if __name__ == "__main__":
     env = SumoEnvironment(
         net_file="nets/2way-single-intersection/single-intersection.net.xml",
         route_file="nets/2way-single-intersection/single-intersection-vhvh.rou.xml",
-        out_csv_name="outputs/2way-single-intersection/dqn",
+        out_csv_name="outputs/2way-single-intersection/dqn/",
         single_agent=True,
-        use_gui=True,
+        use_gui=False,
         num_seconds=100000,
     )
 
