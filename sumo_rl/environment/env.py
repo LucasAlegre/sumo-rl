@@ -357,7 +357,7 @@ class SumoEnvironment(gym.Env):
             info.update(self._get_system_info())
         if self.add_per_agent_info:
             info.update(self._get_per_agent_info())
-        self.metrics.append(info)
+        self.metrics.append(info.copy())
         return info
 
     def _compute_observations(self):
