@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -17,7 +16,6 @@ from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
 
 import sumo_rl
-
 
 if __name__ == "__main__":
     ray.init()
@@ -68,7 +66,7 @@ if __name__ == "__main__":
         config=config.to_dict(),
     )
 
-### 2023-7-18, 原程序运序报错，修改如下：
+# 2023-7-18, 原程序运序报错，修改如下：
 """
 pettingzoo_env.py
 line 139: info = self.env.reset(seed=seed, return_info=True, options=options)

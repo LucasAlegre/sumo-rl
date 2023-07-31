@@ -35,13 +35,13 @@ if __name__ == "__main__":
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=50, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=400000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=4000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
 
     out_csv = "outputs/2way-single-intersection/sarsa_lambda"
 
-    write_route_file("nets/2way-single-intersection/single-intersection-gen.rou.xml", 400000, 100000)
+    write_route_file("nets/2way-single-intersection/single-intersection-gen.rou.xml", 4000, 1000)
     env = SumoEnvironment(
         net_file="nets/2way-single-intersection/single-intersection.net.xml",
         single_agent=True,
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     )
 
     for run in range(1, args.runs + 1):
-        obs = env.reset()
+        obs = env.reset()  # single_agent=True , obs = (observations, info)
         agent = TrueOnlineSarsaLambda(
             env.observation_space,
             env.action_space,
@@ -68,15 +68,16 @@ if __name__ == "__main__":
         done = False
         if args.fixed:
             while not done:
-                _, _, done, _ = env.step({})
+                _, _, done, _, _ = env.step({})  # single_agent=True
         else:
+            state = obs[0]
             while not done:
-                action = agent.act(obs)
+                action = agent.act(state)
 
-                next_obs, r, done, _ = env.step(action=action)
+                next_obs, r, done, _, _ = env.step(action=action)  # single_agent=True, next_obs = observations
 
-                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done=done)
+                agent.learn(state=state, action=action, reward=r, next_state=next_obs, done=done)
 
-                obs = next_obs
+                state = next_obs
 
         env.save_csv(out_csv, run)

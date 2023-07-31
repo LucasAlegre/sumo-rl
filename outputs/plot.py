@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-
 sns.set(
     style="darkgrid",
     rc={
@@ -56,6 +55,13 @@ def plot_df(df, color, xaxis, yaxis, ma=1, label=""):
     # plt.xlim([40000, 70000])
 
 
+def convert_to_float(x) -> float:
+    try:
+        return float(x)
+    except:
+        return float(0)
+
+
 if __name__ == "__main__":
     prs = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="""Plot Traffic Signal Metrics"""
@@ -80,7 +86,8 @@ if __name__ == "__main__":
     for file in args.f:
         main_df = pd.DataFrame()
         for f in glob.glob(file + "*"):
-            df = pd.read_csv(f, sep=args.sep)
+            df = pd.read_csv(f, sep=args.sep, on_bad_lines="skip", usecols=[args.xaxis, args.yaxis], converters={args.xaxis: convert_to_float, args.yaxis: convert_to_float})
+
             if main_df.empty:
                 main_df = df
             else:
