@@ -35,13 +35,13 @@ if __name__ == "__main__":
     prs.add_argument("-maxgreen", dest="max_green", type=int, default=50, required=False, help="Maximum green time.\n")
     prs.add_argument("-gui", action="store_true", default=False, help="Run with visualization on SUMO.\n")
     prs.add_argument("-fixed", action="store_true", default=False, help="Run with fixed timing traffic signals.\n")
-    prs.add_argument("-s", dest="seconds", type=int, default=4000, required=False, help="Number of simulation seconds.\n")
+    prs.add_argument("-s", dest="seconds", type=int, default=400000, required=False, help="Number of simulation seconds.\n")
     prs.add_argument("-runs", dest="runs", type=int, default=1, help="Number of runs.\n")
     args = prs.parse_args()
 
     out_csv = "outputs/2way-single-intersection/sarsa_lambda"
 
-    write_route_file("nets/2way-single-intersection/single-intersection-gen.rou.xml", 4000, 1000)
+    write_route_file("nets/2way-single-intersection/single-intersection-gen.rou.xml", 400000, 100000)
     env = SumoEnvironment(
         net_file="nets/2way-single-intersection/single-intersection.net.xml",
         single_agent=True,
@@ -74,7 +74,9 @@ if __name__ == "__main__":
             while not done:
                 action = agent.act(state)
 
-                next_obs, r, done, _, _ = env.step(action=action)  # single_agent=True, next_obs = observations
+                next_obs, r, done, truncated, _ = env.step(action=action)  # single_agent=True, next_obs = observations
+
+                done = done or truncated  # added by xnpeng, 2023-07-31
 
                 agent.learn(state=state, action=action, reward=r, next_state=next_obs, done=done)
 
