@@ -58,9 +58,8 @@ def run(use_gui=False, episodes=50):
                                 state=obs_it[ts_id2], action=actions[ts_id2], reward=r[ts_id2], next_state=next_obs[ts_id2], done=done[ts_id2]
                             )
                             obs_it[ts_id2] = next_obs[ts_id2]
-                print("count=", count)
             except:
-                print("except, count=", count)
+                print("except======count=", count)
 
     env.close()
 
