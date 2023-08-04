@@ -1,6 +1,5 @@
 import os
 import sys
-import numpy as np
 
 import fire
 
@@ -12,13 +11,21 @@ else:
 
 from linear_rl.true_online_sarsa import TrueOnlineSarsaLambda
 
-from sumo_rl import grid4x4
+from sumo_rl import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
 
 
 def run(use_gui=False, episodes=50):
     fixed_tl = False
 
-    env = grid4x4(out_csv_name="outputs/grid4x4/test", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = grid4x4(out_csv_name="outputs/grid4x4/grid4x4", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    env = arterial4x4(out_csv_name="outputs/grid4x4/arterial4x4", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = cologne1(out_csv_name="outputs/grid4x4/cologne1", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = cologne3(out_csv_name="outputs/grid4x4/cologne3", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = cologne8(out_csv_name="outputs/grid4x4/cologne8", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = ingolstadt1(out_csv_name="outputs/grid4x4/ingolstadt1", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = ingolstadt7(out_csv_name="outputs/grid4x4/ingolstadt7", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = ingolstadt21(out_csv_name="outputs/grid4x4/ingolstadt21", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+
     env.reset()
 
     agents = {
@@ -37,11 +44,6 @@ def run(use_gui=False, episodes=50):
     for ep in range(1, episodes + 1):
         obs = env.reset()
         done = {agent: False for agent in env.agents}
-        print("\n==================ep=", ep)
-        print("done=", done)
-        print("env.agents.length=", len(env.agents), "env.agents[0]=", env.agents[0])
-
-        count = 0
 
         if fixed_tl:
             while not done["__all__"]:
@@ -49,7 +51,6 @@ def run(use_gui=False, episodes=50):
         else:
             try:
                 while not done[env.agents[0]]:
-                    count += 1
                     for obs_it in obs:
                         actions = {ts_id: agents[ts_id].act(obs_it[ts_id]) for ts_id in obs_it.keys()}
                         next_obs, r, done, truncated, _ = env.step(actions=actions)
@@ -59,7 +60,7 @@ def run(use_gui=False, episodes=50):
                             )
                             obs_it[ts_id2] = next_obs[ts_id2]
             except:
-                print("except======count=", count)
+                print("except=")
 
     env.close()
 
