@@ -98,3 +98,4 @@ if __name__ == "__main__":
         plt.savefig(args.output + ".pdf", bbox_inches="tight")
 
     plt.show()
+
