@@ -18,7 +18,7 @@ import sumo_rl
 if __name__ == "__main__":
     RESOLUTION = (3200, 1800)
 
-    env = sumo_rl.grid4x4(use_gui=False, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION)
+    env = sumo_rl.grid4x4(use_gui=True, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION)
 
     max_time = env.unwrapped.env.sim_max_time
     delta_time = env.unwrapped.env.delta_time
