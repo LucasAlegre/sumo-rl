@@ -112,4 +112,7 @@ settings.json
 # output files
 *.csv
 /logs
-/wandb
+/wandb/
+/model/
+/tensorboard/
+/rl/tensorboard/
