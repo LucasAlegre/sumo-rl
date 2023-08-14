@@ -29,15 +29,17 @@ print("mean_reward:", mean_reward, "std_reward:", std_reward)
 # 保存模型到相应的目录
 model.save("./model/CartPole.pkl")
 
+del model
+
 # 导入模型
-model2 = DQN.load("./model/CartPole.pkl")
+model = DQN.load("./model/CartPole.pkl")
 
 state = env.reset()
 done = False
 score = 0
 while not done:
     # 预测动作
-    action, _ = model2.predict(observation=state)
+    action, _ = model.predict(observation=state)
     # 与环境互动
     state, reward, done, truncated, info = env.step(action=action)
     score += reward
