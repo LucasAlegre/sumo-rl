@@ -1,5 +1,5 @@
-import gymnasium as  gym
-from gymnasium import wrappers
+import gym
+from gym import wrappers
 
 import torch
 import torch.nn as nn
