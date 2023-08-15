@@ -116,3 +116,4 @@ settings.json
 /model/
 /tensorboard/
 /rl/tensorboard/
+/rl/model/
