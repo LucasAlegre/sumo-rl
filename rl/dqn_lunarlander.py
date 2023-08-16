@@ -2,9 +2,22 @@ import gymnasium as gym
 
 from stable_baselines3 import DQN
 from stable_baselines3.common.evaluation import evaluate_policy
+from stable_baselines3.common.vec_env import VecVideoRecorder, DummyVecEnv
 
 # Create environment
-env = gym.make("LunarLander-v2", render_mode="rgb_array")
+# env = gym.make("LunarLander-v2", render_mode="rgb_array")
+
+# Record video
+env_id = "LunarLander-v2"
+video_folder = "./videos/"
+video_length = 1000
+env = DummyVecEnv([lambda: gym.make(env_id, render_mode="rgb_array")])
+env.reset()
+env = VecVideoRecorder(env, video_folder,
+                       record_video_trigger=lambda x: x == 0,
+                       video_length=video_length,
+                       name_prefix=f"random-agent-LunarLander-v2")
+# end record video
 
 # Instantiate the agent
 model = DQN("MlpPolicy", env, verbose=1)
