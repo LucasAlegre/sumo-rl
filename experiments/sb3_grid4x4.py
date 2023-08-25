@@ -14,10 +14,13 @@ from tqdm import trange
 
 import sumo_rl
 
+RENDER_MODE = os.environ.get("RENDER_MODE", "human")
+USE_GUI = os.environ.get("USE_GUI", "True").lower() == "true"
+
 if __name__ == "__main__":
     RESOLUTION = (3200, 1800)
 
-    env = sumo_rl.grid4x4(use_gui=True, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION, render_mode="human")
+    env = sumo_rl.grid4x4(use_gui=USE_GUI, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION, render_mode=RENDER_MODE)
 
     max_time = env.unwrapped.env.sim_max_time
     delta_time = env.unwrapped.env.delta_time
