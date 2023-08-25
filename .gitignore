@@ -117,3 +117,7 @@ settings.json
 /tensorboard/
 /rl/tensorboard/
 /rl/model/
+/rl/logs/
+/rl/log/
+/rl/tmp/
+/rl/videos/
