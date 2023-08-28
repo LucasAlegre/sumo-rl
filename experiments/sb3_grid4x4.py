@@ -11,8 +11,12 @@ from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import VecMonitor
 from tqdm import trange
+import matplotlib.pyplot as plt
 
 import sumo_rl
+
+os.environ['LIBSUMO_AS_TRACI'] = "1"
+del os.environ['LIBSUMO_AS_TRACI']
 
 RENDER_MODE = os.environ.get("RENDER_MODE", "human")
 USE_GUI = os.environ.get("USE_GUI", "True").lower() == "true"
@@ -51,7 +55,19 @@ if __name__ == "__main__":
     print("Starting training")
     model.learn(total_timesteps=50000)
 
-    print("Training finished. Starting evaluation")
+    print("Saving model")
+    model.save("./model/ppo_grid4x4")
+
+    # del model  # delete trained model to demonstrate loading
+    #
+    # print("Loading model")
+    # env = sumo_rl.grid4x4(use_gui=True, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION, render_mode="human")
+    # env = ss.pettingzoo_env_to_vec_env_v1(env)
+    # env = ss.concat_vec_envs_v1(env, 2, num_cpus=1, base_class="stable_baselines3")
+    # env = VecMonitor(env)
+    # model = PPO.load("./model/ppo_grid4x4", env=env)
+
+    print("Evaluating model")
     mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=1)
 
     print(mean_reward)
