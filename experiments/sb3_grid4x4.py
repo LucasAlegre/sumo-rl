@@ -21,6 +21,9 @@ del os.environ['LIBSUMO_AS_TRACI']
 RENDER_MODE = os.environ.get("RENDER_MODE", "human")
 USE_GUI = os.environ.get("USE_GUI", "True").lower() == "true"
 
+display = SmartDisplay(visible=False, size=(800, 600))
+display.start()
+
 if __name__ == "__main__":
     RESOLUTION = (3200, 1800)
 
@@ -53,19 +56,19 @@ if __name__ == "__main__":
     )
 
     print("Starting training")
-    model.learn(total_timesteps=50000)
+    # model.learn(total_timesteps=50000)
 
     print("Saving model")
-    model.save("./model/ppo_grid4x4")
+    # model.save("./model/ppo_grid4x4")
 
-    # del model  # delete trained model to demonstrate loading
+    del model  # delete trained model to demonstrate loading
     #
-    # print("Loading model")
-    # env = sumo_rl.grid4x4(use_gui=True, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION, render_mode="human")
-    # env = ss.pettingzoo_env_to_vec_env_v1(env)
-    # env = ss.concat_vec_envs_v1(env, 2, num_cpus=1, base_class="stable_baselines3")
-    # env = VecMonitor(env)
-    # model = PPO.load("./model/ppo_grid4x4", env=env)
+    print("Loading model")
+    env = sumo_rl.grid4x4(use_gui=True, out_csv_name="outputs/grid4x4/ppo_test", virtual_display=RESOLUTION, render_mode="rgb_array")
+    env = ss.pettingzoo_env_to_vec_env_v1(env)
+    env = ss.concat_vec_envs_v1(env, 2, num_cpus=1, base_class="stable_baselines3")
+    env = VecMonitor(env)
+    model = PPO.load("./model/ppo_grid4x4", env=env)
 
     print("Evaluating model")
     mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=1)
@@ -77,7 +80,6 @@ if __name__ == "__main__":
     print("Starting rendering")
     num_steps = (max_time // delta_time) + 1
 
-    obs = env.reset()
 
     if os.path.exists("temp"):
         shutil.rmtree("temp")
@@ -86,11 +88,11 @@ if __name__ == "__main__":
     # img = disp.grab()
     # img.save(f"temp/img0.jpg")
 
-    img = env.render()
+    obs = env.reset()
     for t in trange(num_steps):
         actions, _ = model.predict(obs, state=None, deterministic=False)
         obs, reward, done, info = env.step(actions)
-        img = env.render()
+        img = env.render(mode="rgb_array")
         img.save(f"temp/img{t}.jpg")
 
     subprocess.run(["ffmpeg", "-y", "-framerate", "5", "-i", "temp/img%d.jpg", "output.mp4"])
@@ -116,3 +118,5 @@ if __name__ == "__main__":
 #   - ray[rllib] 2.5.0
 # 3. 必须使用gui模式(use_gui=True)，否则无法启动服务，客户端无法连接，导致connection refused错误
 # 4. 关闭LIBSUMO_AS_TRACI环境变量（unset LIBSUMO_AS_TRACI），使用client-server模式，启动sumo服务,使用traci客户端连接，采用服务间的通信，而非进程间通信。
+# 5. 无法使用render_mode="rgb_array"返回数组，只能使用render_mode="human"返回图像。
+
