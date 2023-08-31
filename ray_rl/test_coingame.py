@@ -1,5 +1,6 @@
-import coin_game_env as coin
+from ray.rllib.examples import coin_game_env as coin
 import argparse
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--tf", action="store_true")
