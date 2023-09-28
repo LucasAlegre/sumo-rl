@@ -7,6 +7,8 @@ tokenizer = AutoTokenizer.from_pretrained("togethercomputer/RedPajama-INCITE-Cha
 model = AutoModelForCausalLM.from_pretrained("togethercomputer/RedPajama-INCITE-Chat-3B-v1", torch_dtype=torch.float16)
 model = model.to('cuda:0')
 
+# python -c "from huggingface_hub.hf_api import HfFolder; HfFolder.save_token('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')"
+
 
 class StopOnTokens(StoppingCriteria):
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
