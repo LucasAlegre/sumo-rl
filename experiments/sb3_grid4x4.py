@@ -56,10 +56,10 @@ if __name__ == "__main__":
     )
 
     print("Starting training")
-    # model.learn(total_timesteps=50000)
+    model.learn(total_timesteps=50000)
 
     print("Saving model")
-    # model.save("./model/ppo_grid4x4")
+    model.save("./model/ppo_grid4x4")
 
     del model  # delete trained model to demonstrate loading
     #
@@ -120,3 +120,21 @@ if __name__ == "__main__":
 # 4. 关闭LIBSUMO_AS_TRACI环境变量（unset LIBSUMO_AS_TRACI），使用client-server模式，启动sumo服务,使用traci客户端连接，采用服务间的通信，而非进程间通信。
 # 5. 无法使用render_mode="rgb_array"返回数组，只能使用render_mode="human"返回图像。
 
+# 测试说明：2021-10-30
+# 检查环境，见列表 libs-mac/ubuntu-2023-10-30.txt
+# 运行程序, 报错：Too many parameters for <class 'gymnasium.core.Wrapper'>; actual 4, expected 2
+# 1, create -n sumoai-sb3-grid4x4 python=3.10
+#  pip install pytorch==2.0.1 torchvision==2.0.1 torchaudio==2.0.1
+#  pip install stable-baselines3==2.0.0a13
+#  pip install pettingzoo==1.23.1
+#  pip install supersuit==3.9.0
+#  pip install sumolib==1.18.0
+#  pip install traci==1.18.0
+#  pip install gymnasium==0.28.1
+#  pip install ray[rllib]==2.5.0
+#  pip install pyvirtualdisplay
+#
+#  ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+# supersuit 3.9.0 requires gymnasium>=0.28.1, but you have gymnasium 0.26.3 which is incompatible.
+# pettingzoo 1.23.1 requires gymnasium>=0.28.0, but you have gymnasium 0.26.3 which is incompatible.
+# stable-baselines3 2.0.0a13 requires gymnasium==0.28.1, but you have gymnasium 0.26.3 which is incompatible.

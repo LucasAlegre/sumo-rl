@@ -67,3 +67,9 @@ def run(use_gui=False, episodes=50):
 
 if __name__ == "__main__":
     fire.Fire(run)
+
+# 测试说明 2023-10-30
+# 1. 检查环境：libs-mac/ubuntu-2023-10-30.txt
+# 2. python experiments/sarsa_resco.py
+#    ubuntu运行成功，macOS运行正常。
+
