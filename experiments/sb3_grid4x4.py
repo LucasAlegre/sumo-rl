@@ -21,8 +21,8 @@ del os.environ['LIBSUMO_AS_TRACI']
 RENDER_MODE = os.environ.get("RENDER_MODE", "human")
 USE_GUI = os.environ.get("USE_GUI", "True").lower() == "true"
 
-display = SmartDisplay(visible=False, size=(800, 600))
-display.start()
+# display = SmartDisplay(visible=False, size=(800, 600))
+# display.start()
 
 if __name__ == "__main__":
     RESOLUTION = (3200, 1800)
@@ -133,8 +133,7 @@ if __name__ == "__main__":
 #  pip install gymnasium==0.28.1
 #  pip install ray[rllib]==2.5.0
 #  pip install pyvirtualdisplay
-#
-#  ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-# supersuit 3.9.0 requires gymnasium>=0.28.1, but you have gymnasium 0.26.3 which is incompatible.
-# pettingzoo 1.23.1 requires gymnasium>=0.28.0, but you have gymnasium 0.26.3 which is incompatible.
-# stable-baselines3 2.0.0a13 requires gymnasium==0.28.1, but you have gymnasium 0.26.3 which is incompatible.
+# 2, 运行时报错，显示Nvidia driver/library version mismatch. 这是由于重装pytorch导致的，需要重新安装Nvidia驱动。
+#  按官网指导安装了新版本，driver 545.23.06, cuda toolkit 12.3。
+# 3, ubuntu里按上面要求重装后，运行成功。
+# 4, macos里，重装torch等libs，运行时出现No OpenGL support错误，关闭SmartDisplay后，开启sumo-gui模式运行成功。
