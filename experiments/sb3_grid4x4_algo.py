@@ -136,11 +136,16 @@ def grid4x4_dqn():
     env.close()
 
 
-def grid4x4_sac():
+def grid4x4_a2c():
+    pass
+
+
+def grid4x4_trpo():
     pass
 
 
 if __name__ == "__main__":
-    # grid4x4_ppo()
+    grid4x4_ppo()
     # grid4x4_dqn()
-    grid4x4_sac()
+    # grid4x4_a2c()
+    # grid4x4_trpo()

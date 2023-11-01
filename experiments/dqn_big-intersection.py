@@ -41,3 +41,7 @@ model = DQN(
     verbose=1,
 )
 model.learn(total_timesteps=100000)
+
+# 在Mac/Ubuntu上，在sumoai/sumoai-sb3-grid4x4中运行成功。
+# 1，修改需求，或者说，整理当涂数据，使之成为本试验的需求数据。
+# 2，修改算法，尝试使用PPO，QL，A2C, TRPO或者别的算法。
