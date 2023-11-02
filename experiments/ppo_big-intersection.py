@@ -25,6 +25,7 @@ env = SumoEnvironment(
     yellow_time=4,
     min_green=5,
     max_green=60,
+    render_mode="rgb_array",
 )
 
 model = PPO(
@@ -50,7 +51,7 @@ obs = vec_env.reset()
 for i in range(1000):
     action, _states = model.predict(obs, deterministic=True)
     obs, rewards, dones, info = vec_env.step(action)
-    vec_env.render()
+    vec_env.render("rgb_array")
 
 # 在Mac/Ubuntu上，在env:sumoai-sb3-grid4x4中运行成功。
 # 1，修改需求，或者说，整理当涂数据，使之成为本试验的需求数据。
