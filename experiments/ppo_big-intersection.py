@@ -25,7 +25,7 @@ env = SumoEnvironment(
     yellow_time=4,
     min_green=5,
     max_green=60,
-    render_mode="rgb_array",
+    render_mode="human",
 )
 
 model = PPO(
@@ -53,6 +53,6 @@ obs = vec_env.reset()
 for i in range(1000):
     action, _states = model.predict(obs, deterministic=True)
     obs, rewards, dones, info = vec_env.step(action)
-    vec_env.render("rgb_array")
+    vec_env.render("human")
 
 #
