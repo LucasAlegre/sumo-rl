@@ -38,12 +38,13 @@ model = DQN(
     exploration_fraction=0.05,
     exploration_final_eps=0.01,
     verbose=1,
+    tensorboard_log="./tensorboard/big-intersection/",
 )
-model.learn(total_timesteps=100000)
+# model.learn(total_timesteps=100000)
 
 
 # Save, load, evaluate and predict the model
-model.save("./model/dqn_big-intersection")
+# model.save("./model/dqn_big-intersection")
 del model
 
 model = DQN.load("./model/dqn_big-intersection", env=env)
@@ -55,7 +56,7 @@ obs = vec_env.reset()
 for i in range(1000):
     action, _states = model.predict(obs, deterministic=True)
     obs, rewards, dones, info = vec_env.step(action)
-    vec_env.render("human")
+    vec_env.render("rgb_array")
 
 # 在Mac/Ubuntu上，在env:sumoai-sb3-grid4x4中运行成功。
 # 1，修改需求，或者说，整理当涂数据，使之成为本试验的需求数据。
