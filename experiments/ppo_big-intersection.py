@@ -45,6 +45,8 @@ del model
 model = PPO.load("./model/ppo_big-intersection", env=env)
 mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
 
+print("mean_reward:", mean_reward, "std_reward:", std_reward)
+
 # Enjoy trained agent
 vec_env = model.get_env()
 obs = vec_env.reset()
@@ -53,6 +55,4 @@ for i in range(1000):
     obs, rewards, dones, info = vec_env.step(action)
     vec_env.render("rgb_array")
 
-# 在Mac/Ubuntu上，在env:sumoai-sb3-grid4x4中运行成功。
-# 1，修改需求，或者说，整理当涂数据，使之成为本试验的需求数据。
-# 2，修改算法，尝试使用PPO，QL，A2C, TRPO或者别的算法。
+#
