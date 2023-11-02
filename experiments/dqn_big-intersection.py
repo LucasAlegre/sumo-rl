@@ -25,6 +25,7 @@ env = SumoEnvironment(
     yellow_time=4,
     min_green=5,
     max_green=60,
+    render_mode="rgb_array"
 )
 
 model = DQN(
