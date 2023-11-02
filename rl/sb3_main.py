@@ -119,6 +119,6 @@ def pendulum_sac():
 if __name__ == '__main__':
     # cartpole_ppo()
     # cartpole_dqn()
-    # cartpole_a2c()
+    cartpole_a2c()
     # cartpole_sac()
-    pendulum_sac()
+    # pendulum_sac()

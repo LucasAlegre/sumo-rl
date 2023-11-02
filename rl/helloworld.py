@@ -1,9 +1,9 @@
-import gym
+import gymnasium as gym
 
 env_name = "CartPole-v1"
 env = gym.make(env_name, render_mode="human")          # 导入环境
 
-episodes = 10
+episodes = 100
 for episode in range(1, episodes + 1):
     state = env.reset()
     done = False

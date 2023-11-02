@@ -3,7 +3,6 @@ import sys
 
 import gymnasium as gym
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -12,9 +11,9 @@ else:
 import numpy as np
 import traci
 from stable_baselines3.dqn.dqn import DQN
+from stable_baselines3.common.evaluation import evaluate_policy
 
 from sumo_rl import SumoEnvironment
-
 
 env = SumoEnvironment(
     net_file="nets/big-intersection/big-intersection.net.xml",
@@ -42,6 +41,22 @@ model = DQN(
 )
 model.learn(total_timesteps=100000)
 
-# 在Mac/Ubuntu上，在sumoai/sumoai-sb3-grid4x4中运行成功。
+
+# Save, load, evaluate and predict the model
+model.save("./model/dqn_big-intersection")
+del model
+
+model = DQN.load("./model/dqn_big-intersection", env=env)
+mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
+
+# Enjoy trained agent
+vec_env = model.get_env()
+obs = vec_env.reset()
+for i in range(1000):
+    action, _states = model.predict(obs, deterministic=True)
+    obs, rewards, dones, info = vec_env.step(action)
+    vec_env.render("human")
+
+# 在Mac/Ubuntu上，在env:sumoai-sb3-grid4x4中运行成功。
 # 1，修改需求，或者说，整理当涂数据，使之成为本试验的需求数据。
 # 2，修改算法，尝试使用PPO，QL，A2C, TRPO或者别的算法。
