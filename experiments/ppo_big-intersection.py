@@ -58,4 +58,4 @@ print("Done")
 # Ubuntu：use_gui=True,render_mode="rgb_array",vec_env.render("rgb_array") 在图形状态训练及评估正常，enjoy没有消息。
 # 在terminal上去行时报错：AttributeError: type object 'gui' has no attribute 'DEFAULT_VIEW'
 
-# Ubuntu：use_gui=True,render_mode="human",vec_env.render("human") ？
+# Ubuntu：use_gui=True,render_mode="human",vec_env.render("human") ,在图形状态下运行时，启动了sumo-gui。
