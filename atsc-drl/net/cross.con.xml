@@ -1,7 +1,38 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<connections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/connections_file.xsd">
-	<connection from="1i" to="2o"/>
-	<connection from="2i" to="1o"/>
-	<connection from="3i" to="4o"/>
-	<connection from="4i" to="3o"/>
+<connections>
+    <!--从北到南,右转-->
+    <connection from="n_t" to="t_w" fromLane="0" toLane="0" />
+    <!--从北到南,直行-->
+    <connection from="n_t" to="t_s" fromLane="1" toLane="1"/>
+    <!--从北到南,左转-->
+    <connection from="n_t" to="t_e" fromLane="2" toLane="2"/>
+    <!--从北到南,调头-->
+    <connection from="n_t" to="t_n" fromLane="3" toLane="3"/>
+
+    <!--从南到北，右转-->
+    <connection from="s_t" to="t_e" fromLane="0" toLane="0"/>
+    <!--从南到北，直行-->
+    <connection from="s_t" to="t_n" fromLane="1" toLane="1"/>
+    <!--从南到北，左转-->
+    <connection from="s_t" to="t_w" fromLane="2" toLane="2"/>
+    <!--从南到北，调头-->
+    <connection from="s_t" to="t_s" fromLane="3" toLane="3"/>
+
+    <!--从东到西，右转-->
+    <connection from="e_t" to="t_n" fromLane="0" toLane="0"/>
+    <!--从东到西，直行-->
+    <connection from="e_t" to="t_w" fromLane="1" toLane="1"/>
+    <!--从东到西，左转-->
+    <connection from="e_t" to="t_s" fromLane="2" toLane="2"/>
+    <!--从东到西，调头-->
+    <connection from="e_t" to="t_e" fromLane="3" toLane="3"/>
+
+    <!--从西到东，右转-->
+    <connection from="w_t" to="t_s" fromLane="0" toLane="0"/>
+    <!--从西到东，直行-->
+    <connection from="w_t" to="t_e" fromLane="1" toLane="1"/>
+    <!--从西到东，左转-->
+    <connection from="w_t" to="t_n" fromLane="2" toLane="2"/>
+    <!--从西到东，右转-->
+    <connection from="w_t" to="t_w" fromLane="3" toLane="3"/>
+
 </connections>

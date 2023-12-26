@@ -1,0 +1,10 @@
+<routes>
+    <route id="ns" edges="n_t t_s"/>
+    <route id="sn" edges="s_t t_n"/>
+    <route id="we" edges="w_t t_e"/>
+    <route id="ew" edges="e_t t_w"/>
+    <flow id="flow_ns" route="ns" begin="0" end="100000" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn" route="sn" begin="0" end="100000" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="we" begin="0" end="100000" probability="0.5" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew" route="ew" begin="0" end="100000" probability="0.5" departSpeed="max" departPos="base" departLane="best"/>
+</routes>

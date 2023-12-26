@@ -1,0 +1,7 @@
+<WAUT refTime="0" id="myWAUT" startProg="weekday_night">
+    <wautSwitch time="21600" to="weekday_day"/>    <!-- monday, 6.00 -->
+    <wautSwitch time="79200" to="weekday_night"/>  <!-- monday, 22.00 -->
+    <wautSwitch time="108000" to="weekday_day"/>   <!-- tuesday, 6.00 -->
+    <wautSwitch time="453600" to="weekend_day"/>   <!-- saturday, 6.00 -->
+</WAUT>
+<!--These definitions must be loaded as additional-file at the start of the simulation.-->
