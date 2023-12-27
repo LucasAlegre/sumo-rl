@@ -5,7 +5,7 @@
     </input>
     <time>
         <begin value="0"/>
-        <end value="20000"/>
+        <end value="100000"/>
     </time>
     <viewsettings>
         <scheme name="real world" />
