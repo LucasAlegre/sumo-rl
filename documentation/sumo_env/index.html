@@ -1,15 +1,15 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Petting Zoo Sumo Environment" href="../pz_env/" /><link rel="prev" title="Install" href="../../install/install/" />
 
-    <!-- Generated with Sphinx 7.1.0 and Furo 2023.05.20 -->
+    <!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
         <title>Sumo Environment - SUMO-RL 1.4.3 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=362ab14a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=e6660623a769aa55fea372102b9bf3151b292993" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
     
     
 
@@ -227,10 +227,10 @@
         </div>
         <article role="main">
           <section id="sumo-environment">
-<h1>Sumo Environment<a class="headerlink" href="#sumo-environment" title="Permalink to this heading">#</a></h1>
+<h1>Sumo Environment<a class="headerlink" href="#sumo-environment" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.env.</span></span><span class="sig-name descname"><span class="pre">SumoEnvironment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_file:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_file:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_csv_name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_gui:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">virtual_display:</span> <span class="pre">~typing.Tuple[int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int]</span> <span class="pre">=</span> <span class="pre">(3200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">1800)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_time:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_seconds:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depart_delay:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiting_time_memory:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_teleport:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_time:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yellow_time:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_green:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_green:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_agent:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_fn:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.Callable</span> <span class="pre">|</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">'diff-waiting-time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation_class:</span> <span class="pre">~sumo_rl.environment.observations.ObservationFunction</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'sumo_rl.environment.observations.DefaultObservationFunction'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_system_info:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_per_agent_info:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo_seed:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_ts:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo_warnings:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_sumo_cmd:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_mode:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.env.</span></span><span class="sig-name descname"><span class="pre">SumoEnvironment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_file:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_file:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_csv_name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_gui:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">virtual_display:</span> <span class="pre">~typing.Tuple[int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int]</span> <span class="pre">=</span> <span class="pre">(3200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">1800)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_time:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_seconds:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">20000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_depart_delay:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiting_time_memory:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_to_teleport:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_time:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yellow_time:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_green:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_green:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_agent:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_fn:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.Callable</span> <span class="pre">|</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">'diff-waiting-time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observation_class:</span> <span class="pre">~sumo_rl.environment.observations.ObservationFunction</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'sumo_rl.environment.observations.DefaultObservationFunction'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_system_info:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_per_agent_info:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo_seed:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed_ts:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo_warnings:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_sumo_cmd:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_mode:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment" title="Link to this definition">#</a></dt>
 <dd><p>SUMO Environment for Traffic Signal Control.</p>
 <p>Class that implements a gym.Env interface for traffic signal control using the SUMO simulator.
 See <a class="reference external" href="https://sumo.dlr.de/docs/">https://sumo.dlr.de/docs/</a> for details on SUMO.
@@ -267,58 +267,58 @@ See <a class="reference external" href="https://gymnasium.farama.org/">https://g
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.action_space">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_space</span></span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.action_space" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">action_space</span></span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.action_space" title="Link to this definition">#</a></dt>
 <dd><p>Return the action space of a traffic signal.</p>
 <p>Only used in case of single-agent environment.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.action_spaces">
-<span class="sig-name descname"><span class="pre">action_spaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Discrete</span></span></span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.action_spaces" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">action_spaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Discrete</span></span></span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.action_spaces" title="Link to this definition">#</a></dt>
 <dd><p>Return the action space of a traffic signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.close">
-<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.close" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.close" title="Link to this definition">#</a></dt>
 <dd><p>Close the environment and stop the SUMO simulation.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.encode" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.encode" title="Link to this definition">#</a></dt>
 <dd><p>Encode the state of the traffic signal into a hashable object.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.observation_space">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.observation_space" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">observation_space</span></span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.observation_space" title="Link to this definition">#</a></dt>
 <dd><p>Return the observation space of a traffic signal.</p>
 <p>Only used in case of single-agent environment.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.observation_spaces">
-<span class="sig-name descname"><span class="pre">observation_spaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.observation_spaces" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">observation_spaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.observation_spaces" title="Link to this definition">#</a></dt>
 <dd><p>Return the observation space of a traffic signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.render" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.render" title="Link to this definition">#</a></dt>
 <dd><p>Render the environment.</p>
 <p>If render_mode is “human”, the environment will be rendered in a GUI window using pyvirtualdisplay.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.reset" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.reset" title="Link to this definition">#</a></dt>
 <dd><p>Reset the environment.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.save_csv">
-<span class="sig-name descname"><span class="pre">save_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_csv_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.save_csv" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_csv_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.save_csv" title="Link to this definition">#</a></dt>
 <dd><p>Save metrics of the simulation to a .csv file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -332,13 +332,13 @@ See <a class="reference external" href="https://gymnasium.farama.org/">https://g
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.sim_step">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.sim_step" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.sim_step" title="Link to this definition">#</a></dt>
 <dd><p>Return current simulation second on SUMO.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.env.SumoEnvironment.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.step" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.env.SumoEnvironment.step" title="Link to this definition">#</a></dt>
 <dd><p>Apply the action(s) and then step the simulation for delta_time seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -437,9 +437,9 @@ See <a class="reference external" href="https://gymnasium.farama.org/">https://g
       
     </aside>
   </div>
-</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=6f151fd5"></script>
+</div><script src="../../_static/documentation_options.js?v=762e3934"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
 </html>
