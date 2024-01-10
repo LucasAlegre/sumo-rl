@@ -54,7 +54,7 @@ if __name__ == "__main__":
     )
 
     for run in range(1, args.runs + 1):
-        obs = env.reset()
+        obs, info = env.reset()
         agent = TrueOnlineSarsaLambda(
             env.observation_space,
             env.action_space,
@@ -65,17 +65,17 @@ if __name__ == "__main__":
             lamb=0.95,
         )
 
-        done = False
+        terminated, truncated = False, False
         if args.fixed:
-            while not done:
-                _, _, done, _ = env.step({})
+            while not (terminated or truncated):
+                _, _, terminated, truncated, _ = env.step({})
         else:
-            while not done:
+            while not (terminated or truncated):
                 action = agent.act(obs)
 
-                next_obs, r, done, _ = env.step(action=action)
+                next_obs, r, terminated, truncated, info = env.step(action=action)
 
-                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done=done)
+                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done=terminated)
 
                 obs = next_obs
 
