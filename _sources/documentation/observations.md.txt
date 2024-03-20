@@ -1,6 +1,6 @@
 # Observation Functions
 
-To create a new obsevation function, you must create a class that inherits from the ObservationFunction class:
+To create a new observation function, you must create a class that inherits from the ObservationFunction class:
 
 ```{eval-rst}
 .. autoclass:: sumo_rl.environment.observations.ObservationFunction
