@@ -236,7 +236,7 @@ class SumoEnvironment(gym.Env):
             self.sumo = traci.getConnection(self.label)
 
         if self.use_gui or self.render_mode is not None:
-            if "DEFAULT_VIEW" not in dir(traci.gui):
+            if "DEFAULT_VIEW" not in dir(traci.gui):  # traci.gui.DEFAULT_VIEW is not defined in libsumo
                 traci.gui.DEFAULT_VIEW = "View #0"
             self.sumo.gui.setSchema(traci.gui.DEFAULT_VIEW, "real world")
 
