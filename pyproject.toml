@@ -87,6 +87,7 @@ reportInvalidTypeVarUse = "none"
 # reportUnknownVariableType = "warning"  # -> raises warnings
 # reportUnknownArgumentType = "warning"  # -> raises warnings
 reportGeneralTypeIssues = "none"  # -> commented out raises 489 errors
+reportArgumentType = "none"
 reportUntypedFunctionDecorator = "none"  # -> pytest.mark.parameterize issues
 
 reportOptionalMemberAccess = "none" # -> commented out raises warnings
