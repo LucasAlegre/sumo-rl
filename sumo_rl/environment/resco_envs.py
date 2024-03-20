@@ -13,7 +13,7 @@ def grid4x4(parallel=True, **kwargs):
 
     Number of agents = 16
     Number of actions = 4
-    Agents have the same obsevation and action space
+    Agents have the same observation and action space
     """
     kwargs.update(
         {
@@ -33,7 +33,7 @@ def arterial4x4(parallel=True, **kwargs):
 
     Number of agents = 16
     Number of actions = 5
-    Agents have the same obsevation and action space
+    Agents have the same observation and action space
     """
     kwargs.update(
         {
@@ -73,7 +73,7 @@ def cologne3(parallel=True, **kwargs):
 
     Number of agents: 3
     Number of actions: 2 agents with 4 actions and 1 agent with 3 actions
-    2 agents have the same obsevation and action space and 1 has different spaces
+    2 agents have the same observation and action space and 1 has different spaces
     """
     kwargs.update(
         {

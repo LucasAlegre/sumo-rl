@@ -87,6 +87,7 @@ reportInvalidTypeVarUse = "none"
 # reportUnknownVariableType = "warning"  # -> raises warnings
 # reportUnknownArgumentType = "warning"  # -> raises warnings
 reportGeneralTypeIssues = "none"  # -> commented out raises 489 errors
+reportArgumentType = "none"
 reportUntypedFunctionDecorator = "none"  # -> pytest.mark.parameterize issues
 
 reportOptionalMemberAccess = "none" # -> commented out raises warnings
@@ -94,6 +95,8 @@ reportPrivateImportUsage = "warning" # -> this raises warnings because we use no
 
 reportPrivateUsage = "warning"
 reportUnboundVariable = "warning"
+reportCallIssue = "warning"
+reportAttributeAccessIssue = "warning"
 
 [tool.pytest.ini_options]
 filterwarnings = ['ignore:.*The environment .* is out of date.*']
