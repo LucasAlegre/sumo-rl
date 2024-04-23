@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../../genindex/" /><link rel="search" title="Search" href="../../search/" /><link rel="next" title="Observation Functions" href="../observations/" /><link rel="prev" title="Petting Zoo Sumo Environment" href="../pz_env/" />
 
-    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.01.29 -->
         <title>Traffic Signal - SUMO-RL 1.4.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
@@ -227,10 +227,10 @@
         </div>
         <article role="main">
           <section id="traffic-signal">
-<h1>Traffic Signal<a class="headerlink" href="#traffic-signal" title="Link to this heading">#</a></h1>
+<h1>Traffic Signal<a class="headerlink" href="#traffic-signal" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TrafficSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yellow_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sumo_rl.environment.traffic_signal.</span></span><span class="sig-name descname"><span class="pre">TrafficSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ts_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yellow_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_green</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">begin_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reward_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sumo</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal" title="Link to this definition">¶</a></dt>
 <dd><p>This class represents a Traffic Signal controlling an intersection.</p>
 <p>It is responsible for retrieving information and changing the traffic phase using the Traci API.</p>
 <dl class="simple">
@@ -254,19 +254,19 @@ Action space is discrete, corresponding to which green phase is going to be open
 The default reward function is ‘diff-waiting-time’. You can change the reward function by implementing a custom reward function and passing to the constructor of <a class="reference internal" href="../sumo_env/#sumo_rl.environment.env.SumoEnvironment" title="sumo_rl.environment.env.SumoEnvironment"><code class="xref py py-class docutils literal notranslate"><span class="pre">sumo_rl.environment.env.SumoEnvironment</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.compute_observation">
-<span class="sig-name descname"><span class="pre">compute_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.compute_observation" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_observation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.compute_observation" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the observation of the traffic signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.compute_reward">
-<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.compute_reward" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.compute_reward" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the reward of the traffic signal.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_accumulated_waiting_time_per_lane">
-<span class="sig-name descname"><span class="pre">get_accumulated_waiting_time_per_lane</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_accumulated_waiting_time_per_lane" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_accumulated_waiting_time_per_lane</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_accumulated_waiting_time_per_lane" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the accumulated waiting time per lane.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -277,46 +277,46 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_average_speed">
-<span class="sig-name descname"><span class="pre">get_average_speed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_average_speed" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_average_speed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_average_speed" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the average speed normalized by the maximum allowed speed of the vehicles in the intersection.</p>
 <p>Obs: If there are no vehicles in the intersection, it returns 1.0.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_density">
-<span class="sig-name descname"><span class="pre">get_lanes_density</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_density" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_lanes_density</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_density" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the density [0,1] of the vehicles in the incoming lanes of the intersection.</p>
 <p>Obs: The density is computed as the number of vehicles divided by the number of vehicles that could fit in the lane.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_queue">
-<span class="sig-name descname"><span class="pre">get_lanes_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_queue" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_lanes_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_queue" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the queue [0,1] of the vehicles in the incoming lanes of the intersection.</p>
 <p>Obs: The queue is computed as the number of vehicles halting divided by the number of vehicles that could fit in the lane.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_out_lanes_density">
-<span class="sig-name descname"><span class="pre">get_out_lanes_density</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_out_lanes_density" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_out_lanes_density</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_out_lanes_density" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the density of the vehicles in the outgoing lanes of the intersection.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_pressure">
-<span class="sig-name descname"><span class="pre">get_pressure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_pressure" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_pressure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_pressure" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the pressure (#veh leaving - #veh approaching) of the intersection.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_total_queued">
-<span class="sig-name descname"><span class="pre">get_total_queued</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_total_queued" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_total_queued</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_total_queued" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the total number of vehicles halting in the intersection.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.register_reward_fn">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_reward_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.register_reward_fn" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_reward_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.register_reward_fn" title="Link to this definition">¶</a></dt>
 <dd><p>Registers a reward function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -327,7 +327,7 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase">
-<span class="sig-name descname"><span class="pre">set_next_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">set_next_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_phase</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase" title="Link to this definition">¶</a></dt>
 <dd><p>Sets what will be the next green phase and sets yellow phase if the next phase is different than the current.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -338,13 +338,13 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.time_to_act">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_to_act</span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.time_to_act" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_to_act</span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.time_to_act" title="Link to this definition">¶</a></dt>
 <dd><p>Returns True if the traffic signal should act in the current step.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.update" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.update" title="Link to this definition">¶</a></dt>
 <dd><p>Updates the traffic signal state.</p>
 <p>If the traffic signal should act, it will set the next green phase and update the next action time.</p>
 </dd></dl>
@@ -437,7 +437,7 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=0a7c8d72"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
     </body>
