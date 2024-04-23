@@ -364,13 +364,25 @@ class SumoEnvironment(gym.Env):
 
     def _compute_observations(self):
         self.observations.update(
-            {ts: self.traffic_signals[ts].compute_observation() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act or self.fixed_ts}
+            {
+                ts: self.traffic_signals[ts].compute_observation()
+                for ts in self.ts_ids
+                if self.traffic_signals[ts].time_to_act or self.fixed_ts
+            }
         )
-        return {ts: self.observations[ts].copy() for ts in self.observations.keys() if self.traffic_signals[ts].time_to_act or self.fixed_ts}
+        return {
+            ts: self.observations[ts].copy()
+            for ts in self.observations.keys()
+            if self.traffic_signals[ts].time_to_act or self.fixed_ts
+        }
 
     def _compute_rewards(self):
         self.rewards.update(
-            {ts: self.traffic_signals[ts].compute_reward() for ts in self.ts_ids if self.traffic_signals[ts].time_to_act or self.fixed_ts}
+            {
+                ts: self.traffic_signals[ts].compute_reward()
+                for ts in self.ts_ids
+                if self.traffic_signals[ts].time_to_act or self.fixed_ts
+            }
         )
         return {ts: self.rewards[ts] for ts in self.rewards.keys() if self.traffic_signals[ts].time_to_act or self.fixed_ts}
 
@@ -589,7 +601,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
             else:
                 for _ in range(self.env.delta_time):
                     self.env._sumo_step()
-            
+
             self.env._compute_observations()
             self.rewards = self.env._compute_rewards()
             self.compute_info()
