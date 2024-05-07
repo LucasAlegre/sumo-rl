@@ -49,7 +49,11 @@ def run(use_gui=False, episodes=50):
 
                 for ts_id in next_obs.keys():
                     agents[ts_id].learn(
-                        state=obs[ts_id], action=actions[ts_id], reward=r[ts_id], next_state=next_obs[ts_id], done=terminated[ts_id]
+                        state=obs[ts_id],
+                        action=actions[ts_id],
+                        reward=r[ts_id],
+                        next_state=next_obs[ts_id],
+                        done=terminated[ts_id],
                     )
                     obs[ts_id] = next_obs[ts_id]
 
