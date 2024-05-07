@@ -9,8 +9,8 @@ def test_api():
         "sumo-rl-v0",
         num_seconds=100,
         use_gui=False,
-        net_file="nets/single-intersection/single-intersection.net.xml",
-        route_file="nets/single-intersection/single-intersection.rou.xml",
+        net_file="sumo_rl/nets/single-intersection/single-intersection.net.xml",
+        route_file="sumo_rl/nets/single-intersection/single-intersection.rou.xml",
     )
     env.reset()
     check_env(env.unwrapped, skip_render_check=True)
