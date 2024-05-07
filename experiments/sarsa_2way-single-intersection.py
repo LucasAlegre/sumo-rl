@@ -41,9 +41,9 @@ if __name__ == "__main__":
 
     out_csv = "outputs/2way-single-intersection/sarsa_lambda"
 
-    write_route_file("nets/2way-single-intersection/single-intersection-gen.rou.xml", 400000, 100000)
+    write_route_file("sumo_rl/nets/2way-single-intersection/single-intersection-gen.rou.xml", 400000, 100000)
     env = SumoEnvironment(
-        net_file="nets/2way-single-intersection/single-intersection.net.xml",
+        net_file="sumo_rl/nets/2way-single-intersection/single-intersection.net.xml",
         single_agent=True,
         route_file=args.route,
         out_csv_name=out_csv,

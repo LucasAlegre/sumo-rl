@@ -39,11 +39,12 @@ Documentation = "https://lucasalegre.github.io/sumo-rl"
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["sumo_rl", "sumo_rl.*"]
+where = ["sumo_rl", "sumo_rl.*"]
 
 [tool.setuptools.package-data]
-sumo_rl = [
-    "nets/*",
+"*" = ["*.xml", "*.sumocfg"]
+nets = [
+    "*.xml", "*.sumocfg",
 ]
 
 # Linters and Test tools #######################################################
