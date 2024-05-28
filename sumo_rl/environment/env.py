@@ -517,6 +517,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         self.seed()
         self.env = SumoEnvironment(**self._kwargs)
+        self.render_mode = self.env.render_mode
 
         self.agents = self.env.ts_ids
         self.possible_agents = self.env.ts_ids
