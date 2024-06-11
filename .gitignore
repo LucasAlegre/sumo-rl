@@ -113,3 +113,7 @@ settings.json
 *.csv
 /logs
 /wandb
+/model/
+/nets/.DS_Store
+/rl/
+/tensorboard/
