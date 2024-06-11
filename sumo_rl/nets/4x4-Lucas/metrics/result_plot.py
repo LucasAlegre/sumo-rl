@@ -1,9 +1,7 @@
-import re
 import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.interpolate import spline
 from sumolib.output import parse_fast
 
 

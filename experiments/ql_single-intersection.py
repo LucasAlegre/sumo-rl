@@ -24,7 +24,7 @@ if __name__ == "__main__":
         "-route",
         dest="route",
         type=str,
-        default="nets/single-intersection/single-intersection.rou.xml",
+        default="sumo_rl/nets/single-intersection/single-intersection.rou.xml",
         help="Route definition xml file.\n",
     )
     prs.add_argument("-a", dest="alpha", type=float, default=0.1, required=False, help="Alpha learning rate.\n")
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     out_csv = f"outputs/single-intersection/{experiment_time}_alpha{args.alpha}_gamma{args.gamma}_eps{args.epsilon}_decay{args.decay}"
 
     env = SumoEnvironment(
-        net_file="nets/single-intersection/single-intersection.net.xml",
+        net_file="sumo_rl/nets/single-intersection/single-intersection.net.xml",
         route_file=args.route,
         out_csv_name=out_csv,
         use_gui=args.gui,

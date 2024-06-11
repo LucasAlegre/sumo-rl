@@ -17,8 +17,8 @@ def grid4x4(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/grid4x4/grid4x4.net.xml",
-            "route_file": PATH + "/../nets/RESCO/grid4x4/grid4x4_1.rou.xml",
+            "net_file": PATH + "/nets/RESCO/grid4x4/grid4x4.net.xml",
+            "route_file": PATH + "/nets/RESCO/grid4x4/grid4x4_1.rou.xml",
             "num_seconds": 3600,
         }
     )
@@ -37,8 +37,8 @@ def arterial4x4(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/arterial4x4/arterial4x4.net.xml",
-            "route_file": PATH + "/../nets/RESCO/arterial4x4/arterial4x4_1.rou.xml",
+            "net_file": PATH + "/nets/RESCO/arterial4x4/arterial4x4.net.xml",
+            "route_file": PATH + "/nets/RESCO/arterial4x4/arterial4x4_1.rou.xml",
             "num_seconds": 3600,
         }
     )
@@ -56,8 +56,8 @@ def cologne1(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/cologne1/cologne1.net.xml",
-            "route_file": PATH + "/../nets/RESCO/cologne1/cologne1.rou.xml",
+            "net_file": PATH + "/nets/RESCO/cologne1/cologne1.net.xml",
+            "route_file": PATH + "/nets/RESCO/cologne1/cologne1.rou.xml",
             "begin_time": 25200,
             "num_seconds": 28800 - 25200,
         }
@@ -77,8 +77,8 @@ def cologne3(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/cologne3/cologne3.net.xml",
-            "route_file": PATH + "/../nets/RESCO/cologne3/cologne3.rou.xml",
+            "net_file": PATH + "/nets/RESCO/cologne3/cologne3.net.xml",
+            "route_file": PATH + "/nets/RESCO/cologne3/cologne3.rou.xml",
             "begin_time": 25200,
             "num_seconds": 28800 - 25200,
         }
@@ -97,8 +97,8 @@ def cologne8(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/cologne8/cologne8.net.xml",
-            "route_file": PATH + "/../nets/RESCO/cologne8/cologne8.rou.xml",
+            "net_file": PATH + "/nets/RESCO/cologne8/cologne8.net.xml",
+            "route_file": PATH + "/nets/RESCO/cologne8/cologne8.rou.xml",
             "begin_time": 25200,
             "num_seconds": 28800 - 25200,
         }
@@ -117,8 +117,8 @@ def ingolstadt1(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/ingolstadt1/ingolstadt1.net.xml",
-            "route_file": PATH + "/../nets/RESCO/ingolstadt1/ingolstadt1.rou.xml",
+            "net_file": PATH + "/nets/RESCO/ingolstadt1/ingolstadt1.net.xml",
+            "route_file": PATH + "/nets/RESCO/ingolstadt1/ingolstadt1.rou.xml",
             "begin_time": 57600,
             "num_seconds": 61200 - 57600,
         }
@@ -137,8 +137,8 @@ def ingolstadt7(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/ingolstadt7/ingolstadt7.net.xml",
-            "route_file": PATH + "/../nets/RESCO/ingolstadt7/ingolstadt7.rou.xml",
+            "net_file": PATH + "/nets/RESCO/ingolstadt7/ingolstadt7.net.xml",
+            "route_file": PATH + "/nets/RESCO/ingolstadt7/ingolstadt7.rou.xml",
             "begin_time": 57600,
             "num_seconds": 61200 - 57600,
         }
@@ -157,8 +157,8 @@ def ingolstadt21(parallel=True, **kwargs):
     """
     kwargs.update(
         {
-            "net_file": PATH + "/../nets/RESCO/ingolstadt21/ingolstadt21.net.xml",
-            "route_file": PATH + "/../nets/RESCO/ingolstadt21/ingolstadt21.rou.xml",
+            "net_file": PATH + "/nets/RESCO/ingolstadt21/ingolstadt21.net.xml",
+            "route_file": PATH + "/nets/RESCO/ingolstadt21/ingolstadt21.rou.xml",
             "begin_time": 57600,
             "num_seconds": 61200 - 57600,
         }

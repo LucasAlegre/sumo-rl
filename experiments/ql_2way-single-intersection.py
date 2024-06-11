@@ -50,7 +50,7 @@ if __name__ == "__main__":
     out_csv = f"outputs/2way-single-intersection/{experiment_time}_alpha{args.alpha}_gamma{args.gamma}_eps{args.epsilon}_decay{args.decay}_reward{args.reward}"
 
     env = SumoEnvironment(
-        net_file="nets/2way-single-intersection/single-intersection.net.xml",
+        net_file="sumo_rl/nets/2way-single-intersection/single-intersection.net.xml",
         route_file=args.route,
         out_csv_name=out_csv,
         use_gui=args.gui,

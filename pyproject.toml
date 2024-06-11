@@ -42,8 +42,9 @@ include-package-data = true
 include = ["sumo_rl", "sumo_rl.*"]
 
 [tool.setuptools.package-data]
-sumo_rl = [
-    "nets/*",
+"*" = ["*.xml", "*.sumocfg"]
+nets = [
+    "*.xml", "*.sumocfg",
 ]
 
 # Linters and Test tools #######################################################
