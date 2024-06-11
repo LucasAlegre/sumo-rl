@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
 
 # C extensions
 *.so
@@ -117,3 +118,10 @@ settings.json
 /nets/.DS_Store
 /rl/
 /tensorboard/
+/rl/tensorboard/
+/rl/model/
+/rl/logs/
+/rl/log/
+/rl/tmp/
+/rl/videos/
+/temp/

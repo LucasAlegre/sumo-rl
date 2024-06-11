@@ -65,18 +65,17 @@ if __name__ == "__main__":
             lamb=0.95,
         )
 
-        terminated, truncated = False, False
+        done = False
         if args.fixed:
-            while not (terminated or truncated):
-                _, _, terminated, truncated, _ = env.step({})
+            while not done:
+                _, _, done, _, _ = env.step({})  # single_agent=True
         else:
-            while not (terminated or truncated):
-                action = agent.act(obs)
-
-                next_obs, r, terminated, truncated, info = env.step(action=action)
-
-                agent.learn(state=obs, action=action, reward=r, next_state=next_obs, done=terminated)
-
-                obs = next_obs
+            state = obs[0]
+            while not done:
+                action = agent.act(state)
+                next_obs, r, done, truncated, _ = env.step(action=action)  # single_agent=True, next_obs = observations
+                done = done or truncated  # added by xnpeng, 2023-07-31
+                agent.learn(state=state, action=action, reward=r, next_state=next_obs, done=done)
+                state = next_obs
 
         env.save_csv(out_csv, run)

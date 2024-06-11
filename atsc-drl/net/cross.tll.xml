@@ -1,0 +1,11 @@
+<tlLogic id="t" programID="my_program" offset="0" type="static">
+    <phase duration="43" state="GGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrr"/>
+    <phase duration="3" state="yyyyyyyyggggggggrrrrrrrrrrrrrrrryyyyyyyyggggggggrrrrrrrrrrrrrrrr"/>
+    <phase duration="16" state="rrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrr"/>
+    <phase duration="3" state="rrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrr"/>
+    <phase duration="53" state="rrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGgggggggg"/>
+    <phase duration="3" state="rrrrrrrrrrrrrrrryyyyyyyyggggggggrrrrrrrrrrrrrrrryyyyyyyygggggggg"/>
+    <phase duration="16" state="rrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGG"/>
+    <phase duration="3" state="rrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyy"/>
+</tlLogic>
+        <!--特别注意：一个车道lane可能有4个信号灯！分别表示：右-直-左-调头-->

@@ -3,7 +3,6 @@ import sys
 
 import fire
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -12,13 +11,21 @@ else:
 
 from linear_rl.true_online_sarsa import TrueOnlineSarsaLambda
 
-from sumo_rl import cologne8
+from sumo_rl import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
 
 
 def run(use_gui=False, episodes=50):
     fixed_tl = False
 
-    env = cologne8(out_csv_name="outputs/cologne8/test", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = grid4x4(out_csv_name="outputs/grid4x4/grid4x4", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    env = arterial4x4(out_csv_name="outputs/grid4x4/arterial4x4", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = cologne1(out_csv_name="outputs/grid4x4/cologne1", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = cologne3(out_csv_name="outputs/grid4x4/cologne3", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = cologne8(out_csv_name="outputs/grid4x4/cologne8", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = ingolstadt1(out_csv_name="outputs/grid4x4/ingolstadt1", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = ingolstadt7(out_csv_name="outputs/grid4x4/ingolstadt7", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    # env = ingolstadt21(out_csv_name="outputs/grid4x4/ingolstadt21", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+
     env.reset()
 
     agents = {
@@ -44,7 +51,6 @@ def run(use_gui=False, episodes=50):
         else:
             while env.agents:
                 actions = {ts_id: agents[ts_id].act(obs[ts_id]) for ts_id in obs.keys()}
-
                 next_obs, r, terminated, truncated, _ = env.step(actions=actions)
 
                 for ts_id in next_obs.keys():
@@ -62,3 +68,9 @@ def run(use_gui=False, episodes=50):
 
 if __name__ == "__main__":
     fire.Fire(run)
+
+# 测试说明 2023-10-30
+# 1. 检查环境：libs-mac/ubuntu-2023-10-30.txt
+# 2. python experiments/sarsa_resco.py
+#    ubuntu运行成功，macOS运行正常。
+

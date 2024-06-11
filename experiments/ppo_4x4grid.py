@@ -1,7 +1,6 @@
 import os
 import sys
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -18,7 +17,6 @@ from ray.tune.registry import register_env
 
 import sumo_rl
 
-
 if __name__ == "__main__":
     ray.init()
 
@@ -32,7 +30,7 @@ if __name__ == "__main__":
                 route_file="sumo_rl/nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
                 out_csv_name="outputs/4x4grid/ppo",
                 use_gui=False,
-                num_seconds=80000,
+                num_seconds=800,
             )
         ),
     )
@@ -62,8 +60,18 @@ if __name__ == "__main__":
     tune.run(
         "PPO",
         name="PPO",
-        stop={"timesteps_total": 100000},
+        stop={"timesteps_total": 1000},
         checkpoint_freq=10,
         local_dir="~/ray_results/" + env_name,
         config=config.to_dict(),
     )
+
+# 2023-7-18, 原程序运序报错，修改如下：
+"""
+pettingzoo_env.py
+line 139: info = self.env.reset(seed=seed, return_info=True, options=options)
+改成: info = self.env.reset(seed=seed, options=options)
+
+line 224: obs, info = self.par_env.reset(seed=seed, return_info=True, options=options)
+改成：obs, info = self.par_env.reset(seed=seed, options=options)
+"""

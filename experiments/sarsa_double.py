@@ -17,7 +17,7 @@ from linear_rl.true_online_sarsa import TrueOnlineSarsaLambda
 from sumo_rl import SumoEnvironment
 
 
-def run(use_gui=True, runs=1):
+def run(use_gui=False, runs=1):
     out_csv = "outputs/double/sarsa-double"
 
     env = SumoEnvironment(
@@ -52,7 +52,7 @@ def run(use_gui=True, runs=1):
 
         if fixed_tl:
             while not done["__all__"]:
-                _, _, done, _ = env.step(None)
+                _, _, done, _ = env.step({})
         else:
             while not done["__all__"]:
                 actions = {ts_id: agents[ts_id].act(obs[ts_id]) for ts_id in obs.keys()}
