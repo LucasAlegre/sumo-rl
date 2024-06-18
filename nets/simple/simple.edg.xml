@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<edges xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="http://sumo.sf.net/xsd/edges_file.xsd">
+
+	<edge id="AB" from="A" to="B" type="T01"/>
+	<edge id="BA" from="B" to="A" type="T01"/>
+    <edge id="AC" from="A" to="C" type="T01"/>
+    <edge id="CA" from="C" to="A" type="T01"/>
+    <edge id="BC" from="B" to="C" type="T01"/>
+    <edge id="CB" from="C" to="B" type="T01"/>
+    <edge id="BD" from="B" to="D" type="T01"/>
+    <edge id="DB" from="D" to="B" type="T01"/>
+    <edge id="CD" from="C" to="D" type="T01"/>
+    <edge id="DC" from="D" to="C" type="T01"/>
+
+</edges>

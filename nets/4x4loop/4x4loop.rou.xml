@@ -1,0 +1,10 @@
+<routes>
+    <!-- B1 -->
+    <flow id="0" from="0to16" to="13to25" begin="0" end="0" departSpeed="max" number="200"/>
+    <!-- E6 -->
+    <flow id="1" from="14to26" to="3to19" begin="0" end="0" departSpeed="max" number="0"/>
+    <!-- F3 -->
+    <flow id="2" from="4to21" to="3to28" begin="0" end="0" departSpeed="max" number="0"/>
+    <!-- A5 -->
+    <flow id="3" from="15to31" to="8to22" begin="0" end="0" departSpeed="max" number="0"/>
+</routes>

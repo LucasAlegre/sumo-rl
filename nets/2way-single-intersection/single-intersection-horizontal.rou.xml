@@ -1,0 +1,30 @@
+<routes>
+    <route id="route_ns" edges="n_t t_s"/>
+    <route id="route_nw" edges="n_t t_w"/>
+    <route id="route_ne" edges="n_t t_e"/>
+    <route id="route_we" edges="w_t t_e"/>
+    <route id="route_wn" edges="w_t t_n"/>
+    <route id="route_ws" edges="w_t t_s"/>
+    <route id="route_ew" edges="e_t t_w"/>
+    <route id="route_en" edges="e_t t_n"/>
+    <route id="route_es" edges="e_t t_s"/>
+    <route id="route_sn" edges="s_t t_n"/>
+    <route id="route_se" edges="s_t t_e"/>
+    <route id="route_sw" edges="s_t t_w"/>
+
+
+    <flow id="flow_ns" route="route_ns" begin="0" end="100000" vehsPerHour="150" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nw" route="route_nw" begin="0" end="100000" vehsPerHour="150" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="route_ne" begin="0" end="100000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="route_sw" begin="0" end="100000" vehsPerHour="100" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn" route="route_sn" begin="0" end="100000" vehsPerHour="150" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_se" route="route_se" begin="0" end="100000" vehsPerHour="150" departSpeed="max" departPos="base" departLane="best"/>
+
+    <flow id="flow_en" route="route_en" begin="0" end="100000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew" route="route_ew" begin="0" end="100000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="route_es" begin="0" end="100000" vehsPerHour="250" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="route_wn" begin="0" end="100000" vehsPerHour="250" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="route_we" begin="0" end="100000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ws" route="route_ws" begin="0" end="100000" vehsPerHour="300" departSpeed="max" departPos="base" departLane="best"/>
+
+</routes>

@@ -1,0 +1,10 @@
+<configuration>
+  <input>
+    <net-file value="arterial4x4.net.xml"/>
+    <route-files value="arterial4x4_1.rou.xml"/>
+  </input>
+  <time>
+    <begin value="0"/>
+    <end value="3600"/>
+  </time>
+</configuration>

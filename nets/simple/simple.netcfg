@@ -1,0 +1,13 @@
+<configuration>
+   <input>
+       <edge-files value="simple.edg.xml"/>
+       <node-files value="simple.nod.xml"/>
+       <type-files value="simple.typ.xml"/>
+   </input>
+   <output>
+       <output-file value="simple.net.xml"/>
+   </output>
+   <processing>
+       <no-turnarounds value="true"/>
+   </processing>
+</configuration>

@@ -1,0 +1,136 @@
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+	<vType id="car" vClass="passenger" color="255,255,255"/>
+    <vType id="motorcicle" vClass="motorcycle" color="50,192,192"/>
+    <vType id="bike" vClass="bicycle" color="100,100,192"/>
+    <vType id="bus" vClass="bus" color="0,192,0"/>
+    <vType id="truck" vClass="truck" color="192,192,192"/>
+	<vType id="emergency" vClass="emergency" color="192,0,0"/>
+
+	<route id="AC" edges="AB1 AB2 BC1 BC2" />
+	<route id="AD" edges="AB1 AB2 BD1 BD2" />
+	<route id="AF" edges="AB1 AB2 BE EF1 EF2" />
+	<route id="AG" edges="AB1 AB2 BE EG1 EG2" />
+	<route id="AH" edges="AB1 AB2 BE EH1 EH2" />
+	<route id="CA" edges="CB1 CB2 BA1 BA2" />
+	<route id="CD" edges="CB1 CB2 BD1 BD2" />
+	<route id="CF" edges="CB1 CB2 BE EF1 EF2" />
+	<route id="CG" edges="CB1 CB2 BE EG1 EG2" />
+	<route id="CH" edges="CB1 CB2 BE EH1 EH2" />
+	<route id="DA" edges="DB1 DB2 BA1 BA2" />
+	<route id="DC" edges="DB1 DB2 BC1 BC2" />
+	<route id="DF" edges="DB1 DB2 BE EF1 EF2" />
+	<route id="DG" edges="DB1 DB2 BE EG1 EG2" />
+	<route id="DH" edges="DB1 DB2 BE EH1 EH2" />
+	<route id="FA" edges="FE1 FE2 EB BA1 BA2" />
+	<route id="FC" edges="FE1 FE2 EB BC1 BC2" />
+	<route id="FD" edges="FE1 FE2 EB BD1 BD2" />
+	<route id="FG" edges="FE1 FE2 EG1 EG2" />
+	<route id="FH" edges="FE1 FE2 EH1 EH2" />
+	<route id="GA" edges="GE1 GE2 EB BA1 BA2" />
+	<route id="GC" edges="GE1 GE2 EB BC1 BC2" />
+	<route id="GD" edges="GE1 GE2 EB BD1 BD2" />
+	<route id="GF" edges="GE1 GE2 EF1 EF2" />
+	<route id="GH" edges="GE1 GE2 EH1 EH2" />
+	<route id="HA" edges="HE1 HE2 EB BA1 BA2" />
+	<route id="HC" edges="HE1 HE2 EB BC1 BC2" />
+	<route id="HD" edges="HE1 HE2 EB BD1 BD2" />
+	<route id="HF" edges="HE1 HE2 EF1 EF2" />
+	<route id="HG" edges="HE1 HE2 EG1 EG2" />
+
+
+	<!-- <flow id="bus_AC" type="bus" route="AC" begin="0" end="86400" probability="0.0001" />
+	<flow id="bus_AD" type="bus" route="AD" begin="0" end="86400" probability="0.0004" />
+	<flow id="bus_AF" type="bus" route="AF" begin="0" end="86400" probability="0.0003" />
+	<flow id="bus_AG" type="bus" route="AG" begin="0" end="86400" probability="0.0004" />
+	<flow id="bus_AH" type="bus" route="AH" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_CA" type="bus" route="CA" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_CD" type="bus" route="CD" begin="0" end="86400" probability="0.0003" />
+	<flow id="bus_CF" type="bus" route="CF" begin="0" end="86400" probability="0.0002" />
+	<flow id="bus_CG" type="bus" route="CG" begin="0" end="86400" probability="0.0006" />
+	<flow id="bus_CH" type="bus" route="CH" begin="0" end="86400" probability="0.0007" />
+	<flow id="bus_DA" type="bus" route="DA" begin="0" end="86400" probability="0.0001" />
+	<flow id="bus_DC" type="bus" route="DC" begin="0" end="86400" probability="0.0004" />
+	<flow id="bus_DF" type="bus" route="DF" begin="0" end="86400" probability="0.0003" />
+	<flow id="bus_DG" type="bus" route="DG" begin="0" end="86400" probability="0.0004" />
+	<flow id="bus_DH" type="bus" route="DH" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_FA" type="bus" route="FA" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_FC" type="bus" route="FC" begin="0" end="86400" probability="0.0003" />
+	<flow id="bus_FD" type="bus" route="FD" begin="0" end="86400" probability="0.0002" />
+	<flow id="bus_FG" type="bus" route="FG" begin="0" end="86400" probability="0.0006" />
+	<flow id="bus_FH" type="bus" route="FG" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_GA" type="bus" route="GA" begin="0" end="86400" probability="0.0001" />
+	<flow id="bus_GC" type="bus" route="GC" begin="0" end="86400" probability="0.0004" />
+	<flow id="bus_GD" type="bus" route="GD" begin="0" end="86400" probability="0.0003" />
+	<flow id="bus_GF" type="bus" route="GF" begin="0" end="86400" probability="0.0004" />
+	<flow id="bus_GH" type="bus" route="GH" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_HA" type="bus" route="HA" begin="0" end="86400" probability="0.0005" />
+	<flow id="bus_HC" type="bus" route="HC" begin="0" end="86400" probability="0.0003" />
+	<flow id="bus_HD" type="bus" route="HD" begin="0" end="86400" probability="0.0002" />
+	<flow id="bus_HF" type="bus" route="HF" begin="0" end="86400" probability="0.0006" />
+	<flow id="bus_HG" type="bus" route="HG" begin="0" end="86400" probability="0.0007" /> -->
+
+	<flow id="car_AC" type="car" route="AC" begin="0" end="86400" probability="0.011" />
+	<flow id="car_AD" type="car" route="AD" begin="0" end="86400" probability="0.014" />
+	<flow id="car_AF" type="car" route="AF" begin="0" end="86400" probability="0.013" />
+	<flow id="car_AG" type="car" route="AG" begin="0" end="86400" probability="0.014" />
+	<flow id="car_AH" type="car" route="AH" begin="0" end="86400" probability="0.015" />
+	<flow id="car_CA" type="car" route="CA" begin="0" end="86400" probability="0.015" />
+	<flow id="car_CD" type="car" route="CD" begin="0" end="86400" probability="0.013" />
+	<flow id="car_CF" type="car" route="CF" begin="0" end="86400" probability="0.012" />
+	<flow id="car_CG" type="car" route="CG" begin="0" end="86400" probability="0.016" />
+	<flow id="car_CH" type="car" route="CH" begin="0" end="86400" probability="0.017" />
+	<flow id="car_DA" type="car" route="DA" begin="0" end="86400" probability="0.011" />
+	<flow id="car_DC" type="car" route="DC" begin="0" end="86400" probability="0.014" />
+	<flow id="car_DF" type="car" route="DF" begin="0" end="86400" probability="0.013" />
+	<flow id="car_DG" type="car" route="DG" begin="0" end="86400" probability="0.014" />
+	<flow id="car_DH" type="car" route="DH" begin="0" end="86400" probability="0.015" />
+	<flow id="car_FA" type="car" route="FA" begin="0" end="86400" probability="0.015" />
+	<flow id="car_FC" type="car" route="FC" begin="0" end="86400" probability="0.013" />
+	<flow id="car_FD" type="car" route="FD" begin="0" end="86400" probability="0.012" />
+	<flow id="car_FG" type="car" route="FG" begin="0" end="86400" probability="0.016" />
+	<flow id="car_FH" type="car" route="FG" begin="0" end="86400" probability="0.015" />
+	<flow id="car_GA" type="car" route="GA" begin="0" end="86400" probability="0.011" />
+	<flow id="car_GC" type="car" route="GC" begin="0" end="86400" probability="0.014" />
+	<flow id="car_GD" type="car" route="GD" begin="0" end="86400" probability="0.013" />
+	<flow id="car_GF" type="car" route="GF" begin="0" end="86400" probability="0.014" />
+	<flow id="car_GH" type="car" route="GH" begin="0" end="86400" probability="0.015" />
+	<flow id="car_HA" type="car" route="HA" begin="0" end="86400" probability="0.015" />
+	<flow id="car_HC" type="car" route="HC" begin="0" end="86400" probability="0.013" />
+	<flow id="car_HD" type="car" route="HD" begin="0" end="86400" probability="0.012" />
+	<flow id="car_HF" type="car" route="HF" begin="0" end="86400" probability="0.016" />
+	<flow id="car_HG" type="car" route="HG" begin="0" end="86400" probability="0.017" />
+
+	<!-- <flow id="emergency_AC" type="emergency" route="AC" begin="0" end="86400" probability="0.00051"/>
+	<flow id="emergency_AF" type="emergency" route="AF" begin="0" end="86400" probability="0.00054" />
+	<flow id="emergency_AD" type="emergency" route="AD" begin="0" end="86400" probability="0.00053" />
+	<flow id="emergency_AG" type="emergency" route="AG" begin="0" end="86400" probability="0.00054" />
+	<flow id="emergency_AH" type="emergency" route="AH" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_CA" type="emergency" route="CA" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_CD" type="emergency" route="CD" begin="0" end="86400" probability="0.00053" />
+	<flow id="emergency_CF" type="emergency" route="CF" begin="0" end="86400" probability="0.00052" />
+	<flow id="emergency_CG" type="emergency" route="CG" begin="0" end="86400" probability="0.00056" />
+	<flow id="emergency_CH" type="emergency" route="CH" begin="0" end="86400" probability="0.00057" />
+	<flow id="emergency_DA" type="emergency" route="DA" begin="0" end="86400" probability="0.00051" />
+	<flow id="emergency_DC" type="emergency" route="DC" begin="0" end="86400" probability="0.00054" />
+	<flow id="emergency_DF" type="emergency" route="DF" begin="0" end="86400" probability="0.00053" />
+	<flow id="emergency_DG" type="emergency" route="DG" begin="0" end="86400" probability="0.00054" />
+	<flow id="emergency_DH" type="emergency" route="DH" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_FA" type="emergency" route="FA" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_FC" type="emergency" route="FC" begin="0" end="86400" probability="0.00053" />
+	<flow id="emergency_FD" type="emergency" route="FD" begin="0" end="86400" probability="0.00052" />
+	<flow id="emergency_FG" type="emergency" route="FG" begin="0" end="86400" probability="0.00056" />
+	<flow id="emergency_FH" type="emergency" route="FG" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_GA" type="emergency" route="GA" begin="0" end="86400" probability="0.00051" />
+	<flow id="emergency_GC" type="emergency" route="GC" begin="0" end="86400" probability="0.00054" />
+	<flow id="emergency_GD" type="emergency" route="GD" begin="0" end="86400" probability="0.00053" />
+	<flow id="emergency_GF" type="emergency" route="GF" begin="0" end="86400" probability="0.00054" />
+	<flow id="emergency_GH" type="emergency" route="GH" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_HA" type="emergency" route="HA" begin="0" end="86400" probability="0.00055" />
+	<flow id="emergency_HC" type="emergency" route="HC" begin="0" end="86400" probability="0.00053" />
+	<flow id="emergency_HD" type="emergency" route="HD" begin="0" end="86400" probability="0.00052" />
+	<flow id="emergency_HF" type="emergency" route="HF" begin="0" end="86400" probability="0.00056" />
+	<flow id="emergency_HG" type="emergency" route="HG" begin="0" end="86400" probability="0.00057" /> -->
+
+
+</routes>

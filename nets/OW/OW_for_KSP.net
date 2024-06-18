@@ -1,0 +1,83 @@
+##################################################
+#                                                #
+# Network file automatically generated in        #
+# compliance with the KSP.py script.             #
+#                                                #
+# WARNING! This file is compatible with the      #
+# Maslab's network file specification but is not #
+# complete. It is intended for the specific      #
+# purpose of the present framework.              #
+#                                                #
+# Generated on 25-Aug-2016                       #
+#                                                #
+##################################################
+function simple_function (f) fftt+f-f
+node A
+node A1
+node B
+node B1
+node C
+node D
+node E
+node F
+node G
+node H
+node I
+node J
+node K
+node L
+node L1
+node M
+node M1
+dedge A1A A1 A simple_function 0.000280
+dedge AB A B simple_function 6.983053
+dedge AC A C simple_function 4.984903
+dedge AD A D simple_function 14.954156
+dedge B1B B1 B simple_function 0.000280
+dedge BA B A simple_function 6.983053
+dedge BD B D simple_function 10.967217
+dedge BE B E simple_function 10.974759
+dedge CA C A simple_function 4.984903
+dedge CD C D simple_function 6.976625
+dedge CF C F simple_function 10.977323
+dedge CG C G simple_function 8.979348
+dedge DA D A simple_function 14.954156
+dedge DB D B simple_function 10.967217
+dedge DC D C simple_function 6.976625
+dedge DE D E simple_function 6.976625
+dedge DG D G simple_function 6.976625
+dedge DH D H simple_function 8.979348
+dedge EB E B simple_function 10.974759
+dedge ED E D simple_function 6.976625
+dedge EH E H simple_function 6.983053
+dedge FC F C simple_function 10.977323
+dedge FG F G simple_function 8.973902
+dedge FI F I simple_function 12.975819
+dedge GC G C simple_function 8.979348
+dedge GD G D simple_function 6.976625
+dedge GF G F simple_function 8.973902
+dedge GH G H simple_function 8.965641
+dedge GJ G J simple_function 2.991301
+dedge GK G K simple_function 12.973473
+dedge HD H D simple_function 8.979348
+dedge HE H E simple_function 6.983053
+dedge HG H G simple_function 8.965641
+dedge HK H K simple_function 2.991301
+dedge IF I F simple_function 12.975819
+dedge IJ I J simple_function 8.966919
+dedge IL I L simple_function 1.992007
+dedge JG J G simple_function 2.991301
+dedge JI J I simple_function 8.966919
+dedge JK J K simple_function 8.958639
+dedge JL J L simple_function 11.955720
+dedge JM J M simple_function 11.955720
+dedge KG K G simple_function 12.973473
+dedge KH K H simple_function 2.991301
+dedge KJ K J simple_function 8.958639
+dedge KM K M simple_function 1.964833
+dedge LI L I simple_function 1.992007
+dedge LJ L J simple_function 11.955720
+dedge LL1 L L1 simple_function 0.000200
+dedge MJ M J simple_function 11.955720
+dedge MK M K simple_function 1.992007
+dedge MM1 M M1 simple_function 0.008238

@@ -1,0 +1,36 @@
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+	<route id="1pra3_0" edges="1to5 5to6 6to11 11to15 15to3"/>
+	<route id="1pra3_1" edges="1to5 5to8 8to12 12to13 13to14 14to15 15to3"/>
+	<route id="1pra3_2" edges="1to5 5to6 6to9 9to10 10to11 11to15 15to3"/>
+	<route id="1pra3_3" edges="1to5 5to8 8to9 9to10 10to11 11to15 15to3"/>
+	<route id="1pra3_4" edges="1to5 5to6 6to9 9to13 13to14 14to15 15to3"/>
+	<route id="1pra3_5" edges="1to5 5to6 6to9 9to10 10to14 14to15 15to3"/>
+	<route id="1pra3_6" edges="1to5 5to8 8to9 9to13 13to14 14to15 15to3"/>
+	<route id="1pra3_7" edges="1to5 5to8 8to9 9to10 10to14 14to15 15to3"/>
+
+	<route id="1pra4_0" edges="1to5 5to8 8to12 12to16 16to17 17to4"/>
+	<route id="1pra4_1" edges="1to5 5to8 8to12 12to13 13to14 14to17 17to4"/>
+	<route id="1pra4_2" edges="1to5 5to6 6to9 9to13 13to14 14to17 17to4"/>
+	<route id="1pra4_3" edges="1to5 5to6 6to9 9to10 10to14 14to17 17to4"/>
+	<route id="1pra4_4" edges="1to5 5to8 8to9 9to13 13to14 14to17 17to4"/>
+	<route id="1pra4_5" edges="1to5 5to8 8to9 9to10 10to14 14to17 17to4"/>
+
+	<route id="2pra3_0" edges="2to7 7to12 12to13 13to14 14to15 15to3"/>
+	<route id="2pra3_1" edges="2to7 7to8 8to12 12to13 13to14 14to15 15to3"/>
+	<route id="2pra3_2" edges="2to7 7to8 8to9 9to10 10to11 11to15 15to3"/>
+	<route id="2pra3_3" edges="2to7 7to8 8to9 9to13 13to14 14to15 15to3"/>
+	<route id="2pra3_4" edges="2to7 7to8 8to9 9to10 10to14 14to15 15to3"/>
+
+	<route id="2pra4_0" edges="2to7 7to12 12to16 16to17 17to4"/>
+	<route id="2pra4_1" edges="2to7 7to12 12to13 13to14 14to17 17to4"/>
+	<route id="2pra4_2" edges="2to7 7to8 8to12 12to16 16to17 17to4"/>
+	<route id="2pra4_3" edges="2to7 7to8 8to12 12to13 13to14 14to17 17to4"/>
+	<route id="2pra4_4" edges="2to7 7to8 8to9 9to13 13to14 14to17 17to4"/>
+	<route id="2pra4_5" edges="2to7 7to8 8to9 9to10 10to14 14to17 17to4"/>
+
+
+    <flow id="1pra3_0" route="1pra3_0" begin="0" end="1000" number="400"/>
+
+
+</routes>

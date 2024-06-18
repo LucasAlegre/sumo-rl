@@ -1,0 +1,62 @@
+<additionals>
+    <routes>
+    <route id="b1a" edges="0to16 16to17 17to1 1to5 5to9 9to13 13to25"/>
+    <route id="b1b" edges="13to25 25to24 24to12 12to8 8to4 4to0 0to16"/>
+    <route id="e6a" edges="3to19 19to18 18to2 2to6 6to10 10to14 14to26"/>
+    <route id="e6b" edges="14to26 26to27 27to15 15to11 11to7 7to3 3to19"/>
+    <route id="a3a" edges="4to21 21to20 20to0 0to1 1to2 2to3 3to28"/>
+    <route id="a3b" edges="3to28 28to29 29to7 7to6 6to5 5to4 4to21"/>
+    <route id="f5a" edges="15to31 31to30 30to11 11to10 10to9 9to8 8to22"/>
+    <route id="f5b" edges="8to22 22to23 23to12 12to13 13to14 14to15 15to31"/>
+
+    <!--B1-->
+    <rerouter id="rerouter_B1a" edges="0to16">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="b1a"/>
+		</interval>
+    </rerouter>
+    <rerouter id="rerouter_B1b" edges="13to25">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="b1b"/>
+		</interval>
+    </rerouter>
+
+    <!--E6-->
+    <rerouter id="rerouter_E6a" edges="3to19">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="e6a"/>
+		</interval>
+    </rerouter>
+    <rerouter id="rerouter_E6b" edges="14to26">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="e6b"/>
+		</interval>
+    </rerouter>
+
+    <!--A3-->
+    <rerouter id="rerouter_A3a" edges="4to21">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="a3a"/>
+		</interval>
+    </rerouter>
+    <rerouter id="rerouter_A3b" edges="3to28">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="a3b"/>
+		</interval>
+    </rerouter>
+
+    <!--F5-->
+    <rerouter id="rerouter_F5a" edges="15to31">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="f5a"/>
+		</interval>
+    </rerouter>
+    <rerouter id="rerouter_F5b" edges="8to22">
+		<interval begin="0" end="1e9">
+		   <routeProbReroute id="f5b"/>
+		</interval>
+    </rerouter>
+
+
+</routes>
+</additionals>

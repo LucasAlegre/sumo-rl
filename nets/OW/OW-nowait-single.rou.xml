@@ -1,0 +1,10 @@
+<routes>
+
+	<route id="routeAL" color="1,1,0" edges="A1A AC CG GJ JI IL LL1"/>
+	<route id="routeAM" color="1,0,0" edges="A1A AC CD DH HK KM MM1"/>
+	<route id="routeBL" color="0,1,0" edges="B1B BD DG GJ JI IL LL1"/>
+	<route id="routeBM" color="1,1,1" edges="B1B BE EH HK KM MM1"/>
+
+    <vehicle id="1.0" depart="2" route="routeAL" />
+
+</routes>

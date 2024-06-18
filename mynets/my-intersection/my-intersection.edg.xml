@@ -1,0 +1,10 @@
+<edges>
+    <edge id="n_t" from="n" to="t" numLanes="4"/>
+    <edge id="t_n" from="t" to="n" numLanes="4"/>
+    <edge id="w_t" from="w" to="t" numLanes="4"/>
+    <edge id="t_w" from="t" to="w" numLanes="4"/>
+    <edge id="s_t" from="s" to="t" numLanes="4"/>
+    <edge id="t_s" from="t" to="s" numLanes="4"/>
+    <edge id="e_t" from="e" to="t" numLanes="4"/>
+    <edge id="t_e" from="t" to="e" numLanes="4"/>
+</edges>

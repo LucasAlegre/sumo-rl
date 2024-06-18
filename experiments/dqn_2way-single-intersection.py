@@ -4,7 +4,6 @@ import sys
 import gymnasium as gym
 from stable_baselines3.dqn.dqn import DQN
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -13,7 +12,6 @@ else:
 import traci
 
 from sumo_rl import SumoEnvironment
-
 
 if __name__ == "__main__":
     env = SumoEnvironment(
@@ -36,4 +34,9 @@ if __name__ == "__main__":
         exploration_final_eps=0.01,
         verbose=1,
     )
-    model.learn(total_timesteps=100000)
+    # model.learn(total_timesteps=100000)
+    # model.save("outputs/2way-single-dqn")
+    model.load("outputs/2way-single-dqn")
+    obs,_ = env.reset(seed=None, options=None)
+    a,b = model.predict(obs)
+    print(a,b)

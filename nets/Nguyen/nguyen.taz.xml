@@ -1,0 +1,6 @@
+<tazs>
+   <taz id="1" edges="1to5"/>
+   <taz id="2" edges="2to7"/>
+   <taz id="3" edges="15to3"/>
+   <taz id="4" edges="17to4"/>
+</tazs>

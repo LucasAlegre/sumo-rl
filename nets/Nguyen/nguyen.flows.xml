@@ -1,0 +1,13 @@
+<flows>
+    <!-- Contexto 1  -->
+    <flow id="0" from="1to5" to="15to3" begin="0" end="1000" number="400"/>
+    <flow id="1" from="1to5" to="17to4" begin="0" end="1000" number="800"/>
+    <flow id="2" from="2to7" to="15to3" begin="0" end="1000" number="600"/>
+    <flow id="3" from="2to7" to="17to4" begin="0" end="1000" number="200"/>
+
+    <!-- Contexto 2 -->
+    <flow id="4" from="1to5" to="15to3" begin="1000" end="2000" number="1000"/>
+    <flow id="5" from="1to5" to="17to4" begin="1000" end="2000" number="800"/>
+    <flow id="6" from="2to7" to="15to3" begin="1000" end="2000" number="600"/>
+    <flow id="7" from="2to7" to="17to4" begin="1000" end="2000" number="200"/>
+</flows>

@@ -1,0 +1,10 @@
+<configuration>
+  <input>
+    <net-file value="ingolstadt1.net.xml"/>
+	<route-files value="ingolstadt1.rou.xml"/>
+  </input>
+  <time>
+    <begin value="57600"/>
+    <end value="61200"/>
+  </time>
+</configuration>

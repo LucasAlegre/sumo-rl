@@ -1,0 +1,15 @@
+<configuration>
+    <input>
+        <net-file value="4x4loop.net.xml"/>
+        <route-files value="4x4loop.rou.xml"/>
+	<additional-files value="circle.add.xml" />
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="100000"/>
+    </time>
+ <output>
+        <summary-output value="output_sumo.xml"/>
+ </output>
+
+</configuration>

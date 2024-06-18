@@ -1,0 +1,59 @@
+<edges>
+	<edge from="0" id="0to16" to="16" numLanes="2"/>
+	<edge from="17" id="17to1" to="1" numLanes="2"/>
+	<edge from="18" id="18to2" to="2" numLanes="2"/>
+	<edge from="3" id="3to19" to="19" numLanes="2"/>
+
+	<edge from="4" id="4to0" to="0" numLanes="2"/>
+	<edge from="8" id="8to4" to="4" numLanes="2"/>
+	<edge from="12" id="12to8" to="8" numLanes="2"/>
+	<edge from="24" id="24to12" to="12" numLanes="2"/>
+
+	<edge from="1" id="1to5" to="5" numLanes="2"/>
+	<edge from="5" id="5to9" to="9" numLanes="2"/>
+	<edge from="9" id="9to13" to="13" numLanes="2"/>
+	<edge from="13" id="13to25" to="25" numLanes="2"/>
+
+	<edge from="2" id="2to6" to="6" numLanes="2"/>
+	<edge from="6" id="6to10" to="10" numLanes="2"/>
+	<edge from="10" id="10to14" to="14" numLanes="2"/>
+	<edge from="14" id="14to26" to="26" numLanes="2"/>
+
+	<edge from="7" id="7to3" to="3" numLanes="2"/>
+	<edge from="11" id="11to7" to="7" numLanes="2"/>
+	<edge from="15" id="15to11" to="11" numLanes="2"/>
+	<edge from="27" id="27to15" to="15" numLanes="2"/>
+
+	<edge from="20" id="20to0" to="0" numLanes="2"/>
+	<edge from="0" id="0to1" to="1" numLanes="2"/>
+	<edge from="1" id="1to2" to="2" numLanes="2"/>
+	<edge from="2" id="2to3" to="3" numLanes="2"/>
+	<edge from="3" id="3to28" to="28" numLanes="2"/>
+
+	<edge from="4" id="4to21" to="21" numLanes="2"/>
+	<edge from="5" id="5to4" to="4" numLanes="2"/>
+	<edge from="6" id="6to5" to="5" numLanes="2"/>
+	<edge from="7" id="7to6" to="6" numLanes="2"/>
+	<edge from="29" id="29to7" to="7" numLanes="2"/>
+
+	<edge from="8" id="8to22" to="22" numLanes="2"/>
+	<edge from="9" id="9to8" to="8" numLanes="2"/>
+	<edge from="10" id="10to9" to="9" numLanes="2"/>
+	<edge from="11" id="11to10" to="10" numLanes="2"/>
+	<edge from="30" id="30to11" to="11" numLanes="2"/>
+
+	<edge from="23" id="23to12" to="12" numLanes="2"/>
+	<edge from="12" id="12to13" to="13" numLanes="2"/>
+	<edge from="13" id="13to14" to="14" numLanes="2"/>
+	<edge from="14" id="14to15" to="15" numLanes="2"/>
+	<edge from="15" id="15to31" to="31" numLanes="2"/>
+
+        <edge from="16" id="16to17" to="17" numLanes="2"/>
+        <edge from="19" id="19to18" to="18" numLanes="2"/>
+        <edge from="21" id="21to20" to="20" numLanes="2"/>
+        <edge from="22" id="22to23" to="23" numLanes="2"/>
+        <edge from="25" id="25to24" to="24" numLanes="2"/>
+        <edge from="26" id="26to27" to="27" numLanes="2"/>
+        <edge from="31" id="31to30" to="30" numLanes="2"/>
+        <edge from="28" id="28to29" to="29" numLanes="2"/>
+</edges>

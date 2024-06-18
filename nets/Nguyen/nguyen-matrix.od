@@ -1,0 +1,13 @@
+$OR;D2
+* From-Time  To-Time
+0.00 1.00
+* Factor
+1.00
+* some
+* additional
+* O D demand
+* comments                2000
+         1          3      600
+         1          4      800
+         2          3      700
+         2          4      400

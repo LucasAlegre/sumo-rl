@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes>
+
+  <vType id="vT01" maxSpeed="11.11" sigma="0.5" />
+
+  <route id="R01" edges="AB BD"/>
+  <route id="R02" edges="AB BC CD"/>
+  <route id="R03" edges="AC CD"/>
+  <route id="R04" edges="BA AC CD"/>
+  <route id="R05" edges="DB BC CD"/>
+  <route id="R06" edges="BC CD"/>
+  <route id="R07" edges="CB BA AC CD"/>
+
+
+</routes>
