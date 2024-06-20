@@ -33,6 +33,7 @@ if __name__ == "__main__":
         target_update_interval=500,
         exploration_initial_eps=0.05,
         exploration_final_eps=0.01,
+        tensorboard_log="./tensorboard/dqn-my-intersection",
         verbose=1,
     )
     # print("train model=====")

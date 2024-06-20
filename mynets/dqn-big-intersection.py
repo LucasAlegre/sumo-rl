@@ -43,8 +43,8 @@ model = DQN(
 model.learn(total_timesteps=100000)
 
 # Save, load, evaluate and predict the model
-model.save("mynets/model/big-intersection-dqn")
-del model
+# model.save("mynets/model/big-intersection-dqn")
+# del model
 
 model = DQN.load("mynets/model/big-intersection-dqn", env=env)
 mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)

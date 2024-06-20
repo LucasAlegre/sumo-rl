@@ -125,3 +125,7 @@ settings.json
 /rl/tmp/
 /rl/videos/
 /temp/
+/sb3_rl/logs/
+/sb3_rl/tensorboard/
+/sb3_rl/videos/
+/sb3_rl/tmp/
