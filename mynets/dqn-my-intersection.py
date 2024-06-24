@@ -16,9 +16,9 @@ from sumo_rl import SumoEnvironment
 
 if __name__ == "__main__":
     env = SumoEnvironment(
-        net_file="mynets/my-intersection/my-intersection.net.xml",
-        route_file="mynets/my-intersection/my-intersection.rou.xml",
-        out_csv_name="mynets/out/my-intersection-dqn",
+        net_file="my-intersection/my-intersection.net.xml",
+        route_file="my-intersection/my-intersection.rou.xml",
+        out_csv_name="out/my-intersection-dqn",
         single_agent=True,
         use_gui=False,
         num_seconds=10000,
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # print("save model=====")
     # model.save("mynets/model/my-intersection-dqn")
     print("load model=====")
-    model.load("mynets/model/my-intersection-dqn")
+    model.load("model/my-intersection-dqn")
 
     # 评测模型
     # print("evaluate policy====")
