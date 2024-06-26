@@ -4,8 +4,6 @@ import sys
 from pathlib import Path
 from typing import Callable, Optional, Tuple, Union
 
-from gymnasium.envs.registration import EnvSpec
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -25,6 +23,17 @@ from sumo_rl.environment.observations import DefaultObservationFunction, Observa
 from sumo_rl.environment.traffic_signal import TrafficSignal
 
 LIBSUMO = "LIBSUMO_AS_TRACI" in os.environ
+
+
+def env(**kwargs):
+    """Instantiate a PettingoZoo environment."""
+    env = SumoEnvPZ(**kwargs)
+    env = wrappers.AssertOutOfBoundsWrapper(env)
+    env = wrappers.OrderEnforcingWrapper(env)
+    return env
+
+
+parallel_env = parallel_wrapper_fn(env)
 
 
 class SumoEnv(gym.Env):
@@ -64,7 +73,6 @@ class SumoEnv(gym.Env):
     metadata = {
         "render_modes": ["human", "rgb_array"],
     }
-    spec = EnvSpec("SumoEnv-v0")
     CONNECTION_LABEL = 0  # For traci multi-client support
 
     def __init__(
@@ -94,6 +102,7 @@ class SumoEnv(gym.Env):
             additional_sumo_cmd: Optional[str] = None,
             render_mode: Optional[str] = None,
     ):
+        super(SumoEnv, self).__init__()
         """Initialize the environment."""
         assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
         self.render_mode = render_mode
@@ -144,32 +153,14 @@ class SumoEnv(gym.Env):
 
         if isinstance(self.reward_fn, dict):
             self.traffic_signals = {
-                ts: TrafficSignal(
-                    self,
-                    ts,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    self.reward_fn[ts],
-                    conn,
-                )
+                ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green,
+                                  self.begin_time, self.reward_fn[ts], conn, )
                 for ts in self.reward_fn.keys()
             }
         else:
             self.traffic_signals = {
-                ts: TrafficSignal(
-                    self,
-                    ts,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    self.reward_fn,
-                    conn,
-                )
+                ts: TrafficSignal(self, ts, self.delta_time, self.yellow_time, self.min_green, self.max_green,
+                                  self.begin_time, self.reward_fn, conn, )
                 for ts in self.ts_ids
             }
 
@@ -454,22 +445,16 @@ class SumoEnv(gym.Env):
 
     def render(self):
         """Render the environment.
-
         If render_mode is "human", the environment will be rendered in a GUI window using pyvirtualdisplay.
         """
         if self.render_mode == "human":
             return  # sumo-gui will already be rendering the frame
         elif self.render_mode == "rgb_array":
-            # img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
-            #                          f"temp/img{self.sim_step}.jpg",
-            #                          width=self.virtual_display[0],
-            #                          height=self.virtual_display[1])
             img = self.disp.grab()
             return np.array(img)
 
     def save_csv(self, out_csv_name, episode):
         """Save metrics of the simulation to a .csv file.
-
         Args:
             out_csv_name (str): Path to the output .csv file. E.g.: "results/my_results
             episode (int): Episode number to be appended to the output file name.
@@ -491,3 +476,118 @@ class SumoEnv(gym.Env):
 
     def _discretize_density(self, density):
         return min(int(density * 10), 9)
+
+
+class SumoEnvPZ(AECEnv, EzPickle):
+    """A wrapper for the SUMO environment that implements the AECEnv interface from PettingZoo.
+    For more information, see https://pettingzoo.farama.org/api/aec/.
+    The arguments are the same as for :py:class:`sumo_rl.environment.env.SumoEnvironment`.
+    """
+
+    metadata = {"render.modes": ["human", "rgb_array"], "name": "sumo_rl_v0", "is_parallelizable": True}
+
+    def __init__(self, **kwargs):
+        """Initialize the environment."""
+        EzPickle.__init__(self, **kwargs)
+        self._kwargs = kwargs
+
+        self.seed()
+        self.env = SumoEnv(**self._kwargs)
+        self.render_mode = self.env.render_mode
+
+        self.agents = self.env.ts_ids
+        self.possible_agents = self.env.ts_ids
+        self._agent_selector = agent_selector(self.agents)
+        self.agent_selection = self._agent_selector.reset()
+        # spaces
+        self.action_spaces = {a: self.env.action_spaces(a) for a in self.agents}
+        self.observation_spaces = {a: self.env.observation_spaces(a) for a in self.agents}
+
+        # dicts
+        self.rewards = {a: 0 for a in self.agents}
+        self.terminations = {a: False for a in self.agents}
+        self.truncations = {a: False for a in self.agents}
+        self.infos = {a: {} for a in self.agents}
+
+    def seed(self, seed=None):
+        """Set the seed for the environment."""
+        self.randomizer, seed = seeding.np_random(seed)
+
+    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
+        """Reset the environment."""
+        self.env.reset(seed=seed, options=options)
+        self.agents = self.possible_agents[:]
+        self.agent_selection = self._agent_selector.reset()
+        self.rewards = {agent: 0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.terminations = {a: False for a in self.agents}
+        self.truncations = {a: False for a in self.agents}
+        self.compute_info()
+
+    def compute_info(self):
+        """Compute the info for the current step."""
+        self.infos = {a: {} for a in self.agents}
+        infos = self.env._compute_info()
+        for a in self.agents:
+            for k, v in infos.items():
+                if k.startswith(a) or k.startswith("system"):
+                    self.infos[a][k] = v
+
+    def observation_space(self, agent):
+        """Return the observation space for the agent."""
+        return self.observation_spaces[agent]
+
+    def action_space(self, agent):
+        """Return the action space for the agent."""
+        return self.action_spaces[agent]
+
+    def observe(self, agent):
+        """Return the observation for the agent."""
+        obs = self.env.observations[agent].copy()
+        return obs
+
+    def close(self):
+        """Close the environment and stop the SUMO simulation."""
+        self.env.close()
+
+    def render(self):
+        """Render the environment."""
+        return self.env.render()
+
+    def save_csv(self, out_csv_name, episode):
+        """Save metrics of the simulation to a .csv file."""
+        self.env.save_csv(out_csv_name, episode)
+
+    def step(self, action):
+        """Step the environment."""
+        if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
+            return self._was_dead_step(action)
+        agent = self.agent_selection
+        if not self.action_spaces[agent].contains(action):
+            raise Exception(
+                "Action for agent {} must be in Discrete({})."
+                "It is currently {}".format(agent, self.action_spaces[agent].n, action)
+            )
+
+        if not self.env.fixed_ts:
+            self.env._apply_actions({agent: action})
+
+        if self._agent_selector.is_last():
+            if not self.env.fixed_ts:
+                self.env._run_steps()
+            else:
+                for _ in range(self.env.delta_time):
+                    self.env._sumo_step()
+
+            self.env._compute_observations()
+            self.rewards = self.env._compute_rewards()
+            self.compute_info()
+        else:
+            self._clear_rewards()
+
+        done = self.env._compute_dones()["__all__"]
+        self.truncations = {a: done for a in self.agents}
+
+        self.agent_selection = self._agent_selector.next()
+        self._cumulative_rewards[agent] = 0
+        self._accumulate_rewards()

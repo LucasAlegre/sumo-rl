@@ -44,9 +44,9 @@ if __name__ == "__main__":
     model.load("model/my-intersection-dqn")
 
     # 评测模型
-    # print("evaluate policy====")
-    # mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
-    # print(mean_reward, std_reward)
+    print("evaluate policy====")
+    mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
+    print(mean_reward, std_reward)
 
     print("predict====")
     env = model.get_env()
@@ -54,10 +54,11 @@ if __name__ == "__main__":
     for i in range(10):
         action, state = model.predict(obs)
         obs, reward, dones, info = env.step(action)
-        print("obs======\n", i, obs)
-        print("\nreward=====\n", i, reward)
-        print("\ndones=\n", i, dones)
-        print("\ninfo=====\n", i, info)
+        print("\n======", i, "======")
+        print("obs:", i, obs)
+        print(" reward:", reward)
+        print(" dones:", dones)
+        print(" info:", info)
         # print(obs, reward, dones, info)
         # env.render()
     env.close()

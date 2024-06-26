@@ -129,3 +129,8 @@ settings.json
 /sb3_rl/tensorboard/
 /sb3_rl/videos/
 /sb3_rl/tmp/
+/mynets/tensorboard/
+/mynets/out/
+/mynets/monitor/
+/mynets/recording/
+/mynets/video/
