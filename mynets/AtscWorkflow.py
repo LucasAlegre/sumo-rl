@@ -1,11 +1,14 @@
 import os
 import sys
 
+sys.path.append('..')
+
 from gymnasium.wrappers import RecordEpisodeStatistics, RecordVideo
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.dqn.dqn import DQN
+import mysumo.envs  # 确保自定义环境被注册
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -13,7 +16,7 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-from mynets.envs.sumo_env import SumoEnv
+from mysumo.envs.sumo_env import SumoEnv
 
 if __name__ == "__main__":
     env = SumoEnv(
