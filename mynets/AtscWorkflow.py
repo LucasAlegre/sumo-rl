@@ -1,6 +1,8 @@
 import os
 import sys
 
+from stable_baselines3 import PPO, A2C
+
 sys.path.append('..')
 
 from gymnasium.wrappers import RecordEpisodeStatistics, RecordVideo
@@ -25,7 +27,7 @@ if __name__ == "__main__":
         out_csv_name="out/wf-my-intersection-dqn",
         single_agent=True,
         use_gui=False,
-        num_seconds=1000,  # 仿真秒，最大值20000
+        num_seconds=10000,  # 仿真秒，最大值20000
         # render_mode='human', # 'rgb_array':This system has no OpenGL support.
     )
 
@@ -36,18 +38,35 @@ if __name__ == "__main__":
     env = DummyVecEnv([lambda: env])
 
     # 创建算法模型实例，DQN, 试用PPO,A2C, SAC等替换
-    model = DQN(
+    # model = DQN(
+    #     env=env,
+    #     policy="MlpPolicy",
+    #     learning_rate=0.001,
+    #     learning_starts=0,
+    #     train_freq=1,
+    #     target_update_interval=1000,  # 目标网络更新时间间隔，1000仿真秒
+    #     exploration_initial_eps=0.05,
+    #     exploration_final_eps=0.01,
+    #     tensorboard_log="./tensorboard/wf-my-intersection-dqn",
+    #     verbose=1,
+    # )
+
+    model = PPO(
         env=env,
         policy="MlpPolicy",
         learning_rate=0.001,
-        learning_starts=0,
-        train_freq=1,
-        target_update_interval=1000,  # 目标网络更新时间间隔，1000仿真秒
-        exploration_initial_eps=0.05,
-        exploration_final_eps=0.01,
+        n_steps=1024,
         tensorboard_log="./tensorboard/wf-my-intersection-dqn",
         verbose=1,
     )
+
+    # model = A2C(
+    #     policy='MlpPolicy',
+    #     env=env,  # env=make_vec_env(MyWrapper, n_envs=8),  # 使用N个环境同时训练
+    #     learning_rate=1e-3,
+    #     n_steps=5,  # 运行N步后执行更新,batch_size=n_steps*环境数量
+    #     gamma=0.9,
+    #     verbose=0)
 
     # 评测模型
     print("evaluate policy====训练前，评测模型的收敛指标")
@@ -55,7 +74,7 @@ if __name__ == "__main__":
     print(mean_reward, std_reward)
 
     print("train model=====训练模型，总时间步，进度条")
-    model.learn(total_timesteps=100000, progress_bar=True)  # 训练总时间步，100000
+    model.learn(total_timesteps=50000, progress_bar=True)  # 训练总时间步，100000
     print("save model=====保存训练模型")
     model.save("model/wf-my-intersection-dqn")
     print("load model=====加载训练模型")
