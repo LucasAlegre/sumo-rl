@@ -91,7 +91,7 @@ if __name__ == "__main__":
     # 异常：last video not closed? 录制视频不成功。
     env = Monitor(env, "monitor/SumoEnv-v0")
     env = DummyVecEnv([lambda: env])
-    model_file = params.model_file + params.algo_name
+    model_file = params.model_file + params.algo_name + ".zip"
 
     # 创建算法模型实例，DQN, 试用PPO,A2C, SAC等替换
     if params.algo_name == "DQN":
