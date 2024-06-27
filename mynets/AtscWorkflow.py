@@ -1,6 +1,7 @@
 import os
 import sys
 import argparse
+from pathlib import Path
 
 from stable_baselines3 import PPO, A2C, SAC
 
@@ -141,13 +142,15 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError
 
+    file_path = Path(model_file)
+    if file_path.exists():
+        print("load model=====加载训练模型==在原来基础上训练")
+        model.load(model_file)
+
     # 评测模型
     print("evaluate policy====训练前，评测模型的收敛指标")
     mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
     print(mean_reward, std_reward)
-
-    print("load model=====加载训练模型==在原来基础上训练")
-    model.load(model_file)
     print("train model=====训练模型，总时间步，进度条")
     model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
     print("save model=====保存训练模型")
