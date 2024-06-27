@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # env = RecordEpisodeStatistics(env)
     # video_recorder = RecordVideo(env, video_folder='recording', name_prefix="sumo-env-dqn")
     # 异常：last video not closed? 录制视频不成功。
-    Monitor(env, "monitor/SumoEnv-v0")
+    env = Monitor(env, "monitor/SumoEnv-v0")
     env = DummyVecEnv([lambda: env])
     model_file = params.model_file + params.algo_name
 
@@ -128,11 +128,16 @@ if __name__ == "__main__":
     elif params.algo_name == "SAC":
         model = SAC(
             policy='MlpPolicy',
-            env=env,
+            env=env,  # 使用N个环境同时训练
             learning_rate=1e-3,
+            buffer_size=10_0000,  # reply_buffer_size
+            learning_starts=100,  # 积累N步的数据以后开始训练
+            batch_size=256,  # 每次采样N条数据
+            tau=5e-3,  # target网络软更新系数
+            gamma=0.9,
+            train_freq=(1, 'step'),  # 训练频率
             tensorboard_log=params.tensorboard_log,
-            verbose=0
-        )
+            verbose=0)
     else:
         raise NotImplementedError
 
