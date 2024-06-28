@@ -107,7 +107,6 @@ if __name__ == "__main__":
             tensorboard_log=params.tensorboard_log,
             verbose=1,
         )
-
     elif params.algo_name == "PPO":
         model = PPO(
             env=env,
