@@ -79,7 +79,7 @@ if __name__ == "__main__":
     env = SumoEnv(
         net_file=params.net_file,
         route_file=params.rou_file,
-        out_csv_name=params.out_csv_name + params.algo_name,
+        out_csv_name=params.out_csv_name + "-" + params.algo_name,
         single_agent=params.single_agent,
         use_gui=params.gui,
         num_seconds=params.num_seconds,  # 仿真秒，最大值20000
