@@ -174,10 +174,10 @@ while env.agents:
 
 ### RESCO Benchmarks
 
-In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/main/nets/RESCO) you can find the network and route files from [RESCO](https://github.com/jault/RESCO) (Reinforcement Learning Benchmarks for Traffic Signal Control), which was built on top of SUMO-RL. See their [paper](https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf) for results.
+In the folder [nets/RESCO](https://github.com/LucasAlegre/sumo-rl/tree/main/sumo_rl/nets/RESCO) you can find the network and route files from [RESCO](https://github.com/jault/RESCO) (Reinforcement Learning Benchmarks for Traffic Signal Control), which was built on top of SUMO-RL. See their [paper](https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf) for results.
 
 <p align="center">
-<img src="nets/RESCO/maps.png" align="center" width="60%"/>
+<img src="sumo_rl/nets/RESCO/maps.png" align="center" width="60%"/>
 </p>
 
 ### Experiments
