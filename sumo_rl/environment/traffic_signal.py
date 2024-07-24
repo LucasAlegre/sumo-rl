@@ -69,6 +69,8 @@ class TrafficSignal:
             reward_fn (Union[str, Callable]): The reward function. Can be a string with the name of the reward function or a callable function.
             sumo (Sumo): The Sumo instance.
         """
+        print("==========create traffic_signal==========")
+
         self.id = ts_id
         self.env = env
         self.delta_time = delta_time
@@ -103,6 +105,7 @@ class TrafficSignal:
 
         self.observation_space = self.observation_fn.observation_space()
         self.action_space = spaces.Discrete(self.num_green_phases)
+        print("==========traffic_signal.action_space", self.action_space)
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
