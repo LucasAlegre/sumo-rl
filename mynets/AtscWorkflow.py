@@ -14,13 +14,16 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.dqn.dqn import DQN
 import mysumo.envs  # 确保自定义环境被注册
 
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
+
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-from mysumo.envs.sumo_env import SumoEnv
+from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 
 
 # run command: python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection.rou.xml -o out/wf-my-intersection-algo -s 5000 -e 10 -l 10000 -t 1024 -q DQN
@@ -54,6 +57,7 @@ def main(args):
     parsed_args = parser.parse_args(args)
 
     # 使用解析后的参数
+    print(f"=====params passed in args =====")
     print(f"net_file, {parsed_args.net_file}")
     print(f"rou_file, {parsed_args.rou_file}.")
     print(f"out_csv_name, {parsed_args.out_csv_name}.")
@@ -72,10 +76,9 @@ def main(args):
 
 if __name__ == "__main__":
     params = main(sys.argv[1:])
-    print(params.net_file)
 
     # sys.exit(0)
-
+    print("=====create env=====")
     env = SumoEnv(
         net_file=params.net_file,
         route_file=params.rou_file,
@@ -89,11 +92,14 @@ if __name__ == "__main__":
     # env = RecordEpisodeStatistics(env)
     # video_recorder = RecordVideo(env, video_folder='recording', name_prefix="sumo-env-dqn")
     # 异常：last video not closed? 录制视频不成功。
+    print("=====wrap env======")
     env = Monitor(env, "monitor/SumoEnv-v0")
     env = DummyVecEnv([lambda: env])
     model_file = params.model_file + params.algo_name + ".zip"
+    print("=====model_file:", model_file)
 
     # 创建算法模型实例，DQN, 试用PPO,A2C, SAC等替换
+    print("=====create Algorythm Model=====")
     if params.algo_name == "DQN":
         model = DQN(
             env=env,
@@ -126,6 +132,23 @@ if __name__ == "__main__":
             tensorboard_log=params.tensorboard_log,
             verbose=0)
     elif params.algo_name == "SAC":
+        print("=====create ContinuousEnv for SAC=====")
+        env = ContinuousSumoEnv(
+            net_file=params.net_file,
+            route_file=params.rou_file,
+            out_csv_name=params.out_csv_name + "-" + params.algo_name,
+            single_agent=params.single_agent,
+            use_gui=params.gui,
+            num_seconds=params.num_seconds,  # 仿真秒，最大值20000
+            render_mode=params.render_mode,  # 'rgb_array':This system has no OpenGL support.
+        )
+        print("=====env:action_space:", env.action_space)
+        env = Monitor(env, "monitor/ContinuousSumoEnv-v0")
+        env = DummyVecEnv([lambda: env])
+        model_file = params.model_file + params.algo_name + ".zip"
+        print("=====model_file:", model_file)
+
+        print("=====create SAC algorythm=====")
         model = SAC(
             policy='MlpPolicy',
             env=env,  # 使用N个环境同时训练

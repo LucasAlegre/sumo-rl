@@ -8,9 +8,14 @@ from mysumo.envs.sumo_env import SumoEnv
 
 print("hello world")
 
-model_file = "model/my-intersection-modelPPO.zip"
+import os
 
-file_path = Path(model_file)
-if file_path.exists():
-    print("load model=====加载训练模型==在原来基础上训练")
-    # model.load(model_file)
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
+value = os.environ.get('KMP_DUPLICATE_LIB_OK')
+print(value)
+
+if value is True:
+    print("true")
+else:
+    print("false")
