@@ -848,7 +848,7 @@ class ContinuousSumoEnv(gym.Env):
             action (Union[dict, int]): action(s) to be applied to the environment.
             If single_agent is True, action is a np.ndarray, otherwise it expects a dict with keys corresponding to traffic signal ids.
         """
-        print("=====action:", action)  # [0.47770298 0.51101553 0.49427566 0.50912726]
+        # print("=====action:", action)  # [0.47770298 0.51101553 0.49427566 0.50912726]
 
         # No action, follow fixed TL defined in self.phases
         # 如果是定周期控制，或 action数组长度为0
@@ -867,9 +867,9 @@ class ContinuousSumoEnv(gym.Env):
         truncated = dones["__all__"]  # episode ends when sim_step >= max_steps
         info = self._compute_info()
 
-        print("=====env:obsevations:", observations)
-        print("=====env:rewards:", rewards)
-        print("=====env:signal_ids:", self.ts_ids)
+        # print("=====env:obsevations:", observations)
+        # print("=====env:rewards:", rewards)
+        # print("=====env:signal_ids:", self.ts_ids)
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], terminated, truncated, info

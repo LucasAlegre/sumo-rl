@@ -403,10 +403,8 @@ class ContinuousTrafficSignal:
         self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
 
         self.observation_space = self.observation_fn.observation_space()
-        print("=====observation_space:", self.observation_space)
         # self.action_space = spaces.Discrete(self.num_green_phases)
         self.action_space = spaces.Box(low=0, high=1, shape=(self.num_green_phases,), dtype=np.float32)
-        print("=====action_space:", self.action_space)
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
@@ -423,7 +421,7 @@ class ContinuousTrafficSignal:
             if "y" not in state and (state.count("r") + state.count("s") != len(state)):
                 self.green_phases.append(self.sumo.trafficlight.Phase(60, state))
         self.num_green_phases = len(self.green_phases)
-        print("=====num_green_phases:", self.num_green_phases)
+        # print("=====num_green_phases:", self.num_green_phases)
         self.all_phases = self.green_phases.copy()
         # print("=====all_phases:", self.all_phases)
 
