@@ -1,0 +1,50 @@
+<routes>
+    <!-- 北进口  -->
+    <route id="nsr" edges="n_t t_w"/> <!-- 右转 -->
+    <route id="nst" edges="n_t t_s"/> <!-- 直行 -->
+    <route id="nsl" edges="n_t t_e"/> <!-- 左转 -->
+    <route id="nsu" edges="n_t t_n"/> <!-- 调头 -->
+
+    <!-- 东进口  -->
+    <route id="ewr" edges="e_t t_n"/> <!-- 右转 -->
+    <route id="ewt" edges="e_t t_w"/> <!-- 直行 -->
+    <route id="ewl" edges="e_t t_s"/> <!-- 左转 -->
+    <route id="ewu" edges="e_t t_e"/> <!-- 调头 -->
+
+    <!-- 南进口  -->
+    <route id="snr" edges="s_t t_e"/> <!-- 右转 -->
+    <route id="snt" edges="s_t t_n"/> <!-- 直行 -->
+    <route id="snl" edges="s_t t_w"/> <!-- 左转 -->
+    <route id="snu" edges="s_t t_s"/> <!-- 调头 -->
+
+    <!-- 西进口  -->
+    <route id="wer" edges="w_t t_s"/> <!-- 右转 -->
+    <route id="wet" edges="w_t t_e"/> <!-- 直行 -->
+    <route id="wel" edges="w_t t_n"/> <!-- 左转 -->
+    <route id="weu" edges="w_t t_w"/> <!-- 调头 -->
+
+    <!-- 北进口  -->
+    <flow id="flow_nsr" route="nsr" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nst" route="nst" begin="0" end="100000" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nsl" route="nsl" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nsu" route="nsu" begin="0" end="100000" probability="0.03" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 东进口  -->
+    <flow id="flow_ewr" route="ewr" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewt" route="ewt" begin="0" end="100000" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewl" route="ewl" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewu" route="ewu" begin="0" end="100000" probability="0.05" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 南进口  -->
+    <flow id="flow_snr" route="snr" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snt" route="snt" begin="0" end="100000" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snl" route="snl" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snu" route="snu" begin="0" end="100000" probability="0.03" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 西进口  -->
+    <flow id="flow_wer" route="wer" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wet" route="wet" begin="0" end="100000" probability="0.2" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wel" route="wel" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_weu" route="weu" begin="0" end="100000" probability="0.05" departSpeed="max" departPos="base" departLane="best"/>
+
+</routes>
