@@ -26,6 +26,12 @@ else:
 from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 
 # 工作流程：1，设计路口网络模型；2，结合网络模型设计交通需求模型；3，编写sumo配置文件；4，运行本程序。
+# netconvert --node-files=my-intersection.nod.xml \
+#            --edge-files=my-intersection.edg.xml \
+#            --connection-files=my-intersection.con.xml \
+#            --tllogic-files=my-intersection.tll.xml \
+#            --output-file=my-intersection-2.net.xml \
+#            --ignore-errors
 # run command: python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection.rou.xml -o out/wf-my-intersection-algo -s 5000 -e 10 -l 10000 -t 1024 -q DQN
 def main(args):
     # 创建 ArgumentParser 对象
