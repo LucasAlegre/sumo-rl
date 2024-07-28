@@ -24,27 +24,27 @@
     <route id="weu" edges="w_t t_w"/> <!-- 调头 -->
 
     <!-- 北进口  -->
-    <flow id="flow_nsr" route="nsr" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_nst" route="nst" begin="0" end="100000" period="900" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_nsl" route="nsl" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_nsu" route="nsu" begin="0" end="100000" probability="0.03" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nsr" route="nsr" begin="0" end="100000" period="10" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nst" route="nst" begin="0" end="100000" period="6" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nsl" route="nsl" begin="0" end="100000" period="60" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_nsu" route="nsu" begin="0" end="100000" period="100" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 东进口  -->
-    <flow id="flow_ewr" route="ewr" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ewt" route="ewt" begin="0" end="100000" period="900" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ewl" route="ewl" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ewu" route="ewu" begin="0" end="100000" probability="0.05" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewr" route="ewr" begin="0" end="100000" period="10" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewt" route="ewt" begin="0" end="100000" period="6" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewl" route="ewl" begin="0" end="100000" period="60" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ewu" route="ewu" begin="0" end="100000" period="100" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 南进口  -->
-    <flow id="flow_snr" route="snr" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_snt" route="snt" begin="0" end="100000" period="900" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_snl" route="snl" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_snu" route="snu" begin="0" end="100000" probability="0.03" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snr" route="snr" begin="0" end="100000" period="10" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snt" route="snt" begin="0" end="100000" period="6" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snl" route="snl" begin="0" end="100000" period="60" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_snu" route="snu" begin="0" end="100000" period="100" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 西进口  -->
-    <flow id="flow_wer" route="wer" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wet" route="wet" begin="0" end="100000" period="900" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wel" route="wel" begin="0" end="100000" probability="0.1" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_weu" route="weu" begin="0" end="100000" probability="0.05" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wer" route="wer" begin="0" end="100000" period="10" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wet" route="wet" begin="0" end="100000" period="6" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wel" route="wel" begin="0" end="100000" period="60" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_weu" route="weu" begin="0" end="100000" period="100" departSpeed="max" departPos="base" departLane="best"/>
 
 </routes>

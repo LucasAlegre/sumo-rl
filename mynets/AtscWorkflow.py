@@ -32,7 +32,11 @@ from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 #            --tllogic-files=my-intersection.tll.xml \
 #            --output-file=my-intersection-2.net.xml \
 #            --ignore-errors
-# run command: python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection.rou.xml -o out/wf-my-intersection-algo -s 5000 -e 10 -l 10000 -t 1024 -q DQN
+# run command:
+# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-probability.rou.xml -o out/wf-my-intersection-probability-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-perhour.rou.xml -o out/wf-my-intersection-perhour-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-period.rou.xml -o out/wf-my-intersection-period-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-number.rou.xml -o out/wf-my-intersection-number-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
 def main(args):
     # 创建 ArgumentParser 对象
     parser = argparse.ArgumentParser(description="Process some integers.")
