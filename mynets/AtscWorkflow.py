@@ -15,7 +15,8 @@ from stable_baselines3.dqn.dqn import DQN
 import mysumo.envs  # 确保自定义环境被注册
 
 import os
-os.environ['KMP_DUPLICATE_LIB_OK']='TRUE'
+
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -25,6 +26,7 @@ else:
 
 from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 
+
 # 工作流程：1，设计路口网络模型；2，结合网络模型设计交通需求模型；3，编写sumo配置文件；4，运行本程序。
 # netconvert --node-files=my-intersection.nod.xml \
 #            --edge-files=my-intersection.edg.xml \
@@ -33,26 +35,26 @@ from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 #            --output-file=my-intersection-2.net.xml \
 #            --ignore-errors
 # run command:
-# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-probability.rou.xml -o out/wf-my-intersection-probability-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
-# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-perhour.rou.xml -o out/wf-my-intersection-perhour-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
-# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-period.rou.xml -o out/wf-my-intersection-period-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
-# python AtscWorkflow.py -n my-intersection/my-intersection.net.xml -r my-intersection/my-intersection-number.rou.xml -o out/wf-my-intersection-number-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-probability.rou.xml -o out/wf-my-intersection-probability-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-perhour.rou.xml -o out/wf-my-intersection-perhour-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-period.rou.xml -o out/wf-my-intersection-period-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-number.rou.xml -o out/wf-my-intersection-number-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
 def main(args):
     # 创建 ArgumentParser 对象
     parser = argparse.ArgumentParser(description="Process some integers.")
     # 添加命令行参数
     parser.add_argument('-n', '--net_file', required=False, type=str,
-                        default="my-intersection/my-intersection.net.xml",
+                        default="net/my-intersection.net.xml",
                         help='net configuration file')
     parser.add_argument('-r', '--rou_file', required=False, type=str,
-                        default="my-intersection/my-intersection.rou.xml",
+                        default="net/my-intersection.rou.xml",
                         help='demand configuration file')
     parser.add_argument('-o', '--out_csv_name', required=False, type=str,
                         default="out/my-intersection-algo")
     parser.add_argument('-d', '--model_file', required=False, type=str,
                         default="model/my-intersection-model")
     parser.add_argument('-b', '--tensorboard_log', required=False, type=str,
-                        default="out/tensorboard/wf-my-intersection-log")
+                        default="logs/my-intersection-log")
     parser.add_argument('-s', '--num_seconds', required=False, type=int, default=20000,
                         help='num seconds (default: 20000)')
     parser.add_argument('-e', '--n_eval_episodes', required=False, type=int, default=10)
@@ -62,6 +64,7 @@ def main(args):
     parser.add_argument('-a', '--single_agent', required=False, type=bool, default=True)
     parser.add_argument('-m', '--render_mode', required=False, type=str, default=None)
     parser.add_argument('-q', '--algo_name', required=False, type=str, default="DQN")
+    parser.add_argument('-f', '--func', required=False, type=str, default="ALL")
 
     # 解析命令行参数
     parsed_args = parser.parse_args(args)
@@ -80,6 +83,7 @@ def main(args):
     print(f"single_agent, {parsed_args.single_agent}.")
     print(f"render_mode, {parsed_args.render_mode}.")
     print(f"algo_name, {parsed_args.algo_name}.")
+    print(f"func, {parsed_args.func}.")
 
     return parsed_args
 
@@ -179,33 +183,59 @@ if __name__ == "__main__":
         print("load model=====加载训练模型==在原来基础上训练")
         model.load(model_file)
 
-    # 评测模型
-    print("evaluate policy====训练前，评测模型的收敛指标")
-    mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-    print(mean_reward, std_reward)
-    print("train model=====训练模型，总时间步，进度条")
-    model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
-    print("save model=====保存训练模型")
-    model.save(model_file)
-    print("load model=====加载训练模型")
-    model.load(model_file)
+    if params.func == "EVAL":
+        # 评测模型
+        print("evaluate policy====训练前，评测模型的收敛指标")
+        mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
+        print(mean_reward, std_reward)
+    elif params.func == "TRAIN":
+        print("train model=====训练模型，总时间步，进度条")
+        model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
+        print("save model=====保存训练模型")
+        model.save(model_file)
 
-    # 评测模型
-    print("evaluate policy====训练后，评测模型的收敛指标")
-    mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-    print(mean_reward, std_reward)
+        # 评测模型
+        # print("evaluate policy====训练后，评测模型的收敛指标")
+        # mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
+        # print(mean_reward, std_reward)
+    elif params.func == "PREDICT":
+        print("predict====使用模型进行预测")
+        env = model.get_env()
+        obs = env.reset()
+        for i in range(10):
+            action, state = model.predict(obs)
+            obs, reward, dones, info = env.step(action)
+            print("\n======", i, "======")
+            # print(" obs:", i, obs)
+            # print(" reward:", reward)
+            # print(" dones:", dones)
+            print(" info:", info)
+            env.render()
+    elif params.func == "ALL":
+        print("evaluate policy====训练前，评测模型的收敛指标")
+        mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
+        print(mean_reward, std_reward)
+        print("train model=====训练模型，总时间步，进度条")
+        model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
+        print("save model=====保存训练模型")
+        model.save(model_file)
+        # 评测模型
+        model.load(model_file)
+        print("evaluate policy====训练后，评测模型的收敛指标")
+        mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
+        print(mean_reward, std_reward)
+        print("predict====使用模型进行预测")
+        env = model.get_env()
+        obs = env.reset()
+        for i in range(10):
+            action, state = model.predict(obs)
+            obs, reward, dones, info = env.step(action)
+            print("\n======", i, "======")
+            # print(" obs:", i, obs)
+            # print(" reward:", reward)
+            # print(" dones:", dones)
+            print(" info:", info)
+            env.render()
 
-    print("predict====使用模型进行预测")
-    env = model.get_env()
-    obs = env.reset()
-    for i in range(10):
-        action, state = model.predict(obs)
-        obs, reward, dones, info = env.step(action)
-        print("\n======", i, "======")
-        # print(" obs:", i, obs)
-        # print(" reward:", reward)
-        # print(" dones:", dones)
-        print(" info:", info)
-        env.render()
     env.close()
     del model
