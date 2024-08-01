@@ -4,6 +4,8 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from mynets.plot_process import replace_extension
+
 # 设置中文字体
 # plt.rcParams['font.family'] = ['Heiti TC']  # 或者使用其他支持中文的字体
 # plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
@@ -48,7 +50,9 @@ for i, metric in enumerate(metrics, 1):
 plt.tight_layout()
 
 # 保存图形
-plt.savefig('./predict/metrics_predict_plot.png')
+# plt.savefig('./predict/metrics_predict_plot.png')
+predict_fig = replace_extension(predict_file, "png")
+plt.savefig(predict_fig)
 plt.close()
 
-print("图形已保存为 metrics_predict_plot.png")
+print("图形已保存为{predict_fig}")

@@ -1,3 +1,5 @@
+import datetime
+import ntpath
 import os
 import sys
 import argparse
@@ -27,21 +29,81 @@ else:
 from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 
 
+def extract_crossname(path):
+    # 使用 ntpath.basename 来处理 Windows 路径
+    filename = ntpath.basename(path)
+    # 分割文件名和扩展名
+    name_parts = filename.split('.')
+    # 返回第一个部分（基本文件名）
+    return name_parts[0]
+
+
+def create_file_if_not_exists(filename):
+    # 获取文件所在的目录路径
+    directory = os.path.dirname(filename)
+    # 如果目录不存在，创建目录
+    if directory and not os.path.exists(directory):
+        try:
+            os.makedirs(directory)
+            print(f"Created directory: {directory}")
+        except OSError as e:
+            print(f"Error creating directory {directory}: {e}")
+            return False
+    # 如果文件不存在，创建文件
+    if not os.path.exists(filename):
+        try:
+            with open(filename, 'w') as f:
+                pass  # 创建一个空文件
+            print(f"Created file: {filename}")
+        except IOError as e:
+            print(f"Error creating file {filename}: {e}")
+            return False
+    else:
+        print(f"File already exists: {filename}")
+    return True
+
+
+def add_directory_if_missing(path, directory="./"):
+    # 规范化路径分隔符
+    path = os.path.normpath(path)
+    # 分割路径
+    path_parts = os.path.split(path)
+    # 检查是否已经包含目录
+    if path_parts[0]:
+        return path
+    else:
+        # 如果没有目录，添加指定的目录
+        return os.path.join(directory, path_parts[1])
+
+
+def write_to_file(mean, std, filename="eval_result.txt"):
+    # 获取当前时间
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 将时间和变量组合成一行
+    line = f"{current_time}, {mean}, {std}\n"
+    print(line)
+    create_file_if_not_exists(filename)
+    # 以写入模式打开文件并写入
+    with open(filename, "a") as file:
+        file.write(line)
+    print(f"Data written to {filename}")
+
+
 def save_result(data, filename='results.json', print_to_console=True):
+    create_file_if_not_exists(filename)
+
     # 如果文件不存在，创建一个包含空列表的 JSON 文件
     try:
         with open(filename, 'r') as f:
             results = json.load(f)
     except FileNotFoundError:
         results = []
-
     # 将新数据添加到结果列表中
     results.append(data)
 
     # 将更新后的结果写入 JSON 文件
     with open(filename, 'w') as f:
         json.dump(results, f, indent=2)
-
     if print_to_console:
         print(json.dumps(data, indent=2))
 
@@ -53,40 +115,45 @@ def save_result(data, filename='results.json', print_to_console=True):
 #            --tllogic-files=my-intersection.tll.xml \
 #            --output-file=my-intersection-2.net.xml \
 #            --ignore-errors
-# run command:
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-probability.rou.xml -o out/my-intersection-probability-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-perhour.rou.xml -o out/my-intersection-perhour-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-period.rou.xml -o out/my-intersection-period-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-number.rou.xml -o out/my-intersection-number-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
-def main(args):
+# run command: EVAL, TRAIN, PREDICT, ALL
+# python AtscWorkflow.py -n my-intersection.net.xml -r my-intersection-probability.rou.xml -q SAC -f EVAL -s 5000 -e 10 -l 10000 -t 1024
+# python AtscWorkflow.py -n my-intersection.net.xml -r my-intersection-perhour.rou.xml -q SAC -f TRAIN -s 5000 -e 10 -l 10000 -t 1024
+# python AtscWorkflow.py -n my-intersection.net.xml -r my-intersection-period.rou.xml -q SAC -f PREDICT -s 5000 -e 10 -l 10000 -t 1024
+# python AtscWorkflow.py -n my-intersection.net.xml -r my-intersection-number.rou.xml -q SAC -f ALL -s 20000 -e 20 -l 100000 -t 2024
+def parserArgs(args):
     # 创建 ArgumentParser 对象
     parser = argparse.ArgumentParser(description="Process some integers.")
     # 添加命令行参数
-    parser.add_argument('-n', '--net_file', required=False, type=str,
-                        default="net/my-intersection.net.xml",
-                        help='net configuration file')
-    parser.add_argument('-r', '--rou_file', required=False, type=str,
-                        default="net/my-intersection.rou.xml",
-                        help='demand configuration file')
-    parser.add_argument('-o', '--out_csv_name', required=False, type=str,
-                        default="out/my-intersection-algo")
-    parser.add_argument('-d', '--model_file', required=False, type=str,
-                        default="model/my-intersection-model")
-    parser.add_argument('-b', '--tensorboard_log', required=False, type=str,
-                        default="logs/my-intersection-log")
-    parser.add_argument('-s', '--num_seconds', required=False, type=int, default=20000,
-                        help='num seconds (default: 20000)')
-    parser.add_argument('-e', '--n_eval_episodes', required=False, type=int, default=10)
-    parser.add_argument('-l', '--total_timesteps', required=False, type=int, default=100000)
-    parser.add_argument('-t', '--n_steps', required=False, type=int, default=2048)
+    parser.add_argument('-n', '--net_file', required=False, type=str, default="net/cross.net.xml", help='网络配置文件')
+    parser.add_argument('-r', '--rou_file', required=False, type=str, default="net/cross.rou.xml", help='需求配置文件')
+    parser.add_argument('-o', '--out_csv_name', required=False, type=str, default="out/cross-algo", help='训练过程输出')
+    parser.add_argument('-d', '--model_file', required=False, type=str, default="model/cross-model", help='模型保存文件')
+    parser.add_argument('-b', '--tensorboard_log', required=False, type=str, default="logs/cross-log", help='tensorboard目录')
+    parser.add_argument('-s', '--num_seconds', required=False, type=int, default=20000, help='仿真秒')
+    parser.add_argument('-e', '--n_eval_episodes', required=False, type=int, default=10, help='评估回合数')
+    parser.add_argument('-l', '--total_timesteps', required=False, type=int, default=100000, help='总训练时间步')
+    parser.add_argument('-t', '--n_steps', required=False, type=int, default=2048, help='A2C价值网络更新间隔时间步')
     parser.add_argument('-g', '--gui', required=False, type=bool, default=False)
     parser.add_argument('-a', '--single_agent', required=False, type=bool, default=True)
     parser.add_argument('-m', '--render_mode', required=False, type=str, default=None)
-    parser.add_argument('-q', '--algo_name', required=False, type=str, default="DQN")
-    parser.add_argument('-f', '--func', required=False, type=str, default="ALL")
+    parser.add_argument('-q', '--algo_name', required=False, type=str, default="DQN", help='算法')
+    parser.add_argument('-f', '--func', required=False, type=str, default="ALL", help='功能')
 
     # 解析命令行参数
     parsed_args = parser.parse_args(args)
+
+    parsed_args.net_file = add_directory_if_missing(parsed_args.net_file, "./net")
+    parsed_args.rou_file = add_directory_if_missing(parsed_args.rou_file, "./net")
+    cross_name = extract_crossname(parsed_args.net_file)
+    parsed_args.out_csv_name = add_directory_if_missing(cross_name, "./out")
+    model_file = cross_name + "-model-" + parsed_args.algo_name + ".zip"
+    parsed_args.model_file = add_directory_if_missing(model_file, "./model")
+    predict_file = cross_name + "-predict-" + parsed_args.algo_name + ".json"
+    parsed_args.predict_file = add_directory_if_missing(predict_file, "./predict")
+    eval_file = cross_name + "-eval-" + parsed_args.algo_name + ".txt"
+    parsed_args.eval_file = add_directory_if_missing(eval_file, "./eval")
+
+    parsed_args.tensorboard_log = add_directory_if_missing(parsed_args.tensorboard_log, "./logs")
 
     # 使用解析后的参数
     print(f"=====params passed in args =====")
@@ -94,6 +161,8 @@ def main(args):
     print(f"rou_file, {parsed_args.rou_file}.")
     print(f"out_csv_name, {parsed_args.out_csv_name}.")
     print(f"model_file, {parsed_args.model_file}.")
+    print(f"predict_file, {parsed_args.predict_file}.")
+    print(f"eval_file, {parsed_args.eval_file}.")
     print(f"num_seconds, {parsed_args.num_seconds}.")
     print(f"n_eval_episodes, {parsed_args.n_eval_episodes}.")
     print(f"total_timesteps, {parsed_args.total_timesteps}.")
@@ -108,7 +177,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    params = main(sys.argv[1:])
+    params = parserArgs(sys.argv[1:])
 
     # sys.exit(0)
     print("=====create env=====")
@@ -128,11 +197,6 @@ if __name__ == "__main__":
     print("=====wrap env======")
     env = Monitor(env, "monitor/SumoEnv-v0")
     env = DummyVecEnv([lambda: env])
-    model_file = params.model_file + params.algo_name + ".zip"
-    print("=====model_file:", model_file)
-    predict_file = model_file.replace("model/", "predict/")  # 替换 "model/" 为 "predict/"
-    predict_file = os.path.splitext(predict_file)[0] + ".json"  # 替换文件扩展名 ".zip" 为 ".json"
-    print("=====predict_file:", predict_file)
 
     # 创建算法模型实例，DQN, 试用PPO,A2C, SAC等替换
     print("=====create Algorythm Model=====")
@@ -181,8 +245,6 @@ if __name__ == "__main__":
         print("=====env:action_space:", env.action_space)
         env = Monitor(env, "monitor/ContinuousSumoEnv-v0")
         env = DummyVecEnv([lambda: env])
-        model_file = params.model_file + params.algo_name + ".zip"
-        print("=====model_file:", model_file)
 
         print("=====create SAC algorythm=====")
         model = SAC(
@@ -200,26 +262,23 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError
 
-    file_path = Path(model_file)
+    file_path = Path(params.model_file)
     if file_path.exists():
         print("load model=====加载训练模型==在原来基础上训练")
-        model.load(model_file)
+        model.load(params.model_file)
 
     if params.func == "EVAL":
-        # 评测模型
         print("evaluate policy====训练前，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        print(mean_reward, std_reward)
+        write_to_file(mean_reward, std_reward, params.eval_file)
     elif params.func == "TRAIN":
         print("train model=====训练模型，总时间步，进度条")
         model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
         print("save model=====保存训练模型")
-        model.save(model_file)
-
-        # 评测模型
-        # print("evaluate policy====训练后，评测模型的收敛指标")
-        # mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        # print(mean_reward, std_reward)
+        model.save(params.model_file)
+        print("evaluate policy====训练后，评测模型的收敛指标")
+        mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
+        write_to_file(mean_reward, std_reward, params.eval_file)
     elif params.func == "PREDICT":
         print("predict====使用模型进行预测")
         env = model.get_env()
@@ -235,21 +294,21 @@ if __name__ == "__main__":
                 # "dones": dones,
                 "info": info
             }
-            save_result(iteration_result, filename=predict_file)
+            save_result(iteration_result, filename=params.predict_file)
             env.render()
     elif params.func == "ALL":
         print("evaluate policy====训练前，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        print(mean_reward, std_reward)
+        write_to_file(mean_reward, std_reward, params.eval_file)
         print("train model=====训练模型，总时间步，进度条")
         model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
         print("save model=====保存训练模型")
-        model.save(model_file)
+        model.save(params.model_file)
         # 评测模型
-        model.load(model_file)
+        model.load(params.model_file)
         print("evaluate policy====训练后，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        print(mean_reward, std_reward)
+        write_to_file(mean_reward, std_reward, params.eval_file)
         print("predict====使用模型进行预测")
         env = model.get_env()
         obs = env.reset()
@@ -264,7 +323,7 @@ if __name__ == "__main__":
                 # "dones": dones,
                 "info": info
             }
-            save_result(iteration_result, filename=predict_file)
+            save_result(iteration_result, filename=params.predict_file)
             env.render()
 
     env.close()

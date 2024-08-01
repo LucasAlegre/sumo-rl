@@ -1,11 +1,29 @@
+import os
 import sys
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 # 设置中文字体
 # plt.rcParams['font.family'] = ['Heiti TC']  # 或者使用其他支持中文的字体
 # plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+
+
+def replace_extension(pathname, new_extension):
+    # 确保新扩展名以点开头
+    if not new_extension.startswith('.'):
+        new_extension = '.' + new_extension
+    # 分离路径和文件名
+    directory, filename = os.path.split(pathname)
+    # 分离文件名和扩展名
+    name, _ = os.path.splitext(filename)
+    # 组合新的文件名
+    new_filename = name + new_extension
+    # 组合新的完整路径
+    new_pathname = os.path.join(directory, new_filename)
+    return new_pathname
+
 
 if (len(sys.argv) <= 1):
     print("usage: python plot_process.py train_out_file.csv")
@@ -57,4 +75,9 @@ axs[1, 1].grid(True)
 plt.tight_layout()
 
 # 显示图表
-plt.show()
+# plt.show()
+
+# 写入文件中
+process_fig = replace_extension(train_out_file,"png")
+plt.savefig(process_fig)
+plt.close()
