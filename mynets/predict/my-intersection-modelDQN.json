@@ -1,0 +1,182 @@
+[
+  {
+    "iteration": 0,
+    "info": [
+      {
+        "step": 5.0,
+        "system_total_stopped": 0,
+        "system_total_waiting_time": 0.0,
+        "system_mean_waiting_time": 0.0,
+        "system_mean_speed": 13.397482166720167,
+        "tl_1_stopped": 0,
+        "tl_1_accumulated_waiting_time": 0.0,
+        "tl_1_average_speed": 0.9807048141279734,
+        "agents_total_stopped": 0,
+        "agents_total_accumulated_waiting_time": 0.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 1,
+    "info": [
+      {
+        "step": 10.0,
+        "system_total_stopped": 0,
+        "system_total_waiting_time": 0.0,
+        "system_mean_waiting_time": 0.0,
+        "system_mean_speed": 12.974058669813859,
+        "tl_1_stopped": 0,
+        "tl_1_accumulated_waiting_time": 0.0,
+        "tl_1_average_speed": 0.9457926253802669,
+        "agents_total_stopped": 0,
+        "agents_total_accumulated_waiting_time": 0.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 2,
+    "info": [
+      {
+        "step": 15.0,
+        "system_total_stopped": 0,
+        "system_total_waiting_time": 0.0,
+        "system_mean_waiting_time": 0.0,
+        "system_mean_speed": 12.1345655079367,
+        "tl_1_stopped": 0,
+        "tl_1_accumulated_waiting_time": 0.0,
+        "tl_1_average_speed": 0.9561375312263377,
+        "agents_total_stopped": 0,
+        "agents_total_accumulated_waiting_time": 0.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 3,
+    "info": [
+      {
+        "step": 20.0,
+        "system_total_stopped": 3,
+        "system_total_waiting_time": 9.0,
+        "system_mean_waiting_time": 0.32142857142857145,
+        "system_mean_speed": 10.448863478424544,
+        "tl_1_stopped": 0,
+        "tl_1_accumulated_waiting_time": 0.0,
+        "tl_1_average_speed": 0.9006200054760317,
+        "agents_total_stopped": 0,
+        "agents_total_accumulated_waiting_time": 0.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 4,
+    "info": [
+      {
+        "step": 25.0,
+        "system_total_stopped": 4,
+        "system_total_waiting_time": 21.0,
+        "system_mean_waiting_time": 0.65625,
+        "system_mean_speed": 8.91430985590683,
+        "tl_1_stopped": 2,
+        "tl_1_accumulated_waiting_time": 4.0,
+        "tl_1_average_speed": 0.6620348212016395,
+        "agents_total_stopped": 2,
+        "agents_total_accumulated_waiting_time": 4.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 5,
+    "info": [
+      {
+        "step": 30.0,
+        "system_total_stopped": 10,
+        "system_total_waiting_time": 65.0,
+        "system_mean_waiting_time": 1.8055555555555556,
+        "system_mean_speed": 8.741784884318733,
+        "tl_1_stopped": 8,
+        "tl_1_accumulated_waiting_time": 38.0,
+        "tl_1_average_speed": 0.5766916745006935,
+        "agents_total_stopped": 8,
+        "agents_total_accumulated_waiting_time": 38.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 6,
+    "info": [
+      {
+        "step": 35.0,
+        "system_total_stopped": 13,
+        "system_total_waiting_time": 124.0,
+        "system_mean_waiting_time": 3.5428571428571427,
+        "system_mean_speed": 7.317517376976863,
+        "tl_1_stopped": 11,
+        "tl_1_accumulated_waiting_time": 87.0,
+        "tl_1_average_speed": 0.473428662566157,
+        "agents_total_stopped": 11,
+        "agents_total_accumulated_waiting_time": 87.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 7,
+    "info": [
+      {
+        "step": 40.0,
+        "system_total_stopped": 16,
+        "system_total_waiting_time": 199.0,
+        "system_mean_waiting_time": 4.853658536585366,
+        "system_mean_speed": 7.033774162289107,
+        "tl_1_stopped": 14,
+        "tl_1_accumulated_waiting_time": 152.0,
+        "tl_1_average_speed": 0.45929858066650375,
+        "agents_total_stopped": 14,
+        "agents_total_accumulated_waiting_time": 152.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 8,
+    "info": [
+      {
+        "step": 45.0,
+        "system_total_stopped": 19,
+        "system_total_waiting_time": 290.0,
+        "system_mean_waiting_time": 6.590909090909091,
+        "system_mean_speed": 7.189870409239827,
+        "tl_1_stopped": 17,
+        "tl_1_accumulated_waiting_time": 233.0,
+        "tl_1_average_speed": 0.45217068618639417,
+        "agents_total_stopped": 17,
+        "agents_total_accumulated_waiting_time": 233.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  },
+  {
+    "iteration": 9,
+    "info": [
+      {
+        "step": 50.0,
+        "system_total_stopped": 21,
+        "system_total_waiting_time": 390.0,
+        "system_mean_waiting_time": 9.285714285714286,
+        "system_mean_speed": 6.114876426341114,
+        "tl_1_stopped": 19,
+        "tl_1_accumulated_waiting_time": 323.0,
+        "tl_1_average_speed": 0.3932824189404847,
+        "agents_total_stopped": 19,
+        "agents_total_accumulated_waiting_time": 323.0,
+        "TimeLimit.truncated": false
+      }
+    ]
+  }
+]

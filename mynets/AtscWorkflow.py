@@ -13,7 +13,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.dqn.dqn import DQN
 import mysumo.envs  # 确保自定义环境被注册
-
+import json
 import os
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
@@ -25,6 +25,25 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
+
+
+def save_result(data, filename='results.json', print_to_console=True):
+    # 如果文件不存在，创建一个包含空列表的 JSON 文件
+    try:
+        with open(filename, 'r') as f:
+            results = json.load(f)
+    except FileNotFoundError:
+        results = []
+
+    # 将新数据添加到结果列表中
+    results.append(data)
+
+    # 将更新后的结果写入 JSON 文件
+    with open(filename, 'w') as f:
+        json.dump(results, f, indent=2)
+
+    if print_to_console:
+        print(json.dumps(data, indent=2))
 
 
 # 工作流程：1，设计路口网络模型；2，结合网络模型设计交通需求模型；3，编写sumo配置文件；4，运行本程序。
@@ -111,6 +130,9 @@ if __name__ == "__main__":
     env = DummyVecEnv([lambda: env])
     model_file = params.model_file + params.algo_name + ".zip"
     print("=====model_file:", model_file)
+    predict_file = model_file.replace("model/", "predict/")  # 替换 "model/" 为 "predict/"
+    predict_file = os.path.splitext(predict_file)[0] + ".json"  # 替换文件扩展名 ".zip" 为 ".json"
+    print("=====predict_file:", predict_file)
 
     # 创建算法模型实例，DQN, 试用PPO,A2C, SAC等替换
     print("=====create Algorythm Model=====")
@@ -205,11 +227,15 @@ if __name__ == "__main__":
         for i in range(10):
             action, state = model.predict(obs)
             obs, reward, dones, info = env.step(action)
-            print("\n======", i, "======")
-            # print(" obs:", i, obs)
-            # print(" reward:", reward)
-            # print(" dones:", dones)
-            print(" info:", info)
+            # 创建一个字典来存储这次迭代的结果
+            iteration_result = {
+                "iteration": i,
+                # "obs": obs.tolist() if hasattr(obs, 'tolist') else obs,  # 如果 obs 是 numpy 数组，转换为列表
+                # "reward": float(reward),  # 确保 reward 是 JSON 可序列化的
+                # "dones": dones,
+                "info": info
+            }
+            save_result(iteration_result, filename=predict_file)
             env.render()
     elif params.func == "ALL":
         print("evaluate policy====训练前，评测模型的收敛指标")
@@ -230,11 +256,15 @@ if __name__ == "__main__":
         for i in range(10):
             action, state = model.predict(obs)
             obs, reward, dones, info = env.step(action)
-            print("\n======", i, "======")
-            # print(" obs:", i, obs)
-            # print(" reward:", reward)
-            # print(" dones:", dones)
-            print(" info:", info)
+            # 创建一个字典来存储这次迭代的结果
+            iteration_result = {
+                "iteration": i,
+                # "obs": obs.tolist() if hasattr(obs, 'tolist') else obs,  # 如果 obs 是 numpy 数组，转换为列表
+                # "reward": float(reward),  # 确保 reward 是 JSON 可序列化的
+                # "dones": dones,
+                "info": info
+            }
+            save_result(iteration_result, filename=predict_file)
             env.render()
 
     env.close()

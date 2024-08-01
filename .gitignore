@@ -135,3 +135,7 @@ settings.json
 /mynets/recording/
 /mynets/video/
 /mynets/model/
+/mynets/logs/
+/mynets/logs/my-intersection-log/
+/mynets/logs/my-intersection-log/DQN_1/
+/mynets/logs/my-intersection-log/DQN_2/
