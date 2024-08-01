@@ -4,8 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # 设置中文字体
-plt.rcParams['font.family'] = ['Heiti TC']  # 或者使用其他支持中文的字体
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+# plt.rcParams['font.family'] = ['Heiti TC']  # 或者使用其他支持中文的字体
+# plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 if (len(sys.argv) <= 1):
     print("usage: python plot_process.py train_out_file.csv")
@@ -21,35 +21,35 @@ df['step'] = pd.to_numeric(df['step'])
 # 创建2x2的子图布局，调整整体图表大小
 fig, axs = plt.subplots(2, 2, figsize=(12, 8))
 # fig.suptitle('交通系统指标随时间变化\n{train_out_file}', fontsize=14)
-plt.suptitle(f'交通系统指标随时间变化\n{train_out_file}', fontsize=14)
+plt.suptitle(f'Traffic System Metrics Over Time\n{train_out_file}', fontsize=14)
 
 # 绘制系统平均速度
 axs[0, 0].plot(df['step'], df['system_mean_speed'], 'b-')
-axs[0, 0].set_title('平均速度', fontsize=10)
-axs[0, 0].set_ylabel('速度', fontsize=8)
+axs[0, 0].set_title('Average Speed', fontsize=10)
+axs[0, 0].set_ylabel('speed', fontsize=8)
 axs[0, 0].tick_params(axis='both', which='major', labelsize=6)
 axs[0, 0].grid(True)
 
 # 绘制系统停止的总车辆数
 axs[0, 1].plot(df['step'], df['system_total_stopped'], 'r-')
-axs[0, 1].set_title('系统停止总数', fontsize=10)
-axs[0, 1].set_ylabel('车辆数', fontsize=8)
+axs[0, 1].set_title('System total stopped', fontsize=10)
+axs[0, 1].set_ylabel('vehicles', fontsize=8)
 axs[0, 1].tick_params(axis='both', which='major', labelsize=6)
 axs[0, 1].grid(True)
 
 # 绘制系统总等待时间
 axs[1, 0].plot(df['step'], df['system_total_waiting_time'], 'g-')
-axs[1, 0].set_title('系统总等待时间', fontsize=10)
-axs[1, 0].set_xlabel('时间步', fontsize=8)
-axs[1, 0].set_ylabel('等待时间', fontsize=8)
+axs[1, 0].set_title('System total waiting time', fontsize=10)
+axs[1, 0].set_xlabel('timestep', fontsize=8)
+axs[1, 0].set_ylabel('waiting time', fontsize=8)
 axs[1, 0].tick_params(axis='both', which='major', labelsize=6)
 axs[1, 0].grid(True)
 
 # 绘制代理总停止数
 axs[1, 1].plot(df['step'], df['agents_total_stopped'], 'm-')
-axs[1, 1].set_title('代理总停止数', fontsize=10)
-axs[1, 1].set_xlabel('时间步', fontsize=8)
-axs[1, 1].set_ylabel('代理数', fontsize=8)
+axs[1, 1].set_title('agents total stopped', fontsize=10)
+axs[1, 1].set_xlabel('timestep', fontsize=8)
+axs[1, 1].set_ylabel('agent number', fontsize=8)
 axs[1, 1].tick_params(axis='both', which='major', labelsize=6)
 axs[1, 1].grid(True)
 

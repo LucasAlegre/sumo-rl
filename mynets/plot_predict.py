@@ -5,13 +5,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # 设置中文字体
-plt.rcParams['font.family'] = ['Heiti TC']  # 或者使用其他支持中文的字体
-plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+# plt.rcParams['font.family'] = ['Heiti TC']  # 或者使用其他支持中文的字体
+# plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 if (len(sys.argv) <= 1):
     print("usage: python plot_predict.py predict_file.json")
     exit()
-    
+
 predict_file = sys.argv[1]
 # predict_file = "./predict/my-intersection-modelDQN.json"
 # 读取JSON数据
@@ -23,7 +23,7 @@ df = pd.DataFrame([item['info'][0] for item in data])
 
 # 设置图形大小
 plt.figure(figsize=(20, 10))
-plt.suptitle(f'交通系统指标随仿真步的变化\n{predict_file}', fontsize=14)
+plt.suptitle(f'Traffic System Metrics Over Time\n{predict_file}', fontsize=14)
 
 # 绘制各项指标的图形
 metrics = [
