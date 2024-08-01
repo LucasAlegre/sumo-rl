@@ -54,10 +54,10 @@ def save_result(data, filename='results.json', print_to_console=True):
 #            --output-file=my-intersection-2.net.xml \
 #            --ignore-errors
 # run command:
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-probability.rou.xml -o out/wf-my-intersection-probability-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-perhour.rou.xml -o out/wf-my-intersection-perhour-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-period.rou.xml -o out/wf-my-intersection-period-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
-# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-number.rou.xml -o out/wf-my-intersection-number-algo -s 5000 -e 10 -l 10000 -t 1024 -q SAC
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-probability.rou.xml -o out/wf-my-intersection-probability-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-perhour.rou.xml -o out/wf-my-intersection-perhour-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-period.rou.xml -o out/wf-my-intersection-period-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
+# python AtscWorkflow.py -n net/my-intersection.net.xml -r net/my-intersection-number.rou.xml -o out/wf-my-intersection-number-algo -q SAC -f ALL -s 5000 -e 10 -l 10000 -t 1024
 def main(args):
     # 创建 ArgumentParser 对象
     parser = argparse.ArgumentParser(description="Process some integers.")
