@@ -76,12 +76,12 @@ def add_directory_if_missing(path, directory="./"):
         return os.path.join(directory, path_parts[1])
 
 
-def write_to_file(mean, std, filename="eval_result.txt"):
+def write_eval_result(mean, std, filename="eval_result.txt"):
     # 获取当前时间
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 将时间和变量组合成一行
     line = f"{current_time}, {mean}, {std}\n"
-    print(line)
+
     create_file_if_not_exists(filename)
     # 以写入模式打开文件并写入
     with open(filename, "a") as file:
@@ -89,23 +89,14 @@ def write_to_file(mean, std, filename="eval_result.txt"):
     print(f"Data written to {filename}")
 
 
-def save_result(data, filename='results.json', print_to_console=True):
+def write_predict_result(data, filename='predict_results.json', print_to_console=False):
     create_file_if_not_exists(filename)
 
-    # 如果文件不存在，创建一个包含空列表的 JSON 文件
-    try:
-        with open(filename, 'r') as f:
-            results = json.load(f)
-    except FileNotFoundError:
-        results = []
-    # 将新数据添加到结果列表中
-    results.append(data)
-
-    # 将更新后的结果写入 JSON 文件
-    with open(filename, 'w') as f:
-        json.dump(results, f, indent=2)
     if print_to_console:
-        print(json.dumps(data, indent=2))
+        print(data)
+
+    with open(filename, 'w') as f:
+        json.dump(info_list, f, indent=2)
 
 
 # 工作流程：1，设计路口网络模型；2，结合网络模型设计交通需求模型；3，编写sumo配置文件；4，运行本程序。
@@ -270,7 +261,7 @@ if __name__ == "__main__":
     if params.func == "EVAL":
         print("evaluate policy====训练前，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        write_to_file(mean_reward, std_reward, params.eval_file)
+        write_eval_result(mean_reward, std_reward, params.eval_file)
     elif params.func == "TRAIN":
         print("train model=====训练模型，总时间步，进度条")
         model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
@@ -278,28 +269,22 @@ if __name__ == "__main__":
         model.save(params.model_file)
         print("evaluate policy====训练后，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        write_to_file(mean_reward, std_reward, params.eval_file)
+        write_eval_result(mean_reward, std_reward, params.eval_file)
     elif params.func == "PREDICT":
         print("predict====使用模型进行预测")
         env = model.get_env()
         obs = env.reset()
+        info_list = []
         for i in range(10):
             action, state = model.predict(obs)
             obs, reward, dones, info = env.step(action)
-            # 创建一个字典来存储这次迭代的结果
-            iteration_result = {
-                "iteration": i,
-                # "obs": obs.tolist() if hasattr(obs, 'tolist') else obs,  # 如果 obs 是 numpy 数组，转换为列表
-                # "reward": float(reward),  # 确保 reward 是 JSON 可序列化的
-                # "dones": dones,
-                "info": info
-            }
-            save_result(iteration_result, filename=params.predict_file)
+            info_list.append(info[0])
             env.render()
+        write_predict_result(info_list, filename=params.predict_file)
     elif params.func == "ALL":
         print("evaluate policy====训练前，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        write_to_file(mean_reward, std_reward, params.eval_file)
+        write_eval_result(mean_reward, std_reward, params.eval_file)
         print("train model=====训练模型，总时间步，进度条")
         model.learn(total_timesteps=params.total_timesteps, progress_bar=True)  # 训练总时间步，100000
         print("save model=====保存训练模型")
@@ -308,23 +293,17 @@ if __name__ == "__main__":
         model.load(params.model_file)
         print("evaluate policy====训练后，评测模型的收敛指标")
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=params.n_eval_episodes)
-        write_to_file(mean_reward, std_reward, params.eval_file)
+        write_eval_result(mean_reward, std_reward, params.eval_file)
         print("predict====使用模型进行预测")
         env = model.get_env()
         obs = env.reset()
+        info_list = []
         for i in range(10):
             action, state = model.predict(obs)
             obs, reward, dones, info = env.step(action)
-            # 创建一个字典来存储这次迭代的结果
-            iteration_result = {
-                "iteration": i,
-                # "obs": obs.tolist() if hasattr(obs, 'tolist') else obs,  # 如果 obs 是 numpy 数组，转换为列表
-                # "reward": float(reward),  # 确保 reward 是 JSON 可序列化的
-                # "dones": dones,
-                "info": info
-            }
-            save_result(iteration_result, filename=params.predict_file)
+            info_list.append(info[0])
             env.render()
+        write_predict_result(info_list, filename=params.predict_file)
 
     env.close()
     del model
