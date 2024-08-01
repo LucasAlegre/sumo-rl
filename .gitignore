@@ -140,3 +140,7 @@ settings.json
 /mynets/logs/my-intersection-log/DQN_1/
 /mynets/logs/my-intersection-log/DQN_2/
 nohup.out
+/mynets/eval/
+/mynets/logs/
+/mynets/predict/
+/mynets/logs/
