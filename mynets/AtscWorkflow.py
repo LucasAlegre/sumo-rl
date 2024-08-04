@@ -96,7 +96,7 @@ def write_predict_result(data, filename='predict_results.json', print_to_console
         print(data)
 
     with open(filename, 'w') as f:
-        json.dump(info_list, f, indent=2)
+        json.dump(data, f, indent=2)
 
 
 # 工作流程：1，设计路口网络模型；2，结合网络模型设计交通需求模型；3，编写sumo配置文件；4，运行本程序。
@@ -253,10 +253,10 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError
 
-    file_path = Path(params.model_file)
-    if file_path.exists():
+    model_path = Path(params.model_file)
+    if model_path.exists():
         print("load model=====加载训练模型==在原来基础上训练")
-        model.load(params.model_file)
+        model.load(model_path)
 
     if params.func == "EVAL":
         print("evaluate policy====训练前，评测模型的收敛指标")
