@@ -1,28 +1,21 @@
 import gradio as gr
-import time
-import subprocess
 import shlex
-import datetime
-import ntpath
 import os
 import sys
-import argparse
 from pathlib import Path
-
+from plot_figures import plot_process, plot_predict
 from stable_baselines3 import PPO, A2C, SAC
+import matplotlib.pyplot as plt
 
 sys.path.append('..')
 
 from ui.utils import add_directory_if_missing, extract_crossname, write_eval_result, write_predict_result
 
-from gymnasium.wrappers import RecordEpisodeStatistics, RecordVideo
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.dqn.dqn import DQN
 import mysumo.envs  # 确保自定义环境被注册
-import json
-import os
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -40,7 +33,7 @@ def parseParams(net_file,  # 网络模型
                 tensorboard_logs="logs",  # tensorboard_logs folder
                 single_agent=True,  # 单智能体
                 num_seconds=20000,  # 仿真时长
-                n_eval_episodes=20,  # 评估回合数
+                n_eval_episodes=10,  # 评估回合数
                 n_steps=1024,  # A2C价值网络更新间隔时间步
                 total_timesteps=1000000,  # 训练时间步
                 gui=False,  # 图形界面
@@ -91,7 +84,6 @@ def parseParams(net_file,  # 网络模型
 
 
 def createEnv(net_file, rou_file, csv_name, num_seconds=20000, render_mode=None, single_agent=True, gui=False, isSAC=False):
-    print("==========AtscUI-createEnv-csv_name={}".format(csv_name))
     if isSAC:
         print("=====create ContinuousEnv for SAC=====")
         env = ContinuousSumoEnv(
@@ -117,8 +109,6 @@ def createEnv(net_file, rou_file, csv_name, num_seconds=20000, render_mode=None,
     print("=====env:action_space:", env.action_space)
     env = Monitor(env, "monitor/SumoEnv-v0")
     env = DummyVecEnv([lambda: env])
-
-    print("==========AtscUI-createEnv-env.out_csv_name={}".format(env.get_attr("out_csv_name")))
 
     return env
 
@@ -180,6 +170,20 @@ def createAgent(algo_name, env_name, tensorboard_log, model_file, n_steps=1024, 
     return model
 
 
+def plot_training_process(file):
+    if file is None:
+        return "请选择训练过程文件"
+    output_path = plot_process(file.name)
+    return output_path, f"训练过程图已生成：{output_path}"
+
+
+def plot_prediction_result(file):
+    if file is None:
+        return "请选择预测结果文件"
+    output_path = plot_predict(file.name)
+    return output_path, f"预测结果图已生成：{output_path}"
+
+
 def run_simulation(network_file, demand_file, algorithm, operation, total_timesteps, num_seconds):
     if not network_file or not demand_file:
         return 0, "请上传路网模型和交通需求文件"
@@ -205,20 +209,33 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
         print("load model=====加载训练模型==在原来基础上训练")
         model.load(model_obj)
 
+    progress = 0
+    output = ""
+
     if operation == "EVAL":
-        print("evaluate policy====训练前，评估模型")
+        output += "evaluate policy====训练前，评估模型\n"
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
         write_eval_result(mean_reward, std_reward, eval_path)
+        output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
+        progress = 100
     elif operation == "TRAIN":
-        print("train model=====训练模型，总时间步，进度条")
-        model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
-        print("save model=====保存训练模型")
+        # print("train model=====训练模型，总时间步，进度条")
+        output += "train model=====训练模型，总时间步，进度条\n"
+        # model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
+        for i in range(0, total_timesteps, 1000):  # 每1000步更新一次进度
+            model.learn(total_timesteps=1000, progress_bar=False)
+            progress = int((i + 1000) / total_timesteps * 100)
+            yield progress, output
+        # print("save model=====保存训练模型")
+        output += "save model=====保存训练模型\n"
         model.save(model_path)
-        print("evaluate policy====训练后，评估模型")
+        output += "evaluate policy====训练后，评估模型"
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
         write_eval_result(mean_reward, std_reward, eval_path)
+        output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
     elif operation == "PREDICT":
-        print("predict====使用模型进行预测")
+        # print("predict====使用模型进行预测")
+        output += "predict====使用模型进行预测\n"
         env = model.get_env()
         obs = env.reset()
         info_list = []
@@ -227,21 +244,31 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
             obs, reward, dones, info = env.step(action)
             info_list.append(info[0])
             env.render()
+            progress = int((i + 1) / 10 * 100)
+            yield progress, output
         write_predict_result(info_list, filename=predict_path)
+        output += "Prediction completed and saved.\n"
     elif operation == "ALL":
-        print("evaluate policy====训练前，评估模型")
+        # print("evaluate policy====训练前，评估模型")
+        output += "evaluate policy====训练前，评估模型\n"
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
         write_eval_result(mean_reward, std_reward, eval_path)
-        print("train model=====训练模型，总时间步，进度条")
+        output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
+        # print("train model=====训练模型，总时间步，进度条")
+        output += "train model=====训练模型，总时间步，进度条\n"
         model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
-        print("save model=====保存训练模型")
+        # print("save model=====保存训练模型")
+        output += "save model=====保存训练模型\n"
         model.save(model_path)
         # 评测模型
         model.load(model_path)
-        print("evaluate policy====训练后，评估模型")
+        # print("evaluate policy====训练后，评估模型")
+        output += "evaluate policy====训练后，评估模型\n"
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
         write_eval_result(mean_reward, std_reward, predict_path)
-        print("predict====使用模型进行预测")
+        output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
+        # print("predict====使用模型进行预测")
+        output += "predict====使用模型进行预测\n"
         env = model.get_env()
         obs = env.reset()
         info_list = []
@@ -250,27 +277,20 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
             obs, reward, dones, info = env.step(action)
             info_list.append(info[0])
             env.render()
+            progress = int((i + 1) / 10 * 100)
+            yield progress, output
         write_predict_result(info_list, filename=predict_path)
+        output += "Prediction completed and saved.\n"
 
     env.close()
     del model
 
-    # process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    yield 100, output
 
-    # start_time = time.time()
-    # progress = 0
-    # while process.poll() is None:
-    #     elapsed_time = time.time() - start_time
-    #     # 假设模拟总时长为100秒，实际应用中应根据SUMO输出动态调整
-    #     progress = min(int(elapsed_time), 100)
-    #     yield progress, "模拟运行中..."
-    #     time.sleep(0.1)
-    #
-    # stdout, stderr = process.communicate()
-    # if process.returncode == 0:
-    #     return 100, "模拟完成"
-    # else:
-    #     return 0, f"模拟出错：{stderr.decode('utf-8')}"
+
+def run_button_click(network_file, demand_file, algorithm, operation, total_timesteps, num_seconds):
+    for progress, output in run_simulation(network_file, demand_file, algorithm, operation, total_timesteps, num_seconds):
+        yield progress, output
 
 
 def validate_file(file):
@@ -278,18 +298,6 @@ def validate_file(file):
         return False
     _, ext = os.path.splitext(file.name)
     return ext.lower() in ['.xml', '.net.xml', '.rou.xml']  # 根据实际需求调整允许的文件类型
-
-
-def view_evaluation():
-    return "评估值查看功能已执行。实际应用中，这里应该返回具体的评估结果。"
-
-
-def view_training_graph():
-    return "训练图生成功能已执行。实际应用中，这里应该生成并返回训练过程的图表。"
-
-
-def view_prediction_graph():
-    return "预测图生成功能已执行。实际应用中，这里应该生成并返回预测结果的图表。"
 
 
 with gr.Blocks() as demo:
@@ -309,22 +317,33 @@ with gr.Blocks() as demo:
 
     run_button = gr.Button("开始运行")
     progress = gr.Slider(0, 100, value=0, label="进度", interactive=False)
-
-    with gr.Row():
-        eval_button = gr.Button("查看评估值")
-        train_graph_button = gr.Button("查看训练图")
-        pred_graph_button = gr.Button("查看预测图")
-
     output = gr.Textbox(label="输出")
 
+    # 新添加的组件
+    with gr.Row():
+        train_process_file = gr.File(label="选择训练过程文件", file_types=[".csv"])
+        plot_train_button = gr.Button("绘制训练过程图")
+
+    with gr.Row():
+        predict_result_file = gr.File(label="选择预测结果文件", file_types=[".json"])
+        plot_predict_button = gr.Button("绘制预测结果图")
+
+    plot_output = gr.Textbox(label="绘图输出")
+    plot_image = gr.Image(label="生成的图形")
+
     run_button.click(
-        run_simulation,
+        run_button_click,
         inputs=[network_file, demand_file, algorithm, operation, total_timesteps, num_seconds],
         outputs=[progress, output]
     )
 
-    eval_button.click(view_evaluation, outputs=output)
-    train_graph_button.click(view_training_graph, outputs=output)
-    pred_graph_button.click(view_prediction_graph, outputs=output)
+    plot_train_button.click(
+        plot_training_process,
+        inputs=[train_process_file],
+        outputs=[plot_image, plot_output])
+    plot_predict_button.click(
+        plot_prediction_result,
+        inputs=[predict_result_file],
+        outputs=[plot_image, plot_output])
 
 demo.launch()
