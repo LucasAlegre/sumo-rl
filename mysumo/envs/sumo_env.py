@@ -4,8 +4,6 @@ import sys
 from pathlib import Path
 from typing import Callable, Optional, Tuple, Union
 
-from gymnasium.spaces import Box
-
 from mysumo.envs.traffic_signal import ContinuousTrafficSignal
 
 if "SUMO_HOME" in os.environ:
@@ -175,7 +173,6 @@ class SumoEnv(gym.Env):
         self.episode = 0
         self.metrics = []
         self.out_csv_name = out_csv_name
-        print("==========sumo_env-init-csv_name={}".format(out_csv_name))
         self.observations = {ts: None for ts in self.ts_ids}
         self.rewards = {ts: None for ts in self.ts_ids}
 
@@ -464,7 +461,6 @@ class SumoEnv(gym.Env):
             out_csv_name (str): Path to the output .csv file. E.g.: "results/my_results
             episode (int): Episode number to be appended to the output file name.
         """
-        print("==========sumo_env-save_csv-out_csv_name={}".format(out_csv_name))
         if out_csv_name is not None:
             df = pd.DataFrame(self.metrics)
             Path(Path(out_csv_name).parent).mkdir(parents=True, exist_ok=True)

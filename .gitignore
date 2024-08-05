@@ -144,3 +144,7 @@ nohup.out
 /mynets/logs/
 /mynets/predict/
 /mynets/logs/
+/ui/eval/
+/ui/monitor/
+/ui/out/
+/ui/predict/
