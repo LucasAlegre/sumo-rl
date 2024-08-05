@@ -39,11 +39,11 @@ def parseParams(net_file,  # 网络模型
                 gui=False,  # 图形界面
                 render_mode=None,  # 渲染模式
                 ):
+    algo_name = algo_name
     net_path = add_directory_if_missing(net_file, "./net")
     rou_path = add_directory_if_missing(rou_file, "./net")
     _cross_name = extract_crossname(net_path)
-    csv_path = add_directory_if_missing(_cross_name, "./out")
-    algo_name = algo_name
+    csv_path = add_directory_if_missing(_cross_name + "-" + algo_name, "./out")
     model_file = _cross_name + "-model-" + algo_name + ".zip"
     model_path = add_directory_if_missing(model_file, "./model")
     predict_file = _cross_name + "-predict-" + algo_name + ".json"
