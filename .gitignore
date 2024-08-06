@@ -148,3 +148,12 @@ nohup.out
 /ui/monitor/
 /ui/out/
 /ui/predict/
+/ui/temp
+/ui/logs/logs/
+/ui/logs/
+/ui/model/
+/ui/eval.tar.gz
+/ui/logs.tar.gz
+/ui/out.tar.gz
+/ui/predict.tar.gz
+/ui/temp
