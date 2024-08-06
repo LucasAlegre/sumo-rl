@@ -20,6 +20,7 @@ import sumo_rl
 
 
 if __name__ == "__main__":
+    print(os.getcwd())
     ray.init()
 
     env_name = "4x4grid"
