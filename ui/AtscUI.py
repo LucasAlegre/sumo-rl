@@ -201,7 +201,7 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
         = parseParams(network_path, demand_path, algorithm, operation,
                       tensorboard_logs="logs", total_timesteps=total_timesteps, num_seconds=num_seconds)
 
-    env = createEnv(net_path, rou_path, csv_path, num_seconds)
+    env = createEnv(net_path, rou_path, csv_path, num_seconds, isSAC=algo_name == "SAC")
     model = createAgent(algo_name, env, tensorboard_logpath, model_path)
 
     model_obj = Path(model_path)
@@ -265,7 +265,7 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
         # print("evaluate policy====训练后，评估模型")
         output += "evaluate policy====训练后，评估模型\n"
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
-        write_eval_result(mean_reward, std_reward, predict_path)
+        write_eval_result(mean_reward, std_reward, eval_path)
         output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
         # print("predict====使用模型进行预测")
         output += "predict====使用模型进行预测\n"

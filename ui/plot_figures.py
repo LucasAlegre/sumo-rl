@@ -115,3 +115,51 @@ def plot_predict(predict_file):
     print(f"图形已保存为{predict_fig}")
     return predict_fig
 
+def plot_evaluation():
+    data = {
+        'DQN': [
+            (1, -2063.549, 14.558827184907457),
+            (2, -2147.611, 311.60712852725294),
+            (3, -3400.0, 0.0),
+            (4, -464.68600000000004, 907.036539442596)
+        ],
+        'PPO': [
+            (1, -1095.1169999999997, 74.73346908179761),
+            (2, -255.83399999999997, 731.4804238829636),
+            (3, -3120.022, 20.010150324272953),
+            (4, -1026.912, 1654.7390609990446)
+        ],
+        'A2C': [
+            (1, -3920.0, 0.0),
+            (2, -191.188, 546.2929970409651)
+        ],
+        'SAC': [
+            (1, -960.0544999999998, 0.04510820324510233),
+            (2, -2221.2855, 767.8168098151732),
+            (3, -3400.0, 0.0),
+            (4, -2100.5535, 901.9646287481289),
+            (5, -2964.7670000000003, 1.686582639540624),
+            (6, -3380.7470000000003, 762.6395575375042)
+        ]
+    }
+
+    # 绘图
+    plt.figure(figsize=(10, 6))
+
+    # 遍历每种算法
+    for algo, results in data.items():
+        episodes = [result[0] for result in results]
+        mean_values = [result[1] for result in results]
+        std_values = [result[2] for result in results]
+
+        plt.errorbar(episodes, mean_values, yerr=std_values, label=algo, marker='o', linestyle='-')
+
+    plt.xlabel('Evaluation')
+    plt.ylabel('Mean Value')
+    plt.title('Algorithm Evaluation Results')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
