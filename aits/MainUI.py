@@ -111,7 +111,7 @@ class TrafficVisualization:
             y += 50
 
 
-def main():
+def main(action_space_type="auto"):
     env = RealWorldEnv(
         intersection_ids=["intersection_1", "intersection_2"],
         delta_time=5,
@@ -119,7 +119,8 @@ def main():
         min_green=5,
         max_green=30,
         num_seconds=3600,
-        reward_fn="queue"
+        reward_fn="queue",
+        action_space_type = action_space_type
     )
 
     env.reset()
@@ -127,8 +128,8 @@ def main():
     vis = TrafficVisualization(env)
 
     def update_env():
-        actions = {ts: env.action_spaces[ts].sample() for ts in env.intersection_ids}
-        env.step(actions)
+        action = env.action_space.sample()
+        env.step(action)
 
     # 创建一个 Pygame 事件来定期更新环境
     UPDATE_ENV_EVENT = pygame.USEREVENT + 1
@@ -148,4 +149,5 @@ def main():
 
 
 if __name__ == "__main__":
+    print("test main-ui")
     main()

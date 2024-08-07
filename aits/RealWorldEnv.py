@@ -8,6 +8,7 @@ from aits.RealWorldDataCollector import RealWorldDataCollector
 from aits.RealWorldTrafficSignal import RealWorldTrafficSignal
 from aits.SignalController import SignalController
 
+
 class RealWorldEnv(gym.Env):
     def __init__(
             self,
@@ -18,6 +19,7 @@ class RealWorldEnv(gym.Env):
             max_green: int,
             num_seconds: int,
             reward_fn: Union[str, Callable, Dict[str, Union[str, Callable]]],
+            action_space_type: str = 'auto'
     ):
         super(RealWorldEnv, self).__init__()
 
@@ -55,13 +57,29 @@ class RealWorldEnv(gym.Env):
         self.reward_range = (-float('inf'), float('inf'))
         self.metadata = {}
 
-        self.observation_spaces = {ts: self.traffic_signals[ts].observation_space for ts in self.intersection_ids}
-        self.action_spaces = {ts: self.traffic_signals[ts].action_space for ts in self.intersection_ids}
+        # 存储每个交叉口的动作数量
+        self.actions_per_intersection = {ts: self.traffic_signals[ts].action_space.n for ts in intersection_ids}
 
-        self.observation_space = gym.spaces.Dict({ts: self.observation_spaces[ts] for ts in self.intersection_ids})
-        self.action_space = gym.spaces.Dict({ts: self.action_spaces[ts] for ts in self.intersection_ids})
+        # 创建离散和连续动作空间
+        self.discrete_action_space = spaces.Discrete(sum(self.actions_per_intersection.values()))
+        self.continuous_action_space = spaces.Box(low=0, high=1, shape=(len(intersection_ids),), dtype=np.float32)
 
-    def reset(self):
+        # 根据 action_space_type 设置实际使用的动作空间
+        if action_space_type == 'auto':
+            self.action_space = self.discrete_action_space
+        elif action_space_type == 'discrete':
+            self.action_space = self.discrete_action_space
+        elif action_space_type == 'continuous':
+            self.action_space = self.continuous_action_space
+        else:
+            raise ValueError("Invalid action_space_type. Use 'auto', 'discrete', or 'continuous'.")
+
+        # 合并所有交叉口的观察空间
+        obs_spaces = {ts: self.traffic_signals[ts].observation_space for ts in self.intersection_ids}
+        self.observation_space = spaces.Dict(obs_spaces)
+
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
         self.start_time = time.time()
         self.next_action_time = self.start_time
 
@@ -73,11 +91,14 @@ class RealWorldEnv(gym.Env):
         observations = {ts: self.traffic_signals[ts].compute_observation() for ts in self.intersection_ids}
         return observations, {}  # Return initial observation and an empty info dict
 
-    def step(self, actions):
+    def step(self, action):
+        # Decode the action
+        actions = self._decode_action(action)
+
         # Apply actions
-        for ts, action in actions.items():
+        for ts, act in actions.items():
             if self.traffic_signals[ts].time_to_act:
-                self.traffic_signals[ts].set_next_phase(action)
+                self.traffic_signals[ts].set_next_phase(act)
 
         # Wait for delta_time
         time.sleep(self.delta_time)
@@ -92,6 +113,7 @@ class RealWorldEnv(gym.Env):
 
         # Compute rewards
         rewards = {ts: self.traffic_signals[ts].compute_reward() for ts in self.intersection_ids}
+        total_reward = sum(rewards.values())  # 计算总奖励
 
         # Check if simulation is done
         done = time.time() - self.start_time >= self.num_seconds
@@ -100,8 +122,23 @@ class RealWorldEnv(gym.Env):
 
         # Compute info
         info = self._compute_info()
+        info['rewards'] = rewards  # 将单个交叉口的奖励放入 info 字典中
 
-        return observations, rewards, terminated, truncated, info
+        return observations, total_reward, terminated, truncated, info
+
+    def _decode_action(self, action):
+        actions = {}
+        if isinstance(self.action_space, spaces.Box):
+            for i, ts in enumerate(self.intersection_ids):
+                discrete_action = int(action[i] * self.actions_per_intersection[ts])
+                actions[ts] = discrete_action
+        else:
+            for ts in self.intersection_ids:
+                if action < self.actions_per_intersection[ts]:
+                    actions[ts] = action
+                    break
+                action -= self.actions_per_intersection[ts]
+        return actions
 
     def _compute_info(self):
         info = {}
