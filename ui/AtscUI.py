@@ -297,14 +297,14 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
             info_list.append(info[0])
             env.render()
             progress = int((i + 1) / 10 * 100)
-            yield progress, output
+            yield progress, f"进度: {progress}%\n正在执行{operation}操作..."
         write_predict_result(info_list, filename=predict_path)
         output += "Prediction completed and saved.\n"
 
     env.close()
     del model
 
-    yield 100, output
+    yield 100, f"{operation}操作完成！"
 
 
 def run_button_click(network_file, demand_file, algorithm, operation, total_timesteps, num_seconds):
@@ -319,40 +319,45 @@ def validate_file(file):
     return ext.lower() in ['.xml', '.net.xml', '.rou.xml']  # 根据实际需求调整允许的文件类型
 
 
-with gr.Blocks() as demo:
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
     gr.Markdown("# 交通信号智能体训练系统")
 
-    with gr.Row():
-        network_file = gr.File(label="路网模型", value="../mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
-        demand_file = gr.File(label="交通需求", value="../mynets/net/my-intersection-perhour.rou.xml", file_types=[".xml", ".rou.xml"])
+    with gr.Tabs():
+        with gr.TabItem("模型训练"):
+            with gr.Row():
+                with gr.Column(scale=2):
+                    network_file = gr.File(label="路网模型", value="../mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
+                    demand_file = gr.File(label="交通需求", value="../mynets/net/my-intersection-perhour.rou.xml", file_types=[".xml", ".rou.xml"])
+                with gr.Column(scale=1):
+                    algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="DQN", label="算法模型")
+                    operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="EVAL", label="运行功能")
 
-    with gr.Row():
-        algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="DQN", label="算法模型")
-        operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="EVAL", label="运行功能")
+            with gr.Row():
+                total_timesteps = gr.Slider(1000, 1000000, value=1000000, step=1000, label="训练步数")
+                num_seconds = gr.Slider(1000, 20000, value=20000, step=1000, label="仿真秒数")
 
-    with gr.Row():
-        total_timesteps = gr.Number(value=1000000, label="训练步数", precision=0)
-        num_seconds = gr.Number(value=20000, label="仿真秒数", precision=0)
+            run_button = gr.Button("开始运行", variant="primary")
+            progress = gr.Slider(0, 100, value=0, label="进度", interactive=False)
+            output = gr.Textbox(label="输出信息", lines=5)
 
-    run_button = gr.Button("开始运行")
-    progress = gr.Slider(0, 100, value=0, label="进度", interactive=False)
-    output = gr.Textbox(label="输出")
+        with gr.TabItem("结果可视化"):
+            with gr.Row():
+                with gr.Column(scale=2):
+                    train_process_file = gr.File(label="选择训练过程文件", file_types=[".csv"])
+                    plot_train_button = gr.Button("绘制训练过程图", variant="secondary")
 
-    # 新添加的组件
-    with gr.Row():
-        train_process_file = gr.File(label="选择训练过程文件", file_types=[".csv"])
-        plot_train_button = gr.Button("绘制训练过程图")
+            with gr.Row():
+                with gr.Column(scale=2):
+                    predict_result_file = gr.File(label="选择预测结果文件", file_types=[".json"])
+                    plot_predict_button = gr.Button("绘制预测结果图", variant="secondary")
 
-    with gr.Row():
-        predict_result_file = gr.File(label="选择预测结果文件", file_types=[".json"])
-        plot_predict_button = gr.Button("绘制预测结果图")
+            with gr.Row():
+                with gr.Column(scale=2):
+                    eval_result_file = gr.File(label="选择评估文件", file_types=[".txt"])
+                    plot_eval_button = gr.Button("绘制评估结果图", variant="secondary")
 
-    with gr.Row():
-        eval_result_file = gr.File(label="选择评估文件", file_types=[".txt"])
-        plot_eval_button = gr.Button("绘制评估结果图")
-
-    plot_output = gr.Textbox(label="绘图输出")
-    plot_image = gr.Image(label="生成的图形")
+            plot_output = gr.Textbox(label="绘图输出", lines=2)
+            plot_image = gr.Image(label="生成的图形")
 
     run_button.click(
         run_button_click,
