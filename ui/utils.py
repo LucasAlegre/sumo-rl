@@ -2,9 +2,12 @@ import datetime
 import json
 import ntpath
 import os
+import re
+from pathlib import Path
+import gradio as gr
 
 
-def extract_crossname(path):
+def extract_crossname_from_netfile(path):
     # 使用 ntpath.basename 来处理 Windows 路径
     filename = ntpath.basename(path)
     # 分割文件名和扩展名
@@ -72,3 +75,64 @@ def write_predict_result(data, filename='predict_results.json', print_to_console
 
     with open(filename, 'w') as f:
         json.dump(data, f, indent=2)
+
+
+def get_relative_path(file_path):
+    # 获取当前工作目录
+    current_dir = Path.cwd()
+
+    # 将文件路径转换为Path对象
+    file_path = Path(file_path)
+
+    # 尝试获取相对路径
+    try:
+        relative_path = file_path.relative_to(current_dir)
+    except ValueError:
+        # 如果无法获取相对路径（例如，文件在不同的驱动器上），则返回原始路径
+        relative_path = file_path
+
+    # 分离文件夹和文件名
+    folder = str(relative_path.parent)
+    filename = relative_path.name
+
+    # 如果文件夹是当前目录，则用 './' 表示
+    if folder == '.':
+        folder = './'
+    elif folder == '..':
+        folder = '../'
+    else:
+        folder = f'./{folder}'
+
+    return folder, filename
+
+
+def extract_crossname_from_evalfile(filename):
+    # 使用正则表达式匹配文件名模式
+    match = re.match(r'(.*?)-eval-', filename)
+    if match:
+        return match.group(1)
+    else:
+        # 如果没有匹配到预期的模式，返回None或者引发一个异常
+        return None
+
+
+def get_gradio_file_info(file: gr.File):
+    if file is None:
+        return None, None
+
+    # 获取原始文件名
+    filename = os.path.basename(file.name)
+
+    conn_ep = r'_conn(\d+)_ep(\d+)'
+
+    # 推断预期的文件夹
+    if 'eval' in filename:
+        inferred_folder = './eval'
+    elif 'predict' in filename:
+        inferred_folder = './predict'
+    elif re.search(conn_ep, filename):
+        inferred_folder = './out'
+    else:
+        inferred_folder = './'  # 默认为当前目录
+
+    return inferred_folder, filename

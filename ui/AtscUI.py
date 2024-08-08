@@ -1,15 +1,19 @@
+import ntpath
+
 import gradio as gr
 import shlex
 import os
 import sys
 from pathlib import Path
-from plot_figures import plot_process, plot_predict
+from plot_figures import plot_process, plot_predict, plot_evaluation
 from stable_baselines3 import PPO, A2C, SAC
 import matplotlib.pyplot as plt
 
 sys.path.append('..')
 
-from ui.utils import add_directory_if_missing, extract_crossname, write_eval_result, write_predict_result
+from ui.utils import (add_directory_if_missing, extract_crossname_from_netfile,
+                      write_eval_result, write_predict_result, get_relative_path,
+                      extract_crossname_from_evalfile, get_gradio_file_info)
 
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.monitor import Monitor
@@ -42,7 +46,7 @@ def parseParams(net_file,  # 网络模型
     algo_name = algo_name
     net_path = add_directory_if_missing(net_file, "./net")
     rou_path = add_directory_if_missing(rou_file, "./net")
-    _cross_name = extract_crossname(net_path)
+    _cross_name = extract_crossname_from_netfile(net_path)
     csv_path = add_directory_if_missing(_cross_name + "-" + algo_name, "./out")
     model_file = _cross_name + "-model-" + algo_name + ".zip"
     model_path = add_directory_if_missing(model_file, "./model")
@@ -173,14 +177,29 @@ def createAgent(algo_name, env_name, tensorboard_log, model_file, n_steps=1024, 
 def plot_training_process(file):
     if file is None:
         return "请选择训练过程文件"
-    output_path = plot_process(file.name)
+    folder_name, filename = get_gradio_file_info(file)
+    output_path = plot_process(file.name, folder_name, filename)
     return output_path, f"训练过程图已生成：{output_path}"
 
 
 def plot_prediction_result(file):
     if file is None:
         return "请选择预测结果文件"
-    output_path = plot_predict(file.name)
+    folder_name, filename = get_gradio_file_info(file)
+    output_path = plot_predict(file.name, folder_name, filename)
+    return output_path, f"预测结果图已生成：{output_path}"
+
+
+def plot_eval_result(file):
+    if file is None:
+        return "请选择评估结果文件"
+    folder_name, filename = get_gradio_file_info(file)
+    print("=====folder_name=====", folder_name)
+    print("=====filename=====", filename)
+    eval_filename = ntpath.basename(filename)
+    cross_name = extract_crossname_from_evalfile(eval_filename)  # 提取路口名称
+    print("=====cross_name=====", cross_name)
+    output_path = plot_evaluation(folder_name, cross_name)
     return output_path, f"预测结果图已生成：{output_path}"
 
 
@@ -328,6 +347,10 @@ with gr.Blocks() as demo:
         predict_result_file = gr.File(label="选择预测结果文件", file_types=[".json"])
         plot_predict_button = gr.Button("绘制预测结果图")
 
+    with gr.Row():
+        eval_result_file = gr.File(label="选择评估文件", file_types=[".txt"])
+        plot_eval_button = gr.Button("绘制评估结果图")
+
     plot_output = gr.Textbox(label="绘图输出")
     plot_image = gr.Image(label="生成的图形")
 
@@ -344,6 +367,10 @@ with gr.Blocks() as demo:
     plot_predict_button.click(
         plot_prediction_result,
         inputs=[predict_result_file],
+        outputs=[plot_image, plot_output])
+    plot_eval_button.click(
+        plot_eval_result,
+        inputs=[eval_result_file],
         outputs=[plot_image, plot_output])
 
 demo.launch()

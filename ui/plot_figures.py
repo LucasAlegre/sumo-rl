@@ -1,7 +1,12 @@
 import os
 import json
+import sys
+from datetime import datetime
+
 import pandas as pd
 import matplotlib.pyplot as plt
+
+sys.path.append('..')
 
 
 def replace_extension(pathname, new_extension):
@@ -19,7 +24,9 @@ def replace_extension(pathname, new_extension):
     return new_pathname
 
 
-def plot_process(train_out_file):
+def plot_process(train_out_file, folder_name, file_name):
+    process_fig = replace_extension(file_name, "png")
+    output_path = os.path.join(folder_name, process_fig)
     # 加载数据
     df = pd.read_csv(train_out_file)
 
@@ -28,7 +35,7 @@ def plot_process(train_out_file):
     # 创建2x2的子图布局，调整整体图表大小
     fig, axs = plt.subplots(2, 2, figsize=(12, 8))
     # fig.suptitle('交通系统指标随时间变化\n{train_out_file}', fontsize=14)
-    plt.suptitle(f'Traffic System Metrics Over Time\n{train_out_file}', fontsize=14)
+    plt.suptitle(f'Traffic System Metrics Over Time\n{output_path}', fontsize=14)
 
     # 绘制系统平均速度
     axs[0, 0].plot(df['step'], df['system_mean_speed'], 'b-')
@@ -63,17 +70,17 @@ def plot_process(train_out_file):
     # 调整子图间距
     plt.tight_layout()
 
-    # 显示图表
-    # plt.show()
-
     # 写入文件中
-    process_fig = replace_extension(train_out_file, "png")
-    plt.savefig(process_fig)
+    plt.savefig(output_path)
     plt.close()
-    print(f"图形已保存为{process_fig}")
-    return process_fig
+    print(f"图形已保存为{output_path}")
+    return output_path
 
-def plot_predict(predict_file):
+
+def plot_predict(predict_file, folder_name, file_name):
+    predict_fig = replace_extension(file_name, "png")
+    output_path = os.path.join(folder_name, predict_fig)
+
     # 读取JSON数据
     with open(predict_file, 'r') as file:
         data = json.load(file)
@@ -83,7 +90,7 @@ def plot_predict(predict_file):
 
     # 设置图形大小
     plt.figure(figsize=(20, 10))
-    plt.suptitle(f'Traffic System Metrics Over Time\n{predict_file}', fontsize=14)
+    plt.suptitle(f'Traffic System Metrics Over Time\n{output_path}', fontsize=14)
 
     # 绘制各项指标的图形
     metrics = [
@@ -108,58 +115,63 @@ def plot_predict(predict_file):
     plt.tight_layout()
 
     # 保存图形
-    predict_fig = replace_extension(predict_file, "png")
-    plt.savefig(predict_fig)
+    plt.savefig(output_path)
     plt.close()
 
-    print(f"图形已保存为{predict_fig}")
-    return predict_fig
+    print(f"图形已保存为{output_path}")
+    return output_path
 
-def plot_evaluation():
-    data = {
-        'DQN': [
-            (1, -2063.549, 14.558827184907457),
-            (2, -2147.611, 311.60712852725294),
-            (3, -3400.0, 0.0),
-            (4, -464.68600000000004, 907.036539442596)
-        ],
-        'PPO': [
-            (1, -1095.1169999999997, 74.73346908179761),
-            (2, -255.83399999999997, 731.4804238829636),
-            (3, -3120.022, 20.010150324272953),
-            (4, -1026.912, 1654.7390609990446)
-        ],
-        'A2C': [
-            (1, -3920.0, 0.0),
-            (2, -191.188, 546.2929970409651)
-        ],
-        'SAC': [
-            (1, -960.0544999999998, 0.04510820324510233),
-            (2, -2221.2855, 767.8168098151732),
-            (3, -3400.0, 0.0),
-            (4, -2100.5535, 901.9646287481289),
-            (5, -2964.7670000000003, 1.686582639540624),
-            (6, -3380.7470000000003, 762.6395575375042)
-        ]
-    }
 
-    # 绘图
-    plt.figure(figsize=(10, 6))
+def plot_evaluation(eval_folder, cross_name="my-intersection"):
+    output_file = os.path.join(eval_folder, cross_name + "-eval.png")
 
-    # 遍历每种算法
-    for algo, results in data.items():
-        episodes = [result[0] for result in results]
-        mean_values = [result[1] for result in results]
-        std_values = [result[2] for result in results]
+    plt.figure(figsize=(12, 6))
+    max_evaluations = 0
 
-        plt.errorbar(episodes, mean_values, yerr=std_values, label=algo, marker='o', linestyle='-')
+    for filename in os.listdir(eval_folder):
+        if filename.startswith(cross_name + "-eval-") and filename.endswith(".txt"):
+            file_path = os.path.join(eval_folder, filename)
+            algorithm = filename.split('-')[-1].split('.')[0]  # 提取算法名称
 
-    plt.xlabel('Evaluation')
-    plt.ylabel('Mean Value')
-    plt.title('Algorithm Evaluation Results')
+            # 读取评估结果文件
+            with open(file_path, 'r') as f:
+                lines = f.readlines()
+
+            # 解析数据
+            mean_rewards = []
+            std_rewards = []
+
+            for line in lines:
+                _, mean_reward, std_reward = line.strip().split(', ')
+                mean_rewards.append(float(mean_reward))
+                std_rewards.append(float(std_reward))
+
+            # 使用评估次序作为x轴
+            x = range(1, len(mean_rewards) + 1)
+            max_evaluations = max(max_evaluations, len(mean_rewards))
+
+            # 绘制数据
+            plt.errorbar(x, mean_rewards, yerr=std_rewards, fmt='o-', capsize=5, label=algorithm)
+
+    plt.title(f'Evaluation Results Comparison\n{output_file}')
+    plt.xlabel('Evaluation Sequence')
+    plt.ylabel('Mean Reward')
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    # 设置x轴刻度为整数
+    if max_evaluations > 0:
+        plt.xticks(range(1, max_evaluations + 1))
+
     plt.tight_layout()
-    plt.show()
 
+    # 设置x轴刻度为整数
+    plt.xticks(range(1, max(plt.xticks()[0]) + 1))
 
+    # 保存图形
+
+    plt.savefig(output_file)
+    plt.close()
+
+    print(f"评估结果比较图形已保存为 {output_file}")
+
+    return output_file
