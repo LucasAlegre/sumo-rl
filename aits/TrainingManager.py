@@ -96,6 +96,7 @@ class TrainingManager:
         print(f"Action space: {self.env.action_space}")
 
     def train(self):
+        print("=====TrainingManager-train-Starting training")
         if self.model is None:
             self._create_model()
 
@@ -138,29 +139,30 @@ class TrainingManager:
         os.system(f"tensorboard --logdir {logdir}")
 
 
-# config = {
-#     'env_params': {
-#         'intersection_ids': ["intersection_1", "intersection_2"],
-#         'delta_time': 5,
-#         'yellow_time': 2,
-#         'min_green': 5,
-#         'max_green': 30,
-#         'num_seconds': 360,  # 3600
-#         'reward_fn': "queue"
-#     },
-#     'algorithm': 'SAC',
-#     'total_timesteps': 5000,  # 500000
-#     'algo_params': {
-#         'learning_rate': 1e-4,
-#         'buffer_size': 1000,  # 100000
-#         'learning_starts': 1000,
-#         'batch_size': 64,
-#         'gamma': 0.99,
-#         'tau': 0.005,
-#     }
-# }
-#
-# trainer = TrainingManager(config)
-# trainer.train()
-# trainer.evaluate()
-# trainer.save_model()
+if __name__ == "__main__":
+    config = {
+        'env_params': {
+            'intersection_ids': ["intersection_1", "intersection_2"],
+            'delta_time': 5,
+            'yellow_time': 2,
+            'min_green': 5,
+            'max_green': 30,
+            'num_seconds': 360,  # 3600
+            'reward_fn': "queue"
+        },
+        'algorithm': 'SAC',
+        'total_timesteps': 5000,  # 500000
+        'algo_params': {
+            'learning_rate': 1e-4,
+            'buffer_size': 1000,  # 100000
+            'learning_starts': 1000,
+            'batch_size': 64,
+            'gamma': 0.99,
+            'tau': 0.005,
+        }
+    }
+
+    trainer = TrainingManager(config)
+    trainer.train()
+    trainer.evaluate()
+    trainer.save_model()
