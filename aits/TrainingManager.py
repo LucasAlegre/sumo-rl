@@ -1,3 +1,4 @@
+import glob
 import os
 import sys
 from typing import Dict, Any
@@ -33,19 +34,40 @@ class FlattenObservationWrapper(gym.Wrapper):
 
 
 class RewardLogger(BaseCallback):
-    def __init__(self, verbose=0):
+    def __init__(self, verbose=0, log_freq=5000):
         super(RewardLogger, self).__init__(verbose)
         self.rewards = []
+        self.log_freq = log_freq
 
     def _on_step(self) -> bool:
         info = self.locals['infos'][0]
         if 'rewards' in info:
             self.rewards.append(info['rewards'])
+        if self.n_calls % self.log_freq == 0:
+            print("RewardLogger._on_step-info: {}".format(info))
         return True
 
     def on_training_end(self) -> None:
         # 这里你可以保存或打印累积的奖励信息
         print("Accumulated rewards:", self.rewards)
+
+
+class PeriodicSaveCallback(BaseCallback):
+    def __init__(self, save_freq: int, save_path: str, name_prefix: str = "model"):
+        super(PeriodicSaveCallback, self).__init__()
+        self.save_freq = save_freq
+        self.save_path = save_path
+        self.name_prefix = name_prefix
+
+    def _init_callback(self) -> None:
+        if self.save_path is not None:
+            os.makedirs(self.save_path, exist_ok=True)
+
+    def _on_step(self) -> bool:
+        if self.n_calls % self.save_freq == 0:
+            path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps")
+            self.model.save(path)
+        return True
 
 
 class TrainingManager:
@@ -96,25 +118,28 @@ class TrainingManager:
         print(f"Action space: {self.env.action_space}")
 
     def train(self):
-        print("=====TrainingManager-train-Starting training")
+        print("=====TrainingManager-train: Start training")
         if self.model is None:
             self._create_model()
 
         # Create an evaluation callback
         eval_env = self._create_env()
         eval_callback = EvalCallback(eval_env, best_model_save_path=self.model_path,
-                                     log_path=self.model_path, eval_freq=10000,
+                                     log_path=self.model_path, eval_freq=1000,
                                      deterministic=True, render=False)
-
+        # 创建定期保存回调
+        save_callback = PeriodicSaveCallback(save_freq=1000, save_path=self.model_path,
+                                             name_prefix=self.algorithm)
         # Train the model
-        reward_logger = RewardLogger()
-        self.model.learn(total_timesteps=self.config.get('total_timesteps', 1000000),
-                         callback=[eval_callback, reward_logger])
+        reward_logger = RewardLogger(log_freq=1000)
+        self.model.learn(total_timesteps=self.config.get('total_timesteps', 10000),
+                         callback=[eval_callback, save_callback, reward_logger])
 
         # Save the final model
         self.model.save(os.path.join(self.model_path, f"final_{self.algorithm}_model"))
 
     def evaluate(self, num_episodes: int = 10):
+        print("=====TrainingManager-evaluate: Start evaluating")
         if self.model is None:
             self.load_model()
 
@@ -129,9 +154,23 @@ class TrainingManager:
 
     def load_model(self, filename: str = None):
         if filename is None:
-            filename = f"{self.algorithm}_model"
+            filename = self.get_latest_model_path()
         model_cls = {'DQN': DQN, 'PPO': PPO, 'A2C': A2C, 'SAC': SAC}[self.algorithm]
-        self.model = model_cls.load(os.path.join(self.model_path, filename), env=self.env)
+        self.model = model_cls.load(filename, env=self.env)
+
+    def get_latest_model_path(self):
+        model_files = glob.glob(os.path.join(self.model_path, f"{self.algorithm}_*_steps.zip"))
+        if not model_files:
+            raise FileNotFoundError("No saved models found.")
+        latest_model = max(model_files, key=os.path.getctime)
+        return latest_model
+
+    def get_best_model_path(self):
+        best_model_path = os.path.join(self.model_path, f"best_{self.algorithm}_model.zip")
+        if os.path.exists(best_model_path):
+            return best_model_path
+        else:
+            return self.get_latest_model_path()
 
     def visualize_training(self):
         # This method can be expanded to create more detailed visualizations
@@ -143,7 +182,7 @@ if __name__ == "__main__":
     config = {
         'env_params': {
             'intersection_ids': ["intersection_1", "intersection_2"],
-            'delta_time': 5,
+            'delta_time': 0,  # 5
             'yellow_time': 2,
             'min_green': 5,
             'max_green': 30,

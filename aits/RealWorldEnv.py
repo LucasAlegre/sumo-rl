@@ -124,6 +124,7 @@ class RealWorldEnv(gym.Env):
         info = self._compute_info()
         info['rewards'] = rewards  # 将单个交叉口的奖励放入 info 字典中
 
+        # print("=====RealWorldEnv-step-info:", info)
         return observations, total_reward, terminated, truncated, info
 
     def _decode_action(self, action):
