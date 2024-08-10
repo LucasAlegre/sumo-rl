@@ -189,7 +189,7 @@ if __name__ == "__main__":
             'num_seconds': 360,  # 3600
             'reward_fn': "queue"
         },
-        'algorithm': 'SAC',
+        'algorithm': 'DQN',
         'total_timesteps': 5000,  # 500000
         'algo_params': {
             'learning_rate': 1e-4,
