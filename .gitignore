@@ -157,3 +157,6 @@ nohup.out
 /ui/out.tar.gz
 /ui/predict.tar.gz
 /ui/temp
+/aits/models/
+/aits/models_副本/
+/aits/models_2/
