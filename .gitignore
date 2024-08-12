@@ -162,3 +162,6 @@ nohup.out
 /aits/models_2/
 /aits/models_3/
 /aits/debug_logs/
+/aits/best_model/
+/aits/eval_logs/
+/aits/ppo_traffic_tensorboard/

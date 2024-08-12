@@ -228,18 +228,19 @@ def train_config():
             'reward_fn': "queue",
             'action_space_type': 'discrete'
         },
-        'algorithm': 'PPO',  # 使用PPO算法，它通常在各种任务中表现良好
-        'total_timesteps': 2_000_000,  # 增加总训练步数以获得更好的性能
+        'algorithm': 'PPO',
+        'total_timesteps': 2_000_000,
         'algo_params': {
+            'policy': 'MultiInputPolicy',  # 更改为MultiInputPolicy
             'learning_rate': 3e-4,
-            'n_steps': 2048,  # 每次更新的步数
+            'n_steps': 2048,
             'batch_size': 64,
-            'n_epochs': 10,  # 每次更新时的训练轮数
-            'gamma': 0.99,  # 折扣因子
-            'gae_lambda': 0.95,  # GAE lambda参数
+            'n_epochs': 10,
+            'gamma': 0.99,
+            'gae_lambda': 0.95,
             'clip_range': 0.2,
             'clip_range_vf': None,
-            'ent_coef': 0.01,  # 增加一点熵以鼓励探索
+            'ent_coef': 0.01,
             'vf_coef': 0.5,
             'max_grad_norm': 0.5,
             'use_sde': False,
@@ -256,12 +257,12 @@ def train_config():
 
     # 创建环境
     env = RealWorldEnv(**config['env_params'])
-    env = Monitor(env)  # 添加监视器以记录训练统计信息
+    env = Monitor(env)
     env = DummyVecEnv([lambda: env])
     env = VecNormalize(env, norm_obs=True, norm_reward=True, clip_obs=10.)
 
     # 创建模型
-    model = PPO('MlpPolicy', env, **config['algo_params'])
+    model = PPO(env=env, **config['algo_params'])
 
     # 创建评估回调
     eval_env = RealWorldEnv(**config['env_params'])
@@ -285,4 +286,7 @@ def train_config():
 
 
 if __name__ == "__main__":
-    debug_config()
+    if sys.argv[1] == 1:
+        debug_config()
+    else:
+        train_config()
