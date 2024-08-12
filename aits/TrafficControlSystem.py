@@ -1,83 +1,71 @@
 import sys
 import time
 import numpy as np
-import gymnasium as gym
-from typing import Callable
+from typing import Callable, Dict, Any
 
 sys.path.append('..')
 
 from aits.RealWorldEnv import RealWorldEnv
 from stable_baselines3 import SAC, PPO, A2C, DQN
-from stable_baselines3.common.utils import get_linear_fn
 
 
 class TrafficControlSystem:
-    def __init__(self, env_params, model_paths, algorithm='SAC'):
-        self.env = RealWorldEnv(**env_params)
-        self.algorithm = algorithm
-        self.models = {}
-        self.load_models(model_paths)
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        self.env = RealWorldEnv(**config.get("env_params"))
+        self.algorithm = config.get("algorithm", "DQN")
+        self.model_path = config.get("model_path", "")
+        self.model = None
+        self.load_model(self.model_path)
 
-    def load_models(self, model_paths):
-        custom_objects = {
-            "learning_rate": 0.0,
-            "lr_schedule": lambda _: 0.0,
-            "clip_range": lambda _: 0.0,
-        }
-        for ts in self.env.intersection_ids:
-            if self.algorithm == 'SAC':
-                self.models[ts] = SAC.load(model_paths[ts], custom_objects=custom_objects)
-            elif self.algorithm == 'PPO':
-                self.models[ts] = PPO.load(model_paths[ts], custom_objects=custom_objects)
-            elif self.algorithm == 'A2C':
-                self.models[ts] = A2C.load(model_paths[ts], custom_objects=custom_objects)
-            elif self.algorithm == 'DQN':
-                self.models[ts] = DQN.load(model_paths[ts], custom_objects=custom_objects)
+    def load_model(self, model_path):
+        if self.algorithm == 'SAC':
+            self.model = SAC.load(model_path)
+        elif self.algorithm == 'PPO':
+            self.model = PPO.load(model_path)
+        elif self.algorithm == 'A2C':
+            self.model = A2C.load(model_path)
+        elif self.algorithm == 'DQN':
+            self.model = DQN.load(model_path)
+        else:
+            raise ValueError(f"Unsupported algorithm: {self.algorithm}")
+
+    def get_action(self, observation):
+        # 处理整个环境的观察
+        if isinstance(observation, dict):
+            # 如果观察是字典（每个交叉口一个观察），我们需要将它们连接起来
+            obs_array = np.concatenate([obs for obs in observation.values()])
+        else:
+            # 如果观察已经是一个数组，直接使用它
+            obs_array = observation
+
+        # 确保观察的形状正确
+        expected_shape = self.model.observation_space.shape
+        if obs_array.shape != expected_shape:
+            # 如果形状不匹配，进行适当的调整
+            if len(obs_array) < expected_shape[0]:
+                # 如果观察太短，填充零
+                padded_obs = np.zeros(expected_shape)
+                padded_obs[:len(obs_array)] = obs_array
+                obs_array = padded_obs
             else:
-                raise ValueError(f"Unsupported algorithm: {self.algorithm}")
+                # 如果观察太长，截断
+                obs_array = obs_array[:expected_shape[0]]
 
-    def get_action(self, ts, observation):
-        # 调整观察空间以匹配模型的期望
-        adjusted_observation = self.adjust_observation(observation)
-        action, _ = self.models[ts].predict(adjusted_observation, deterministic=True)
-        if self.algorithm in ['SAC', 'PPO', 'A2C']:  # 连续动作空间
-            # 将连续动作映射到离散动作
-            discrete_action = int(action * self.env.traffic_signals[ts].num_green_phases)
-            return discrete_action
-        else:  # DQN，离散动作空间
-            return action
+        # 使用模型预测动作
+        action, _ = self.model.predict(obs_array, deterministic=True)
 
-    def adjust_observation(self, observation):
-        # 如果观察空间的维度不匹配，进行调整
-        if len(observation) != 22:
-            # 假设我们需要将11维扩展到22维
-            # 这里我们简单地重复每个元素一次，您可能需要根据实际情况调整这个逻辑
-            adjusted_obs = np.repeat(observation, 2)
-            return adjusted_obs
-        return observation
+        return action
 
     def run(self):
-        obs, _ = self.env.reset()
+        obs, _ = self.env.reset()  # 是多个路口观察值的字典
         try:
             while True:
-                actions = {}
-                for ts in self.env.intersection_ids:
-                    traffic_signal = self.env.traffic_signals[ts]
-                    if traffic_signal.time_to_act:
-                        action = self.get_action(ts, obs[ts])
-                        actions[ts] = action
+                action = self.get_action(obs)
+                obs, reward, terminated, truncated, info = self.env.step(action)
 
-                if isinstance(self.env.action_space, gym.spaces.Dict):
-                    obs, reward, terminated, truncated, info = self.env.step(actions)
-                else:
-                    # 如果动作空间不是字典，我们需要将动作转换为适当的格式
-                    if isinstance(self.env.action_space, gym.spaces.Discrete):
-                        action = next(iter(actions.values())) if actions else 0  # 如果没有动作，默认为0
-                    elif isinstance(self.env.action_space, gym.spaces.Box):
-                        action = np.array(list(actions.values()) or [0] * self.env.action_space.shape[0])
-                    obs, reward, terminated, truncated, info = self.env.step(action)
-
-                print(f"Step info: {info}")  # 打印每一步的信息
+                print(f"==========action: {action}")
+                print(f"Step info: {info}")
                 time.sleep(self.env.delta_time)
 
                 if terminated or truncated:
@@ -89,22 +77,31 @@ class TrafficControlSystem:
 
 
 def main():
-    env_params = {
-        "intersection_ids": ["intersection_1", "intersection_2"],
-        "delta_time": 5,
-        "yellow_time": 2,
-        "min_green": 5,
-        "max_green": 30,
-        "num_seconds": 3600,
-        "reward_fn": "queue"
+    config = {
+        'env_params': {
+            'intersection_ids': ["intersection_1", "intersection_2"],
+            'delta_time': 1,  # 5
+            'yellow_time': 1,  # 2
+            'min_green': 5,
+            'max_green': 30,
+            'num_seconds': 360,  # 3600
+            'reward_fn': "queue",
+            "action_space_type": "discrete",
+        },
+        'algo_params': {
+            'learning_rate': 1e-4,
+            'buffer_size': 1000,  # 100000
+            'learning_starts': 100,  # 1000
+            'batch_size': 64,
+            'gamma': 0.99,
+            'tau': 0.005,
+        },
+        'algorithm': 'DQN',
+        'total_timesteps': 2000,  # 500000
+        "model_path": "models_3/final_DQN_model.zip",
     }
 
-    model_paths = {
-        "intersection_1": "./models_2/final_DQN_model.zip",
-        "intersection_2": "./models_2/final_DQN_model.zip"
-    }
-
-    tcs = TrafficControlSystem(env_params, model_paths, algorithm='DQN')
+    tcs = TrafficControlSystem(config)
     tcs.run()
 
 

@@ -106,3 +106,12 @@
 - 支持DQN,PPO,A2C,SAC算法
 - 修改了RealWorldEnv以兼容连续动作空间要求
 - 经过test_real_world_env的测试。
+
+### 开发TrafficControlSystem程序
+
+使用预训练模型，控制交通信号。由于存在模型期望的观察空间和环境的真实观察空间的维度差异，11<22，程序临时调整了观察值以使程序正确运行。
+
+解决办法：
+- 在ubuntu上重新训练出一个DQN模型，保存模型参数；
+- 在ubuntu上运行TrafficControlSystem，以测试是否还发生相同的问题。
+- 注意adjust_observation的使用。

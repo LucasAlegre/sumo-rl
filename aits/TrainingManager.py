@@ -182,19 +182,19 @@ if __name__ == "__main__":
     config = {
         'env_params': {
             'intersection_ids': ["intersection_1", "intersection_2"],
-            'delta_time': 1,  # 5
-            'yellow_time': 1,  # 2
+            'delta_time': 5,  # 5
+            'yellow_time': 2,  # 2
             'min_green': 5,
             'max_green': 30,
-            'num_seconds': 360,  # 3600
+            'num_seconds': 3600,  # 3600
             'reward_fn': "queue"
         },
         'algorithm': 'DQN',
-        'total_timesteps': 2000,  # 500000
+        'total_timesteps': 500000,  # 500000
         'algo_params': {
             'learning_rate': 1e-4,
-            'buffer_size': 1000,  # 100000
-            'learning_starts': 100, # 1000
+            'buffer_size': 100000,  # 100000
+            'learning_starts': 1000,  # 1000
             'batch_size': 64,
             'gamma': 0.99,
             'tau': 0.005,
