@@ -12,10 +12,14 @@ class SignalController:
     def _initialize_phases(self) -> List[str]:
         # 在实际应用中，这里应该从配置文件或数据库中读取相位信息
         return [
-            "GGrrGGrr",
-            "yyrryyrr",
-            "rrGGrrGG",
-            "rryyrryy"
+            "GGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrr",
+            "yyyyyyyyggggggggrrrrrrrrrrrrrrrryyyyyyyyggggggggrrrrrrrrrrrrrrrr",
+            "rrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrr",
+            "rrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrr",
+            "rrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGgggggggg",
+            "rrrrrrrrrrrrrrrryyyyyyyyggggggggrrrrrrrrrrrrrrrryyyyyyyygggggggg",
+            "rrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGG",
+            "rrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyy"
         ]
 
     def set_phase(self, phase_index: int):

@@ -98,7 +98,7 @@ def main():
         },
         'algorithm': 'DQN',
         'total_timesteps': 2000,  # 500000
-        "model_path": "models_3/final_DQN_model.zip",
+        "model_path": "models/final_DQN_model.zip",
     }
 
     tcs = TrafficControlSystem(config)

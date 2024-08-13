@@ -4,6 +4,7 @@ import sys
 from typing import Dict, Any
 import gymnasium as gym
 import numpy as np
+import torch
 from gymnasium import spaces
 from stable_baselines3 import DQN, PPO, A2C, SAC
 from stable_baselines3.common.callbacks import EvalCallback, BaseCallback
@@ -69,6 +70,9 @@ class PeriodicSaveCallback(BaseCallback):
             path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps")
             self.model.save(path)
         return True
+
+
+# 调试辅助函数
 
 
 class TrainingManager:
@@ -181,7 +185,7 @@ class TrainingManager:
         os.system(f"tensorboard --logdir {logdir}")
 
 
-def debug_config():
+def debug():
     config = {
         'env_params': {
             'intersection_ids': ["intersection_1", "intersection_2"],  # 使用单个交叉口简化调试
@@ -212,26 +216,26 @@ def debug_config():
 
     trainer = TrainingManager(config)
     trainer.train()
-    trainer.evaluate()
-    trainer.save_model()
+    # trainer.evaluate()
+    # trainer.save_model()
+    # trainer.visualize_training()
 
 
-def train_config():
+def train():
     config = {
         'env_params': {
             'intersection_ids': ["intersection_1", "intersection_2", "intersection_3", "intersection_4"],
-            'delta_time': 5,
-            'yellow_time': 2,
+            'delta_time': 1,
+            'yellow_time': 1,
             'min_green': 10,
-            'max_green': 60,
-            'num_seconds': 3600,  # 每个episode模拟1小时
+            'max_green': 40,
+            'num_seconds': 360,  # 每个episode模拟1小时
             'reward_fn': "queue",
             'action_space_type': 'discrete'
         },
         'algorithm': 'PPO',
-        'total_timesteps': 2_000_000,
+        'total_timesteps': 50000,
         'algo_params': {
-            'policy': 'MultiInputPolicy',  # 更改为MultiInputPolicy
             'learning_rate': 3e-4,
             'n_steps': 2048,
             'batch_size': 64,
@@ -255,38 +259,64 @@ def train_config():
         }
     }
 
-    # 创建环境
-    env = RealWorldEnv(**config['env_params'])
-    env = Monitor(env)
-    env = DummyVecEnv([lambda: env])
-    env = VecNormalize(env, norm_obs=True, norm_reward=True, clip_obs=10.)
+    trainer = TrainingManager(config)
+    trainer.train()
+    # trainer.evaluate()
+    # trainer.save_model()
+    # trainer.visualize_training()
 
-    # 创建模型
-    model = PPO(env=env, **config['algo_params'])
+def main():
+    config = {
+        'env_params': {
+            'intersection_ids': ["intersection_1", "intersection_2", "intersection_3", "intersection_4"],
+            'delta_time': 5,
+            'yellow_time': 2,
+            'min_green': 10,
+            'max_green': 50,
+            'num_seconds': 3600,  # 1 hour of simulation time
+            'reward_fn': "queue",
+            'action_space_type': 'discrete'
+        },
+        'algorithm': 'PPO',  # Using PPO for good performance and stability
+        'total_timesteps': 1_000_000,  # 1 million steps for thorough training
+        'algo_params': {
+            'learning_rate': 3e-4,
+            'n_steps': 2048,
+            'batch_size': 64,
+            'n_epochs': 10,
+            'gamma': 0.99,
+            'gae_lambda': 0.95,
+            'clip_range': 0.2,
+            'ent_coef': 0.01,
+            'vf_coef': 0.5,
+            'max_grad_norm': 0.5,
+            'verbose': 1,
+            'tensorboard_log': "./ppo_traffic_tensorboard/",
+            'policy_kwargs': dict(
+                net_arch=[dict(pi=[128, 128], vf=[128, 128])],
+                activation_fn=torch.nn.Tanh
+            )
+        },
+        'model_path': 'models',
+        'evaluate_every': 50000,  # Evaluate every 50k steps
+        'save_every': 100000,  # Save every 100k steps
+        'eval_episodes': 10
+    }
 
-    # 创建评估回调
-    eval_env = RealWorldEnv(**config['env_params'])
-    eval_env = Monitor(eval_env)
-    eval_env = DummyVecEnv([lambda: eval_env])
-    eval_env = VecNormalize(eval_env, norm_obs=True, norm_reward=True, clip_obs=10.)
-
-    eval_callback = EvalCallback(eval_env, best_model_save_path='./best_model/',
-                                 log_path='./eval_logs/', eval_freq=10000,
-                                 deterministic=True, render=False)
-
-    # 训练模型
-    model.learn(total_timesteps=config['total_timesteps'], callback=eval_callback)
-
-    # 保存最终模型
-    model.save("ppo_traffic_final_model")
-
-    # 训练后评估
-    mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10)
-    print(f"Mean reward: {mean_reward:.2f} +/- {std_reward:.2f}")
+    trainer = TrainingManager(config)
+    trainer.train()
+    # trainer.evaluate()
+    # trainer.save_model()
+    # trainer.visualize_training()
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == 1:
-        debug_config()
+    if sys.argv[1] == "1":
+        print("debug")
+        debug()
+    elif sys.argv[1] == "2":
+        print("main")
+        train()
     else:
-        train_config()
+        print("train")
+        main()
