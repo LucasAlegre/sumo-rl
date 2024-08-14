@@ -96,9 +96,9 @@ def main():
             'gamma': 0.99,
             'tau': 0.005,
         },
-        'algorithm': 'DQN',
+        'algorithm': 'PPO',
         'total_timesteps': 2000,  # 500000
-        "model_path": "models/final_DQN_model.zip",
+        "model_path": "models/final_PPO_model.zip",
     }
 
     tcs = TrafficControlSystem(config)

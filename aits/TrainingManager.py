@@ -220,11 +220,11 @@ def debug():
     # trainer.save_model()
     # trainer.visualize_training()
 
-
+# 训练配置：单路口, 算法：PPO，路口相位GGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrr
 def train():
     config = {
         'env_params': {
-            'intersection_ids': ["intersection_1", "intersection_2", "intersection_3", "intersection_4"],
+            'intersection_ids': ["intersection_1"], # "intersection_2", "intersection_3", "intersection_4"],
             'delta_time': 1,
             'yellow_time': 1,
             'min_green': 10,
@@ -250,7 +250,7 @@ def train():
             'use_sde': False,
             'sde_sample_freq': -1,
             'target_kl': None,
-            'tensorboard_log': "./ppo_traffic_tensorboard/",
+            'tensorboard_log': "./ppo_traffic_single/",
             'policy_kwargs': dict(
                 net_arch=[dict(pi=[128, 128], vf=[128, 128])],
                 activation_fn=nn.ReLU
