@@ -1,3 +1,5 @@
+import ast
+import json
 import sys
 import time
 import numpy as np
@@ -10,13 +12,19 @@ from stable_baselines3 import SAC, PPO, A2C, DQN
 
 
 class TrafficControlSystem:
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
-        self.env = RealWorldEnv(**config.get("env_params"))
-        self.algorithm = config.get("algorithm", "DQN")
-        self.model_path = config.get("model_path", "")
+    def __init__(self, config_file: str):
+        self.config = self.load_config(config_file)
+        self.env = RealWorldEnv(**self.config.get("env_params"))
+        self.algorithm = self.config.get("algorithm", "DQN")
+        self.model_path = self.config.get("model_path", "")
         self.model = None
         self.load_model(self.model_path)
+
+    def load_config(self, config_file: str) -> Dict[str, Any]:
+        with open(config_file, 'r') as f:
+            config_str = f.read()
+            # 使用 ast.literal_eval 来安全地解析配置字符串
+            return ast.literal_eval(config_str)
 
     def load_model(self, model_path):
         if self.algorithm == 'SAC':
@@ -54,7 +62,6 @@ class TrafficControlSystem:
 
         # 使用模型预测动作
         action, _ = self.model.predict(obs_array, deterministic=True)
-
         return action
 
     def run(self):
@@ -63,8 +70,6 @@ class TrafficControlSystem:
             while True:
                 action = self.get_action(obs)
                 obs, reward, terminated, truncated, info = self.env.step(action)
-
-                print(f"==========action: {action}")
                 print(f"Step info: {info}")
                 time.sleep(self.env.delta_time)
 
@@ -77,31 +82,8 @@ class TrafficControlSystem:
 
 
 def main():
-    config = {
-        'env_params': {
-            'intersection_ids': ["intersection_1", "intersection_2"],
-            'delta_time': 1,  # 5
-            'yellow_time': 1,  # 2
-            'min_green': 5,
-            'max_green': 30,
-            'num_seconds': 360,  # 3600
-            'reward_fn': "queue",
-            "action_space_type": "discrete",
-        },
-        'algo_params': {
-            'learning_rate': 1e-4,
-            'buffer_size': 1000,  # 100000
-            'learning_starts': 100,  # 1000
-            'batch_size': 64,
-            'gamma': 0.99,
-            'tau': 0.005,
-        },
-        'algorithm': 'PPO',
-        'total_timesteps': 2000,  # 500000
-        "model_path": "models/final_PPO_model.zip",
-    }
-
-    tcs = TrafficControlSystem(config)
+    config_file = "config-run.txt"
+    tcs = TrafficControlSystem(config_file)
     tcs.run()
 
 

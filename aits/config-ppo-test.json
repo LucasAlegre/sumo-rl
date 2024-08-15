@@ -1,0 +1,36 @@
+{
+    "env_params": {
+        "intersection_ids": ["intersection_1"],
+        "delta_time": 1,
+        "yellow_time": 1,
+        "min_green": 10,
+        "max_green": 30,
+        "num_seconds": 60,
+        "reward_fn": "queue",
+        "action_space_type": "discrete"
+    },
+    "algorithm": "PPO",
+    "total_timesteps": 50000,
+    "algo_params": {
+        "learning_rate": 3e-4,
+        "n_steps": 2048,
+        "batch_size": 64,
+        "n_epochs": 10,
+        "gamma": 0.99,
+        "gae_lambda": 0.95,
+        "clip_range": 0.2,
+        "clip_range_vf": null,
+        "ent_coef": 0.01,
+        "vf_coef": 0.5,
+        "max_grad_norm": 0.5,
+        "use_sde": false,
+        "sde_sample_freq": -1,
+        "target_kl": null,
+        "tensorboard_log": "./ppo_traffic_single/",
+        "policy_kwargs": {
+            "net_arch": [{"pi": [128, 128], "vf": [128, 128]}],
+            "activation_fn": "ReLU"
+        },
+        "verbose": 1
+    }
+}
