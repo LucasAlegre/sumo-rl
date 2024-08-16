@@ -165,3 +165,5 @@ nohup.out
 /aits/best_model/
 /aits/eval_logs/
 /aits/ppo_traffic_tensorboard/
+/aits/ppo_traffic_single/
+/aits/ppo_traffic_single/PPO_1/

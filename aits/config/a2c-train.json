@@ -1,0 +1,37 @@
+{
+  "env_params": {
+    "intersection_ids": ["intersection_1", "intersection_2"],
+    "delta_time": 5,
+    "yellow_time": 2,
+    "min_green": 5,
+    "max_green": 50,
+    "num_seconds": 7200,
+    "reward_fn": "queue",
+    "action_space_type": "discrete"
+  },
+  "algorithm": "A2C",
+  "model_path": "models_A2C",
+  "total_timesteps": 2000000,
+  "algo_params": {
+    "learning_rate": 3e-4,
+    "n_steps": 20,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "ent_coef": 0.01,
+    "vf_coef": 0.5,
+    "max_grad_norm": 0.5,
+    "rms_prop_eps": 1e-5,
+    "use_rms_prop": true,
+    "use_sde": false,
+    "sde_sample_freq": -1,
+    "normalize_advantage": true,
+    "tensorboard_log": "./a2c_train_tensorboard/",
+    "policy_kwargs": {
+      "net_arch": [128, 128]
+    },
+    "verbose": 1
+  },
+  "eval_freq": 100000,
+  "n_eval_episodes": 10,
+  "save_freq": 200000
+}

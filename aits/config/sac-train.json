@@ -1,0 +1,39 @@
+{
+  "env_params": {
+    "intersection_ids": ["intersection_1", "intersection_2"],
+    "delta_time": 5,
+    "yellow_time": 2,
+    "min_green": 5,
+    "max_green": 50,
+    "num_seconds": 7200,
+    "reward_fn": "queue",
+    "action_space_type": "continuous"
+  },
+  "algorithm": "SAC",
+  "model_path": "models_SAC",
+  "total_timesteps": 2000000,
+  "algo_params": {
+    "learning_rate": 1e-4,
+    "buffer_size": 300000,
+    "learning_starts": 10000,
+    "batch_size": 256,
+    "tau": 0.005,
+    "gamma": 0.99,
+    "train_freq": 1,
+    "gradient_steps": 1,
+    "ent_coef": "auto",
+    "target_update_interval": 1,
+    "target_entropy": "auto",
+    "use_sde": false,
+    "sde_sample_freq": -1,
+    "use_sde_at_warmup": false,
+    "tensorboard_log": "./sac_train_tensorboard/",
+    "policy_kwargs": {
+      "net_arch": [256, 256]
+    },
+    "verbose": 1
+  },
+  "eval_freq": 100000,
+  "n_eval_episodes": 10,
+  "save_freq": 200000
+}

@@ -115,3 +115,232 @@
 - 在ubuntu上重新训练出一个DQN模型，保存模型参数；
 - 在ubuntu上运行TrafficControlSystem，以测试是否还发生相同的问题。
 - 注意adjust_observation的使用。
+
+### 几个配置文件
+
+#### config-dqn-debug.txt
+
+-   调试程序逻辑
+
+```
+{
+    "env_params": {
+        "intersection_ids": ["intersection_1"],
+        "delta_time": 1,
+        "yellow_time": 1,
+        "min_green": 10,
+        "max_green": 30,
+        "num_seconds": 60,
+        "reward_fn": "queue",
+        "action_space_type": "discrete"
+    },
+    "algorithm": "PPO",
+    "total_timesteps": 50000,
+    "algo_params": {
+        "learning_rate": 3e-4,
+        "n_steps": 2048,
+        "batch_size": 64,
+        "n_epochs": 10,
+        "gamma": 0.99,
+        "gae_lambda": 0.95,
+        "clip_range": 0.2,
+        "clip_range_vf": null,
+        "ent_coef": 0.01,
+        "vf_coef": 0.5,
+        "max_grad_norm": 0.5,
+        "use_sde": false,
+        "sde_sample_freq": -1,
+        "target_kl": null,
+        "tensorboard_log": "./ppo_traffic_single/",
+        "policy_kwargs": {
+            "net_arch": [{"pi": [128, 128], "vf": [128, 128]}],
+            "activation_fn": "ReLU"
+        },
+        "verbose": 1
+    }
+}
+```
+
+#### config-ppo-test.json
+
+-   测试模型训练效果
+
+```
+{
+    "env_params": {
+        "intersection_ids": ["intersection_1"],
+        "delta_time": 1,
+        "yellow_time": 1,
+        "min_green": 10,
+        "max_green": 30,
+        "num_seconds": 60,
+        "reward_fn": "queue",
+        "action_space_type": "discrete"
+    },
+    "algorithm": "PPO",
+    "total_timesteps": 50000,
+    "algo_params": {
+        "learning_rate": 3e-4,
+        "n_steps": 2048,
+        "batch_size": 64,
+        "n_epochs": 10,
+        "gamma": 0.99,
+        "gae_lambda": 0.95,
+        "clip_range": 0.2,
+        "clip_range_vf": null,
+        "ent_coef": 0.01,
+        "vf_coef": 0.5,
+        "max_grad_norm": 0.5,
+        "use_sde": false,
+        "sde_sample_freq": -1,
+        "target_kl": null,
+        "tensorboard_log": "./ppo_traffic_single/",
+        "policy_kwargs": {
+            "net_arch": [{"pi": [128, 128], "vf": [128, 128]}],
+            "activation_fn": "ReLU"
+        },
+        "verbose": 1
+    }
+}
+```
+#### config-ppo-train.json
+-   完整训练
+```
+{
+    "env_params": {
+        "intersection_ids": ["intersection_1", "intersection_2"],
+        "delta_time": 5,
+        "yellow_time": 2,
+        "min_green": 10,
+        "max_green": 50,
+        "num_seconds": 3600,
+        "reward_fn": "queue",
+        "action_space_type": "discrete"
+    },
+    "algorithm": "PPO",
+    "total_timesteps": 1000000,
+    "algo_params": {
+        "learning_rate": 3e-4,
+        "n_steps": 2048,
+        "batch_size": 64,
+        "n_epochs": 10,
+        "gamma": 0.99,
+        "gae_lambda": 0.95,
+        "clip_range": 0.2,
+        "ent_coef": 0.01,
+        "vf_coef": 0.5,
+        "max_grad_norm": 0.5,
+        "verbose": 1,
+        "tensorboard_log": "./ppo_traffic_tensorboard/",
+        "policy_kwargs": {
+            "net_arch": [{"pi": [128, 128], "vf": [128, 128]}],
+            "activation_fn": "torch.nn.Tanh"
+        }
+    },
+    "model_path": "models",
+    "evaluate_every": 50000,
+    "save_every": 100000,
+    "eval_episodes": 10
+}
+```
+
+#### 三个配置文件的比较
+
+当然，我会创建一个comprehensive表格，包含所有配置项，并按类别进行组织。我们将使用 "=" 表示两个配置中相同的项，使用具体的值表示不同的项。
+
+| 类别 | 配置项 | config-ppo-test.json | config-ppo-train.json |
+|------|--------|----------------------|------------------------|
+| 环境参数 | intersection_ids | ["intersection_1"] | ["intersection_1", "intersection_2"] |
+| | delta_time | 1 | 5 |
+| | yellow_time | 1 | 2 |
+| | min_green | 10 | = |
+| | max_green | 30 | 50 |
+| | num_seconds | 60 | 3600 |
+| | reward_fn | "queue" | = |
+| | action_space_type | "discrete" | = |
+| 算法 | algorithm | "PPO" | = |
+| 训练参数 | total_timesteps | 50000 | 1000000 |
+| | learning_rate | 3e-4 | = |
+| | n_steps | 2048 | = |
+| | batch_size | 64 | = |
+| | n_epochs | 10 | = |
+| | gamma | 0.99 | = |
+| | gae_lambda | 0.95 | = |
+| | clip_range | 0.2 | = |
+| | clip_range_vf | null | 未指定 |
+| | ent_coef | 0.01 | = |
+| | vf_coef | 0.5 | = |
+| | max_grad_norm | 0.5 | = |
+| | use_sde | false | 未指定 |
+| | sde_sample_freq | -1 | 未指定 |
+| | target_kl | null | 未指定 |
+| | verbose | 1 | = |
+| 网络结构 | policy_kwargs.net_arch | [{"pi": [128, 128], "vf": [128, 128]}] | = |
+| | policy_kwargs.activation_fn | "ReLU" | "torch.nn.Tanh" |
+| 日志和保存 | tensorboard_log | "./ppo_traffic_single/" | "./ppo_traffic_tensorboard/" |
+| | model_path | 未指定 | "models" |
+| | evaluate_every | 未指定 | 50000 |
+| | save_every | 未指定 | 100000 |
+| | eval_episodes | 未指定 | 10 |
+
+这个表格全面展示了两个配置文件的所有项目，让我们可以清楚地看到它们之间的异同。主要的差异集中在环境参数、训练步数、激活函数以及额外的评估和保存功能上。相同的项目主要是 PPO 算法的核心参数，这表明两个配置在算法的基本设置上是一致的，主要区别在于应用场景和训练强度。
+
+#### 定性分析
+
+为了估算和比较这两种配置的训练时间，我们需要考虑几个关键因素：总训练步数、环境复杂度、和每步仿真时间。让我们逐一分析这些因素，然后给出一个粗略的估算。
+
+1. 总训练步数:
+   - config-ppo-test.json: 50,000 步
+   - config-ppo-train.json: 1,000,000 步
+
+   定量比较：train 配置的训练步数是 test 配置的 20 倍。
+
+2. 环境复杂度:
+   - config-ppo-test.json: 1 个交叉口
+   - config-ppo-train.json: 2 个交叉口
+
+   定性比较：train 配置的环境复杂度大约是 test 配置的 2 倍。
+
+3. 每步仿真时间:
+   - config-ppo-test.json: 60 秒
+   - config-ppo-train.json: 3600 秒
+
+   定量比较：train 配置的仿真时间是 test 配置的 60 倍。
+
+4. 时间步长:
+   - config-ppo-test.json: 1 秒
+   - config-ppo-train.json: 5 秒
+
+   定量比较：train 配置的时间步长是 test 配置的 5 倍，这意味着每次仿真需要处理的状态更新次数会减少。
+
+估算训练时间：
+假设在相同的硬件上运行，我们可以粗略估计 config-ppo-test.json 的训练时间为 T。
+
+那么，config-ppo-train.json 的估计训练时间将是：
+T * (20 * 2 * 60 / 5) = 480T
+
+解释：
+- 20 倍来自总训练步数的差异
+- 2 倍来自环境复杂度的增加
+- 60 倍来自每步仿真时间的增加
+- 除以 5 是因为时间步长的增加，减少了每次仿真中的状态更新次数
+
+定性比较：
+1. 训练时长：train 配置的训练时间将显著长于 test 配置，可能需要几天时间，而 test 配置可能在几小时内完成。
+2. 结果质量：train 配置由于训练时间更长、环境更复杂，很可能产生更好、更稳定、更具泛化能力的模型。
+3. 资源消耗：train 配置将消耗更多的计算资源和能源。
+4. 迭代速度：test 配置允许更快的实验迭代，有利于快速验证想法或调整超参数。
+
+定量估算：
+如果假设 config-ppo-test.json 的训练时间为 2 小时：
+- config-ppo-test.json: 2 小时
+- config-ppo-train.json: 2 * 480 = 960 小时 ≈ 40 天
+
+实际情况可能会有所不同，因为：
+1. 硬件优化可能会减少训练时间的差异。
+2. 训练过程中的早停机制可能会缩短 train 配置的实际训练时间。
+3. 更复杂的环境可能导致每步训练时间增加的比例大于线性关系。
+
+总结：
+虽然 config-ppo-train.json 的训练时间大大长于 config-ppo-test.json，但它提供了更全面的训练，可能产生更高质量的模型。选择使用哪种配置应该基于项目的具体需求、可用资源和时间限制来决定。
+

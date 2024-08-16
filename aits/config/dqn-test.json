@@ -1,0 +1,34 @@
+{
+  "env_params": {
+    "intersection_ids": ["intersection_1"],
+    "delta_time": 5,
+    "yellow_time": 2,
+    "min_green": 5,
+    "max_green": 30,
+    "num_seconds": 3600,
+    "reward_fn": "queue",
+    "action_space_type": "discrete"
+  },
+  "algorithm": "DQN",
+  "model_path": "models_DQN",
+  "total_timesteps": 50000,
+  "algo_params": {
+    "learning_rate": 1e-4,
+    "buffer_size": 10000,
+    "learning_starts": 1000,
+    "batch_size": 32,
+    "tau": 1.0,
+    "gamma": 0.99,
+    "train_freq": 4,
+    "gradient_steps": 1,
+    "target_update_interval": 1000,
+    "exploration_fraction": 0.1,
+    "exploration_initial_eps": 1.0,
+    "exploration_final_eps": 0.05,
+    "verbose": 1,
+    "tensorboard_log": "./dqn_test_tensorboard/",
+    "policy_kwargs": {
+      "net_arch": [64, 64]
+    }
+  }
+}
