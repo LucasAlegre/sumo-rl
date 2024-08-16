@@ -1,3 +1,4 @@
+import argparse
 import ast
 import os
 import sys
@@ -169,17 +170,24 @@ class TrainingManager:
         os.system(f"tensorboard --logdir {logdir}")
 
 
-if __name__ == "__main__":
-    param = sys.argv[1]
-    config_file = "config-dqn-debug.json"
-    if param == "debug":
-        config_file = "config-dqn-debug.json"
-    elif param == "test":
-        config_file = "config-ppo-test.json"
-    elif param == "train":
-        config_file = "config-ppo-train.json"
+def main():
+    parser = argparse.ArgumentParser(description='Run Traffic Control System Training')
+    parser.add_argument('operation', choices=['debug', 'test', 'train'], help='Execution parameter')
+    parser.add_argument('algorythm', choices=['DQN', 'PPO', 'A2C', 'SAC'], help='Algorithm to use')
+    args = parser.parse_args()
 
-    trainer = TrainingManager(config_file)
+    config_file = f"{args.algorythm.lower()}-{args.operation}.json"
+    config_path = os.path.join("config", config_file)
+
+    if not os.path.exists(config_path):
+        print(f"Error: Configuration file {config_path} not found.")
+        sys.exit(1)
+
+    trainer = TrainingManager(config_path)
     trainer.train()
     trainer.evaluate()
     trainer.save_model()
+
+
+if __name__ == "__main__":
+    main()

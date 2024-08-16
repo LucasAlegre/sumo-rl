@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 import time
@@ -82,9 +83,20 @@ class TrafficControlSystem:
 
 
 def main():
-    config_file = "config/ppo-run.json"
-    tcs = TrafficControlSystem(config_file)
-    tcs.run()
+    parser = argparse.ArgumentParser(description='Run Traffic Control System Training')
+    parser.add_argument('operation', choices=['run'], help='Execution parameter')
+    parser.add_argument('algorythm', choices=['DQN', 'PPO', 'A2C', 'SAC'], help='Algorithm to use')
+    args = parser.parse_args()
+
+    config_file = f"{args.algorythm.lower()}-{args.operation}.json"
+    config_path = os.path.join("config", config_file)
+
+    if not os.path.exists(config_path):
+        print(f"Error: Configuration file {config_path} not found.")
+        sys.exit(1)
+
+    trainer = TrafficControlSystem(config_path)
+    trainer.run()
 
 
 if __name__ == "__main__":
