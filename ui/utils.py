@@ -48,10 +48,18 @@ def add_directory_if_missing(path, directory="./"):
     path_parts = os.path.split(path)
     # 检查是否已经包含目录
     if path_parts[0]:
-        return path
+        dir_path = os.path.join(directory, path_parts[0])
     else:
         # 如果没有目录，添加指定的目录
-        return os.path.join(directory, path_parts[1])
+        dir_path = directory
+    if not os.path.exists(dir_path):
+        try:
+            os.makedirs(dir_path)
+            print(f"Directory created: {dir_path}")
+        except OSError as e:
+            print(f"Error creating directory {dir_path}: {e}")
+
+    return dir_path
 
 
 def write_eval_result(mean, std, filename="eval_result.txt"):
@@ -127,11 +135,11 @@ def get_gradio_file_info(file: gr.File):
 
     # 推断预期的文件夹
     if 'eval' in filename:
-        inferred_folder = './eval'
+        inferred_folder = './evals'
     elif 'predict' in filename:
-        inferred_folder = './predict'
+        inferred_folder = './predicts'
     elif re.search(conn_ep, filename):
-        inferred_folder = './out'
+        inferred_folder = './outs'
     else:
         inferred_folder = './'  # 默认为当前目录
 

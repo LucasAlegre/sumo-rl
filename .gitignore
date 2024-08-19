@@ -167,3 +167,8 @@ nohup.out
 /aits/ppo_traffic_tensorboard/
 /aits/ppo_traffic_single/
 /aits/ppo_traffic_single/PPO_1/
+/ui/config/
+/ui/evals/
+/ui/models/
+/ui/outs/
+/ui/predicts/
