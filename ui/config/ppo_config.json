@@ -6,7 +6,7 @@
         "yellow_time": 2,
         "min_green": 5,
         "max_green": 50,
-        "num_seconds": 3600,
+        "num_seconds": 7200,
         "reward_fn": "queue",
         "out_csv_name": "./outs/my-intersection-PPO",
         "single_agent": true,
@@ -23,12 +23,20 @@
         "ent_coef": 0.0,
         "vf_coef": 0.5,
         "max_grad_norm": 0.5,
-        "tensorboard_log": "./tensorboard/"
+        "tensorboard_log": "./tensorboard/",
+        "policy_kwargs": {
+          "net_arch": [
+            {
+              "pi": [128, 128],
+              "vf": [128, 128]
+            }
+          ]
+        }
     },
     "train_params": {
-        "total_timesteps": 100000,
-        "eval_freq": 10000,
-        "n_eval_episodes": 5
+        "total_timesteps": 2000000,
+        "eval_freq": 100000,
+        "n_eval_episodes": 10
     },
     "operation": "evaluation",
     "algorithm": "PPO",

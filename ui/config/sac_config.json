@@ -27,17 +27,14 @@
         "use_sde_at_warmup": false,
         "tensorboard_log": "./tensorboard/",
         "policy_kwargs": {
-            "net_arch": [
-                64,
-                64
-            ]
+            "net_arch": [256, 256]
         },
         "verbose": 1
     },
     "train_params": {
-        "total_timesteps": 1000,
-        "eval_freq": 10000,
-        "n_eval_episodes": 5
+        "total_timesteps": 2000000,
+        "eval_freq": 100000,
+        "n_eval_episodes": 10
     },
     "operation": "evaluation",
     "algorithm": "SAC",

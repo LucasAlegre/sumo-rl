@@ -46,7 +46,7 @@ class TrafficSimulator:
     def setup_logger(self):
         self.logger = logging.getLogger('TrafficSimulator')
         self.logger.setLevel(logging.DEBUG)
-        log_file = 'traffic_simulator.log'
+        log_file = './logs/traffic_simulator.log'
         file_handler = RotatingFileHandler(log_file, maxBytes=5 * 1024 * 1024, backupCount=5)
         file_handler.setLevel(logging.DEBUG)
         console_handler = logging.StreamHandler()

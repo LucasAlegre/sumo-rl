@@ -175,3 +175,4 @@ nohup.out
 /ui/dqn_train_tensorboard/
 /ui/sac_test_tensorboard/
 /ui/a2c_test_tensorboard/
+/ui/model.tar.gz

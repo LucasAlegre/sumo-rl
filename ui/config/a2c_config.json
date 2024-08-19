@@ -3,8 +3,8 @@
         "delta_time": 5,
         "yellow_time": 2,
         "min_green": 5,
-        "max_green": 30,
-        "num_seconds": 1000,
+        "max_green": 50,
+        "num_seconds": 7200,
         "reward_fn": "queue",
         "out_csv_name": "./outs/my-intersection-A2C",
         "single_agent": true,
@@ -25,17 +25,14 @@
         "normalize_advantage": false,
         "tensorboard_log": "./tensorboard/",
         "policy_kwargs": {
-            "net_arch": [
-                64,
-                64
-            ]
+            "net_arch": [128, 128]
         },
         "verbose": 1
     },
     "train_params": {
-        "total_timesteps": 1000,
-        "eval_freq": 10000,
-        "n_eval_episodes": 5
+        "total_timesteps": 2000000,
+        "eval_freq": 100000,
+        "n_eval_episodes": 10
     },
     "operation": "evaluation",
     "algorithm": "A2C",
