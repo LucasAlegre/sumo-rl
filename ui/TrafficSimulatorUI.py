@@ -1,7 +1,11 @@
+import ntpath
+
 import gradio as gr
-from TrafficSimulator import TrafficSimulator, initialize_simulator, update_config, run_operation, save_model, load_model
+from TrafficSimulator import TrafficSimulator, initialize_simulator, update_config, run_operation
 from plot_figures import plot_process, plot_predict, plot_evaluation
 import logging
+
+from ui.utils import get_gradio_file_info, extract_crossname_from_evalfile
 
 
 def setup_logger():
@@ -77,16 +81,46 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         outputs=[progress, output]
     )
 
+
+    def plot_training_process(file):
+        if file is None:
+            return "请选择训练过程文件"
+        folder_name, filename = get_gradio_file_info(file)
+        output_path = plot_process(file.name, folder_name, filename)
+        return output_path, f"训练过程图已生成：{output_path}"
+
+
+    def plot_prediction_result(file):
+        if file is None:
+            return "请选择预测结果文件"
+        folder_name, filename = get_gradio_file_info(file)
+        output_path = plot_predict(file.name, folder_name, filename)
+        return output_path, f"预测结果图已生成：{output_path}"
+
+
+    def plot_eval_result(file):
+        if file is None:
+            return "请选择评估结果文件"
+        folder_name, filename = get_gradio_file_info(file)
+        logger.info("=====folder_name=====", folder_name)
+        logger.info("=====filename=====", filename)
+        eval_filename = ntpath.basename(filename)
+        cross_name = extract_crossname_from_evalfile(eval_filename)  # 提取路口名称
+        logger.info("=====cross_name=====", cross_name)
+        output_path = plot_evaluation(folder_name, cross_name)
+        return output_path, f"预测结果图已生成：{output_path}"
+
+
     plot_train_button.click(
-        plot_process,
+        plot_training_process,
         inputs=[train_process_file],
         outputs=[plot_image, plot_output])
     plot_predict_button.click(
-        plot_predict,
+        plot_prediction_result,
         inputs=[predict_result_file],
         outputs=[plot_image, plot_output])
     plot_eval_button.click(
-        plot_evaluation,
+        plot_eval_result,
         inputs=[eval_result_file],
         outputs=[plot_image, plot_output])
 

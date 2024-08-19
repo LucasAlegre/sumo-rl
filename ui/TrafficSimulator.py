@@ -135,7 +135,7 @@ class TrafficSimulator:
             self.config['env_params']['out_csv_name'] = csv_path
             os.makedirs('./models', exist_ok=True)
             self.model_name = _cross_name + "-model-" + algorithm
-            self.config['model_path'] = './models/' + self.model_name
+            self.config['model_path'] = './models'
             predict_path = "./predicts/" + _cross_name + "-predict-" + algorithm + ".json"
             create_file_if_not_exists(predict_path)
             self.config['predict_path'] = predict_path
@@ -276,7 +276,7 @@ class TrafficSimulator:
             yield progress, f"Training progress: {progress}%"
 
         self.logger.info("Saving trained model")
-        self.model.save(os.path.join(self.config['model_path'], f"final_{self.algorithm}"))
+        self.model.save(os.path.join(self.config['model_path'], f"final_{self.model_name}"))
         yield 100, "Training completed"
 
     def predict(self, num_steps=100):
@@ -339,13 +339,6 @@ def run_operation(network_file, demand_file, operation):
             yield progress, output
     else:
         yield 100, "Simulator not initialized"
-
-
-def save_model(path):
-    if simulator and simulator.model:
-        simulator.save_model(path)
-        return f"Model saved to {path}"
-    return "Model not initialized or trained"
 
 
 def load_model(path):
