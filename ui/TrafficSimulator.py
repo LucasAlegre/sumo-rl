@@ -99,6 +99,7 @@ class TrafficSimulator:
                 'ent_coef': 0.0,
                 'vf_coef': 0.5,
                 'max_grad_norm': 0.5,
+                "tensorboard_log": "./tensorboard/",
             },
             'train_params': {
                 'total_timesteps': 1000000,
@@ -107,7 +108,6 @@ class TrafficSimulator:
             },
             'operation': 'evaluation',
             'algorithm': 'PPO',
-            'intersection_name': 'my-intersection',
             'model_path': './models',
             'eval_path': './evals',
             'predict_path': './predicts',

@@ -26,7 +26,7 @@
         "exploration_initial_eps": 1.0,
         "exploration_final_eps": 0.01,
         "verbose": 1,
-        "tensorboard_log": "./dqn_train_tensorboard/",
+        "tensorboard_log": "./tensorboard/",
         "policy_kwargs": {
             "net_arch": [
                 128,
@@ -41,7 +41,6 @@
     },
     "operation": "evaluation",
     "algorithm": "DQN",
-    "intersection_name": "my-intersection",
     "model_path": "./models",
     "eval_path": "./evals/my-intersection-eval-DQN.txt",
     "predict_path": "./predicts/my-intersection-predict-DQN.json"

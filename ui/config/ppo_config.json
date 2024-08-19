@@ -22,7 +22,8 @@
         "clip_range": 0.2,
         "ent_coef": 0.0,
         "vf_coef": 0.5,
-        "max_grad_norm": 0.5
+        "max_grad_norm": 0.5,
+        "tensorboard_log": "./tensorboard/"
     },
     "train_params": {
         "total_timesteps": 100000,
@@ -31,7 +32,6 @@
     },
     "operation": "evaluation",
     "algorithm": "PPO",
-    "intersection_name": "my-intersection",
     "model_path": "./models",
     "eval_path": "./evals/my-intersection-eval-PPO.txt",
     "predict_path": "./predicts/my-intersection-predict-PPO.json"
