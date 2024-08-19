@@ -1,0 +1,44 @@
+{
+    "env_params": {
+        "delta_time": 5,
+        "yellow_time": 2,
+        "min_green": 5,
+        "max_green": 30,
+        "num_seconds": 1000,
+        "reward_fn": "queue",
+        "out_csv_name": "./outs/my-intersection-A2C",
+        "single_agent": true,
+        "use_gui": false
+    },
+    "algo_params": {
+        "learning_rate": 0.0007,
+        "n_steps": 5,
+        "gamma": 0.99,
+        "gae_lambda": 1.0,
+        "ent_coef": 0.0,
+        "vf_coef": 0.5,
+        "max_grad_norm": 0.5,
+        "rms_prop_eps": 1e-05,
+        "use_rms_prop": true,
+        "use_sde": false,
+        "sde_sample_freq": -1,
+        "normalize_advantage": false,
+        "tensorboard_log": "./a2c_test_tensorboard/",
+        "policy_kwargs": {
+            "net_arch": [
+                64,
+                64
+            ]
+        },
+        "verbose": 1
+    },
+    "train_params": {
+        "total_timesteps": 1000,
+        "eval_freq": 10000,
+        "n_eval_episodes": 5
+    },
+    "algorithm": "A2C",
+    "model_path": "./models",
+    "predict_path": "./predicts/my-intersection-predict-A2C.json",
+    "eval_path": "./evals/my-intersection-eval-A2C.txt"
+}

@@ -173,3 +173,5 @@ nohup.out
 /ui/outs/
 /ui/predicts/
 /ui/dqn_train_tensorboard/
+/ui/sac_test_tensorboard/
+/ui/a2c_test_tensorboard/
