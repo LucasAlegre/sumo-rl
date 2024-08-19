@@ -145,48 +145,6 @@ class TrafficSimulator:
 
         self.logger.info(f"Updated config: {self.config}")
 
-    def parse_params(self, net_file, rou_file, algo_name="DQN", operation="ALL",
-                     tensorboard_logs="logs", single_agent=True, num_seconds=20000,
-                     n_eval_episodes=10, n_steps=1024, total_timesteps=1000000,
-                     gui=False, render_mode=None):
-        self.logger.info(f"Parsing parameters for {algo_name} algorithm")
-        try:
-            algo_name = algo_name
-            net_path = add_directory_if_missing(net_file, "./net")
-            rou_path = add_directory_if_missing(rou_file, "./net")
-            _cross_name = extract_crossname_from_netfile(net_path)
-            csv_path = add_directory_if_missing(_cross_name + "-" + algo_name, "./out")
-            model_file = _cross_name + "-model-" + algo_name + ".zip"
-            model_path = add_directory_if_missing(model_file, "./model")
-            predict_file = _cross_name + "-predict-" + algo_name + ".json"
-            predict_path = add_directory_if_missing(predict_file, "./predict")
-            eval_file = _cross_name + "-eval-" + algo_name + ".txt"
-            eval_path = add_directory_if_missing(eval_file, "./eval")
-            tensorboard_logpath = add_directory_if_missing(tensorboard_logs, "./logs")
-
-            params = {
-                "net_path": net_path,
-                "rou_path": rou_path,
-                "csv_path": csv_path,
-                "model_path": model_path,
-                "predict_path": predict_path,
-                "eval_path": eval_path,
-                "tensorboard_logpath": tensorboard_logpath,
-                "algo_name": algo_name,
-                "operation": operation,
-                "single_agent": single_agent,
-                "num_seconds": num_seconds,
-                "n_eval_episodes": n_eval_episodes,
-                "n_steps": n_steps,
-                "total_timesteps": total_timesteps,
-                "gui": gui,
-                "render_mode": render_mode
-            }
-            self.logger.debug(f"Parsed parameters: {params}")
-            return params
-        except Exception as e:
-            self.logger.error(f"Error parsing parameters: {str(e)}")
-            raise ValueError(f"Error parsing parameters: {str(e)}")
 
     def create_env(self, net_file, rou_file):
         env_params = self.config['env_params']
@@ -276,7 +234,7 @@ class TrafficSimulator:
             yield progress, f"Training progress: {progress}%"
 
         self.logger.info("Saving trained model")
-        self.model.save(os.path.join(self.config['model_path'], f"final_{self.model_name}"))
+        self.model.save(os.path.join(self.config['model_path'], f"{self.model_name}"))
         yield 100, "Training completed"
 
     def predict(self, num_steps=100):
