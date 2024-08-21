@@ -1,12 +1,12 @@
 {
     "env_params": {
         "net_file": "/private/var/folders/yk/xs1byz1x1hdbbwk36sy03jym0000gn/T/gradio/4ce7be9525e9cc637e3c91cb2a47534eaff23bda/my-intersection.net.xml",
-        "route_file": "/private/var/folders/yk/xs1byz1x1hdbbwk36sy03jym0000gn/T/gradio/c0712cd3fe1d4b106a453001a4c6fe74994ffb2c/my-intersection-perhour.rou.xml",
+        "route_file": "/private/var/folders/yk/xs1byz1x1hdbbwk36sy03jym0000gn/T/gradio/f9afb7714d54f579d3820b32b4794e29edc5bff4/my-intersection-perhour.rou.xml",
         "delta_time": 5,
         "yellow_time": 2,
         "min_green": 5,
         "max_green": 50,
-        "num_seconds": 7200,
+        "num_seconds": 3600,
         "reward_fn": "queue",
         "out_csv_name": "./outs/my-intersection-PPO",
         "single_agent": true,
@@ -25,16 +25,22 @@
         "max_grad_norm": 0.5,
         "tensorboard_log": "./tensorboard/",
         "policy_kwargs": {
-          "net_arch": [
-            {
-              "pi": [128, 128],
-              "vf": [128, 128]
-            }
-          ]
+            "net_arch": [
+                {
+                    "pi": [
+                        128,
+                        128
+                    ],
+                    "vf": [
+                        128,
+                        128
+                    ]
+                }
+            ]
         }
     },
     "train_params": {
-        "total_timesteps": 2000000,
+        "total_timesteps": 100000,
         "eval_freq": 100000,
         "n_eval_episodes": 10
     },

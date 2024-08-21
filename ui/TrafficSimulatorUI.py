@@ -35,44 +35,44 @@ def run_button_click(network_file, demand_file, algorithm, operation, total_time
 
 
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
-    gr.Markdown("# Advanced Intelligent Traffic Signal Control System")
+    gr.Markdown("# AI信号控制优化模型训练")
 
     with gr.Row():
         with gr.Column(scale=2):
-            network_file = gr.File(label="Network Model (.net.xml)", value="../mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
-            demand_file = gr.File(label="Traffic Demand (.rou.xml)", value="../mynets/net/my-intersection-perhour.rou.xml",
+            network_file = gr.File(label="路网模型(.net.xml)", value="../mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
+            demand_file = gr.File(label="需求模型(.rou.xml)", value="../mynets/net/my-intersection-perhour.rou.xml",
                                   file_types=[".xml", ".rou.xml"])
         with gr.Column(scale=1):
-            algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="PPO", label="Algorithm")
-            operation = gr.Dropdown(["evaluate", "train", "predict"], value="evaluate", label="Operation")
+            algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="PPO", label="算法")
+            operation = gr.Dropdown(["evaluate", "train", "predict"], value="evaluate", label="操作")
 
     with gr.Row():
-        total_timesteps = gr.Slider(1000, 1000000, value=100000, step=1000, label="Total Timesteps")
-        num_seconds = gr.Slider(1000, 20000, value=3600, step=1000, label="Simulation Duration (seconds)")
+        total_timesteps = gr.Slider(1000, 1000000, value=100000, step=1000, label="总训练时间步")
+        num_seconds = gr.Slider(1000, 20000, value=3600, step=1000, label="每回合仿真时间(秒)")
 
-    run_button = gr.Button("Start Simulation", variant="primary")
-    progress = gr.Slider(0, 100, value=0, label="Progress", interactive=False)
-    output = gr.Textbox(label="Output Information", lines=5)
+    run_button = gr.Button("执行操作", variant="primary")
+    progress = gr.Slider(0, 100, value=0, label="操作进度", interactive=False)
+    output = gr.Textbox(label="输出信息", lines=5)
 
-    gr.Markdown("## Results Visualization")
-
-    with gr.Row():
-        with gr.Column(scale=2):
-            train_process_file = gr.File(label="Select Training Process File", file_types=[".csv"])
-            plot_train_button = gr.Button("Plot Training Process", variant="secondary")
+    gr.Markdown("## 结果可视化")
 
     with gr.Row():
         with gr.Column(scale=2):
-            predict_result_file = gr.File(label="Select Prediction Result File", file_types=[".json"])
-            plot_predict_button = gr.Button("Plot Prediction Result", variant="secondary")
+            train_process_file = gr.File(label="训练过程", file_types=[".csv"])
+            plot_train_button = gr.Button("绘制曲线图", variant="secondary")
 
     with gr.Row():
         with gr.Column(scale=2):
-            eval_result_file = gr.File(label="Select Evaluation File", file_types=[".txt"])
-            plot_eval_button = gr.Button("Plot Evaluation Result", variant="secondary")
+            predict_result_file = gr.File(label="预测结果", file_types=[".json"])
+            plot_predict_button = gr.Button("绘制曲线图", variant="secondary")
 
-    plot_output = gr.Textbox(label="Plot Output", lines=2)
-    plot_image = gr.Image(label="Generated Plot")
+    with gr.Row():
+        with gr.Column(scale=2):
+            eval_result_file = gr.File(label="评估结果", file_types=[".txt"])
+            plot_eval_button = gr.Button("绘制曲线图", variant="secondary")
+
+    plot_output = gr.Textbox(label="结果图", lines=2)
+    plot_image = gr.Image(label="绘制结果图")
 
     # Binding event handling functions
     run_button.click(
