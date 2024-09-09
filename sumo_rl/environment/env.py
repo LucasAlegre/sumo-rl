@@ -104,6 +104,7 @@ class SumoEnvironment(gym.Env):
         sumo_warnings: bool = True,
         additional_sumo_cmd: Optional[str] = None,
         render_mode: Optional[str] = None,
+        ignore_route_errors: Optional[bool] = True
     ) -> None:
         """Initialize the environment."""
         assert render_mode is None or render_mode in self.metadata["render_modes"], "Invalid render mode."
@@ -138,6 +139,7 @@ class SumoEnvironment(gym.Env):
         self.additional_sumo_cmd = additional_sumo_cmd
         self.add_system_info = add_system_info
         self.add_per_agent_info = add_per_agent_info
+        self.ignore_route_errors = ignore_route_errors
         self.label = str(SumoEnvironment.CONNECTION_LABEL)
         SumoEnvironment.CONNECTION_LABEL += 1
         self.sumo = None
@@ -227,6 +229,8 @@ class SumoEnvironment(gym.Env):
                 self.disp = SmartDisplay(size=self.virtual_display)
                 self.disp.start()
                 print("Virtual display started.")
+        if self.ignore_route_errors:
+            sumo_cmd.append("--ignore-route-errors")
 
         if LIBSUMO:
             traci.start(sumo_cmd)
