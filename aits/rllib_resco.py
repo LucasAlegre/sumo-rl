@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import ray
@@ -12,23 +13,50 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-from sumo_rl import arterial4x4
+from sumo_rl import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
 
 
 def env_creator(config):
-    env = arterial4x4(out_csv_name="outputs/arterial4x4/ppo", use_gui=False, yellow_time=2, fixed_ts=False)
+    env_name = config.get("env_name", "arterial4x4")
+    use_gui = config.get("use_gui", False)
+    yellow_time = config.get("yellow_time", 2)
+    fixed_ts = config.get("fixed_ts", False)
+
+    env_mapping = {
+        "arterial4x4": arterial4x4,
+        "grid4x4": grid4x4,
+        "cologne1": cologne1,
+        "cologne3": cologne3,
+        "cologne8": cologne8,
+        "ingolstadt1": ingolstadt1,
+        "ingolstadt7": ingolstadt7,
+        "ingolstadt21": ingolstadt21
+    }
+
+    if env_name not in env_mapping:
+        raise ValueError(f"未知的环境名称: {env_name}")
+
+    env_func = env_mapping[env_name]
+    out_csv_name = f"outputs/{env_name}/{env_name}"
+
+    env = env_func(out_csv_name=out_csv_name, use_gui=use_gui, yellow_time=yellow_time, fixed_ts=fixed_ts)
     return env
 
 
-register_env("arterial4x4", lambda config: ParallelPettingZooEnv(env_creator(config)))
+register_env("sumo_env", lambda config: ParallelPettingZooEnv(env_creator(config)))
 
 
-def train_ppo_resco(num_iterations=200, use_gpu=False, num_env_runners=4):
+def train_ppo_resco(env_name="arterial4x4", num_iterations=200, use_gpu=False, num_env_runners=4):
     ray.init()
 
     config = (
         PPOConfig()
-        .environment("arterial4x4")
+        .environment("sumo_env", env_config={
+            "env_name": env_name,
+            "use_gui": False,
+            "yellow_time": 2,
+            "fixed_ts": False
+        })
         .env_runners(
             num_env_runners=num_env_runners,
             rollout_fragment_length=128
@@ -54,9 +82,9 @@ def train_ppo_resco(num_iterations=200, use_gpu=False, num_env_runners=4):
         "training_iteration": num_iterations,
     }
 
-   # 使用绝对路径
+    # 使用绝对路径
     storage_path = os.path.abspath("./ray_results")
-    
+
     results = tune.run(
         "PPO",
         config=config.to_dict(),
@@ -67,14 +95,27 @@ def train_ppo_resco(num_iterations=200, use_gpu=False, num_env_runners=4):
         storage_path=storage_path,
     )
 
-    best_checkpoint = results.get_best_checkpoint(results.get_best_trial("episode_reward_mean"), "episode_reward_mean")
+    best_checkpoint = results.get_best_checkpoint(results.get_best_trial("episode_reward_mean", mode="max"), "episode_reward_mean", mode="max")
     print(f"Best checkpoint: {best_checkpoint}")
 
     ray.shutdown()
 
 
 if __name__ == "__main__":
-    train_ppo_resco()
+    parser = argparse.ArgumentParser(description="训练PPO-RESCO代理")
+    parser.add_argument("--env_name", type=str, default="arterial4x4", help="环境名称")
+    parser.add_argument("--num_iterations", type=int, default=200, help="训练迭代次数")
+    parser.add_argument("--use_gpu", action="store_true", help="是否使用GPU")
+    parser.add_argument("--num_env_runners", type=int, default=4, help="环境运行器数量")
+
+    args = parser.parse_args()
+
+    train_ppo_resco(
+        env_name=args.env_name,
+        num_iterations=args.num_iterations,
+        use_gpu=args.use_gpu,
+        num_env_runners=args.num_env_runners
+    )
 
 """
 这个程序是一个使用Ray RLlib框架来训练强化学习代理的示例，主要用于优化交通信号控制。让我为您分析一下程序的设计原理和预期结果：
