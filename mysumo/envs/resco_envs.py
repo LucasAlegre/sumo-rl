@@ -1,12 +1,15 @@
 """Environments from RESCO: https://github.com/jault/RESCO, paper https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf ."""
 import os
+import sys
 
-import sumo_rl
-from sumo_rl import env, parallel_env
+sys.path.append('..')
 
+import mysumo.envs  # 确保自定义环境被注册
 
-PATH = os.path.dirname(sumo_rl.__file__)
+from mysumo.envs.sumo_env import env, parallel_env
 
+PATH = os.path.dirname(mysumo.__file__)
+PATH = os.path.dirname(PATH)
 
 def grid4x4(parallel=True, **kwargs):
     """Grid 4x4 network.

@@ -8,4 +8,4 @@
     <phase duration="16" state="rrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGG"/>
     <phase duration="3" state="rrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyy"/>
 </tlLogic>
-        <!--特别注意：一个车道lane可能有4个信号灯！分别表示：右-直-左-调头-->
+        <!--特别注意：一个车道lane可能有4个信号灯位，分别连接出口的4个车道lane！？分别表示：右-直-左-调头-->

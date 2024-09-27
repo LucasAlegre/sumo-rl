@@ -141,9 +141,7 @@ settings.json
 /mynets/logs/my-intersection-log/DQN_2/
 nohup.out
 /mynets/eval/
-/mynets/logs/
 /mynets/predict/
-/mynets/logs/
 /ui/eval/
 /ui/monitor/
 /ui/out/
@@ -156,7 +154,6 @@ nohup.out
 /ui/logs.tar.gz
 /ui/out.tar.gz
 /ui/predict.tar.gz
-/ui/temp
 /aits/models/
 /aits/models_副本/
 /aits/models_2/
@@ -177,3 +174,6 @@ nohup.out
 /ui/a2c_test_tensorboard/
 /ui/model.tar.gz
 /ui/outs.tar.gz
+/ui/outputs/
+/aits/ray_results/
+/aits/outputs/
