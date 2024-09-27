@@ -95,7 +95,7 @@ def train_ppo_resco(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
         storage_path=storage_path,
     )
 
-    best_checkpoint = results.get_best_checkpoint(results.get_best_trial("episode_reward_mean", mode="max"), "episode_reward_mean", mode="max")
+    best_checkpoint = results.get_best_checkpoint(results.get_best_trial("episode_return_mean", mode="max"), "episode_return_mean", mode="max")
     print(f"Best checkpoint: {best_checkpoint}")
 
     ray.shutdown()
