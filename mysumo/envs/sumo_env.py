@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Callable, Optional, Tuple, Union
 
 from mysumo.envs.traffic_signal import ContinuousTrafficSignal
+from mysumo.envs.observations import DefaultObservationFunction, ObservationFunction
+from mysumo.envs.traffic_signal import TrafficSignal
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -21,11 +23,12 @@ from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector, wrappers
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
-from sumo_rl.environment.observations import DefaultObservationFunction, ObservationFunction
-from sumo_rl.environment.traffic_signal import TrafficSignal
-
 LIBSUMO = "LIBSUMO_AS_TRACI" in os.environ
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def env(**kwargs):
     """Instantiate a PettingoZoo environment."""
@@ -225,6 +228,7 @@ class SumoEnv(gym.Env):
 
     def reset(self, seed: Optional[int] = None, **kwargs):
         """Reset the environment."""
+        logger.debug("=====================Resetting environment start=====================")
         super().reset(seed=seed, **kwargs)
 
         if self.episode != 0:
@@ -270,6 +274,8 @@ class SumoEnv(gym.Env):
 
         self.vehicles = dict()
 
+        logger.debug("=====================Resetting environment end=====================")
+
         if self.single_agent:
             return self._compute_observations()[self.ts_ids[0]], self._compute_info()
         else:
@@ -288,6 +294,7 @@ class SumoEnv(gym.Env):
             If single_agent is True, action is an int, otherwise it expects a dict with keys corresponding to traffic signal ids.
         """
         # No action, follow fixed TL defined in self.phases
+        logger.debug("=====================step start=====================")
         if self.fixed_ts or action is None or action == {}:
             for _ in range(self.delta_time):
                 self._sumo_step()
@@ -301,6 +308,10 @@ class SumoEnv(gym.Env):
         terminated = False  # there are no 'terminal' states in this environment
         truncated = dones["__all__"]  # episode ends when sim_step >= max_steps
         info = self._compute_info()
+
+        logger.debug("===========是否单智能体?::",self.single_agent)
+
+        logger.debug("=====================step end=====================")
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], terminated, truncated, info
@@ -318,7 +329,6 @@ class SumoEnv(gym.Env):
 
     def _apply_actions(self, actions):
         """Set the next green phase for the traffic signals.
-
         Args:
             actions: If single-agent, actions is an int between 0 and self.num_green_phases (next green phase)
                      If multiagent, actions is a dict {ts_id : greenPhase}
@@ -346,6 +356,7 @@ class SumoEnv(gym.Env):
         return info
 
     def _compute_observations(self):
+        logger.debug("====================_compute_observations====================")
         self.observations.update(
             {
                 ts: self.traffic_signals[ts].compute_observation()
@@ -360,6 +371,7 @@ class SumoEnv(gym.Env):
         }
 
     def _compute_rewards(self):
+        logger.debug("====================_compute_rewards====================")
         self.rewards.update(
             {
                 ts: self.traffic_signals[ts].compute_reward()
@@ -562,6 +574,7 @@ class SumoEnvPZ(AECEnv, EzPickle):
 
     def step(self, action):
         """Step the environment."""
+        logger.debug("=================step start=================")
         if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
             return self._was_dead_step(action)
         agent = self.agent_selection
@@ -593,6 +606,7 @@ class SumoEnvPZ(AECEnv, EzPickle):
         self.agent_selection = self._agent_selector.next()
         self._cumulative_rewards[agent] = 0
         self._accumulate_rewards()
+        logger.debug("=================step end=================")
 
 
 # 连续型环境对step，_apply_actions函数进行了修改，处理了连续动作空间与离散动作空间的转换。
@@ -1065,3 +1079,77 @@ def continuous_to_discrete_actions(actions):
         discrete_actions[tl] = int(discrete_action)
 
     return discrete_actions
+
+
+
+"""
+这个程序实现了一个基于SUMO(Simulation of Urban MObility)的交通信号控制环境。它提供了两个主要的环境类:
+
+1. `SumoEnv`: 一个基本的离散动作空间环境
+2. `ContinuousSumoEnv`: 一个连续动作空间的环境
+
+主要功能:
+
+1. 模拟城市交通环境,包括道路网络、车辆和交通信号灯。
+
+2. 提供强化学习接口,允许智能体控制交通信号灯。
+
+3. 支持单智能体和多智能体设置。
+
+4. 提供观察空间,包括交通状态信息。
+
+5. 计算奖励,评估交通控制的效果。
+
+6. 支持自定义奖励函数和观察函数。
+
+7. 提供系统级和每个智能体的性能指标。
+
+8. 支持保存模拟结果到CSV文件。
+
+9. 支持GUI渲染和RGB数组渲染。
+
+使用方法:
+
+1. 初始化环境:
+
+```python
+env = SumoEnv(net_file="path/to/net.xml", 
+              route_file="path/to/route.xml",
+              use_gui=True)
+```
+
+2. 运行模拟:
+
+```python
+obs = env.reset()
+done = False
+while not done:
+    action = agent.choose_action(obs)  # 你的智能体
+    obs, reward, terminated, truncated, info = env.step(action)
+    done = terminated or truncated
+```
+
+3. 对于连续动作空间:
+
+```python
+env = ContinuousSumoEnv(net_file="path/to/net.xml", 
+                        route_file="path/to/route.xml")
+```
+
+这个环境可以与各种强化学习算法一起使用,如DQN、PPO等,来优化交通信号控制策略。它提供了一个灵活的框架,可以根据具体需求进行定制和扩展。
+
+=======================================================
+
+奖励函数 reward_fn 的定义
+
+在traffic_signal.py中，定义了奖励函数 reward_fn ，
+
+    reward_fns = {
+        "diff-waiting-time": _diff_waiting_time_reward,
+        "average-speed": _average_speed_reward,
+        "queue": _queue_reward,
+        "pressure": _pressure_reward,
+    }
+
+
+"""

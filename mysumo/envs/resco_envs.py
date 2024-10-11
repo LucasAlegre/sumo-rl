@@ -2,7 +2,7 @@
 import os
 import sys
 
-sys.path.append('..')
+sys.path.append('../')
 
 import mysumo.envs  # 确保自定义环境被注册
 

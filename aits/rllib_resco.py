@@ -6,6 +6,12 @@ from ray import tune
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
+from pprint import pprint
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -13,7 +19,11 @@ if "SUMO_HOME" in os.environ:
 else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
-from sumo_rl import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
+sys.path.append('../')
+# 将项目根目录添加到 Python 路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from mysumo.envs.resco_envs import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
 
 
 def env_creator(config):
@@ -46,7 +56,8 @@ def env_creator(config):
 register_env("sumo_env", lambda config: ParallelPettingZooEnv(env_creator(config)))
 
 
-def train_ppo_resco(env_name="arterial4x4", num_iterations=200, use_gpu=False, num_env_runners=4):
+def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, num_env_runners=4):
+    logger.debug("=====================train_resco_ppo=====================")
     ray.init()
 
     config = (
@@ -85,18 +96,44 @@ def train_ppo_resco(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
     # 使用绝对路径
     storage_path = os.path.abspath("./ray_results")
 
-    results = tune.run(
-        "PPO",
-        config=config.to_dict(),
-        stop=stop,
-        checkpoint_freq=10,
-        checkpoint_at_end=True,
-        name="ppo_arterial4x4",
-        storage_path=storage_path,
-    )
+    logger.debug("=====================start tune.run====================")
 
-    best_checkpoint = results.get_best_checkpoint(results.get_best_trial("episode_return_mean", mode="max"), "episode_return_mean", mode="max")
-    print(f"Best checkpoint: {best_checkpoint}")
+    try:
+        results = tune.run(
+            "PPO",
+            config=config.to_dict(),
+            stop=stop,
+            checkpoint_freq=10,
+            checkpoint_at_end=True,
+            name="resco_ppo",
+            storage_path=storage_path,
+            verbose=0,
+            # log_to_file=True,
+        )
+        logger.debug(f"=====================训练过程正常=====================")
+    except Exception as e:
+        logger.debug(f"=====================训练过程中发生错误=====================:\n {e}")
+        raise
+
+    logger.debug("=====================end tune.run=====================")
+
+    # logger.debug("=====================results.trials[0].last_result:=====================")
+    # pprint(results.trials[0].last_result)
+
+    def get_episode_reward_mean(trial):
+        return trial.last_result["env_runners"]["episode_reward_mean"]
+
+    best_trial = results.get_best_trial("env_runners/episode_reward_mean", mode="max")
+    logger.debug(f"最佳试验: {best_trial}")
+
+    best_reward = get_episode_reward_mean(best_trial)
+    logger.debug(f"最佳试验的平均奖励: {best_reward}")
+
+    if best_trial:
+        best_checkpoint = results.get_best_checkpoint(best_trial, "env_runners/episode_reward_mean", mode="max")
+        logger.debug(f"最佳检查点: {best_checkpoint}")
+    else:
+        logger.debug("未找到最佳试验，无法获取检查点。")
 
     ray.shutdown()
 
@@ -110,7 +147,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    train_ppo_resco(
+    train_resco_ppo(
         env_name=args.env_name,
         num_iterations=args.num_iterations,
         use_gpu=args.use_gpu,
@@ -118,7 +155,7 @@ if __name__ == "__main__":
     )
 
 """
-这个程序是一个使用Ray RLlib框架来训练强化学习代理的示例，主要用于优化交通信号控制。让我为您分析一下程序的设计原理和预期结果：
+这个程序是一个使用Ray RLlib框架来训练强化学习代理的示例，主要用于优化交通信号控制。分析一下程序的设计原理和预期结果：
 
 1. 设计原理：
 

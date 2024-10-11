@@ -11,6 +11,10 @@ else:
 import numpy as np
 from gymnasium import spaces
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class TrafficSignal:
     """This class represents a Traffic Signal controlling an intersection.
@@ -146,7 +150,6 @@ class TrafficSignal:
 
     def update(self):
         """Updates the traffic signal state.
-
         If the traffic signal should act, it will set the next green phase and update the next action time.
         """
         self.time_since_last_phase_change += 1
@@ -157,7 +160,6 @@ class TrafficSignal:
 
     def set_next_phase(self, new_phase: int):
         """Sets what will be the next green phase and sets yellow phase if the next phase is different than the current.
-
         Args:
             new_phase (int): Number between [0 ... num_green_phases]
         """
@@ -182,7 +184,11 @@ class TrafficSignal:
 
     def compute_reward(self):
         """Computes the reward of the traffic signal."""
+        logger.debug("====================compute_reward=====================")
         self.last_reward = self.reward_fn(self)
+        logger.debug(f"=====reward: {self.last_reward}")
+        if np.isnan(self.last_reward):
+            logger.warning("======Reward is NaN!")
         return self.last_reward
 
     def _pressure_reward(self):
@@ -195,9 +201,11 @@ class TrafficSignal:
         return -self.get_total_queued()
 
     def _diff_waiting_time_reward(self):
+        logger.debug("========================_diff_waiting_time_reward================")
         ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
+        logger.debug("=====================reward==========:",reward)
         return reward
 
     def _observation_fn_default(self):

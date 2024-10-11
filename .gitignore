@@ -177,3 +177,5 @@ nohup.out
 /ui/outputs/
 /aits/ray_results/
 /aits/outputs/
+/ray_results/
+/aits/temp.json
