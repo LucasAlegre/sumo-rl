@@ -101,7 +101,7 @@ if __name__ == "__main__":
     tune.run(
         "PPO",
         name="PPO",
-        stop={"timesteps_total": 50000 if not os.environ.get("CI") else 50000},
+        stop={"timesteps_total": 5000000 if not os.environ.get("CI") else 50000},
         checkpoint_freq=10,
         storage_path=storage_path,
         config=config.to_dict(),
