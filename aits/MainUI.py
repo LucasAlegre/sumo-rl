@@ -1,13 +1,16 @@
+import os
 import pygame
 import sys
 import time
 from typing import Dict, List
+
 sys.path.append('..')
+# 将项目根目录添加到 Python 路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from aits.RealWorldEnv import RealWorldEnv
 from aits.RealWorldTrafficSignal import RealWorldTrafficSignal
 from aits.RealWorldDataCollector import RealWorldDataCollector
-
 
 
 class TrafficVisualization:
@@ -120,7 +123,7 @@ def main(action_space_type="auto"):
         max_green=30,
         num_seconds=3600,
         reward_fn="queue",
-        action_space_type = action_space_type
+        action_space_type=action_space_type
     )
 
     env.reset()

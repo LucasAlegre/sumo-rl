@@ -1,6 +1,8 @@
 """SUMO Environment for Traffic Signal Control."""
+import json
 import os
 import sys
+import traceback
 from pathlib import Path
 from typing import Callable, Optional, Tuple, Union
 
@@ -26,9 +28,13 @@ from pettingzoo.utils.conversions import parallel_wrapper_fn
 LIBSUMO = "LIBSUMO_AS_TRACI" in os.environ
 
 import logging
+import psutil
 
-logging.basicConfig(level=logging.DEBUG)
+from pprint import pprint
+
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
+
 
 def env(**kwargs):
     """Instantiate a PettingoZoo environment."""
@@ -40,6 +46,37 @@ def env(**kwargs):
 
 parallel_env = parallel_wrapper_fn(env)
 
+"""
+1. `env` 函数:
+
+这个函数的作用是创建和配置一个 PettingZoo 环境。具体步骤如下：
+
+a) 首先，使用传入的参数创建一个 `SumoEnvPZ` 实例。
+
+b) 然后，将环境包装在 `AssertOutOfBoundsWrapper` 中。这个包装器可能用于检查动作和观察是否在预定义的范围内，如果超出范围则抛出异常。
+
+c) 接着，再用 `OrderEnforcingWrapper` 包装环境。这个包装器可能用于强制执行某些操作顺序，例如确保在调用 `step()` 之前调用了 `reset()`。
+
+d) 最后，返回包装后的环境。
+
+2. `parallel_env` 函数:
+
+这行代码创建了一个并行版本的环境。具体解释如下：
+
+a) `parallel_wrapper_fn` 可能是 PettingZoo 库提供的一个函数，用于将普通的环境转换为并行环境。
+
+b) 它接受 `env` 函数作为参数，这意味着它会使用 `env` 函数来创建基础环境。
+
+c) 返回的 `parallel_env` 是一个新的函数，当调用时，它会创建一个并行版本的环境。
+
+并行环境通常允许多个智能体同时采取行动，这在多智能体强化学习任务中很有用。它可以提高训练效率，特别是在模拟大规模系统（如交通网络）时。
+
+总结：
+- `env` 函数创建一个单一的、经过包装的 SUMO 环境。
+- `parallel_env` 函数创建这个环境的并行版本，可能用于多智能体学习或更高效的训练。
+
+这种设计提供了灵活性，允许用户根据需要选择使用普通环境或并行环境。对于交通模拟这样的复杂系统，并行环境可能特别有用，因为它可以模拟多个交通参与者同时做出决策的情况。
+"""
 
 class SumoEnv(gym.Env):
     """SUMO Environment for Traffic Signal Control.
@@ -179,6 +216,9 @@ class SumoEnv(gym.Env):
         self.observations = {ts: None for ts in self.ts_ids}
         self.rewards = {ts: None for ts in self.ts_ids}
 
+        self.step_counter = 0
+        self.print_interval = 500  # 默认每100步打印一次
+
     def _start_simulation(self):
         sumo_cmd = [
             self._sumo_binary,
@@ -228,8 +268,9 @@ class SumoEnv(gym.Env):
 
     def reset(self, seed: Optional[int] = None, **kwargs):
         """Reset the environment."""
-        logger.debug("=====================Resetting environment start=====================")
         super().reset(seed=seed, **kwargs)
+
+        self.step_counter = 0
 
         if self.episode != 0:
             self.close()
@@ -274,12 +315,11 @@ class SumoEnv(gym.Env):
 
         self.vehicles = dict()
 
-        logger.debug("=====================Resetting environment end=====================")
-
         if self.single_agent:
             return self._compute_observations()[self.ts_ids[0]], self._compute_info()
         else:
-            return self._compute_observations()
+            self._compute_observations()
+            return self.observations
 
     @property
     def sim_step(self) -> float:
@@ -293,8 +333,9 @@ class SumoEnv(gym.Env):
             action (Union[dict, int]): action(s) to be applied to the environment.
             If single_agent is True, action is an int, otherwise it expects a dict with keys corresponding to traffic signal ids.
         """
+        self.step_counter += 1
+
         # No action, follow fixed TL defined in self.phases
-        logger.debug("=====================step start=====================")
         if self.fixed_ts or action is None or action == {}:
             for _ in range(self.delta_time):
                 self._sumo_step()
@@ -309,9 +350,9 @@ class SumoEnv(gym.Env):
         truncated = dones["__all__"]  # episode ends when sim_step >= max_steps
         info = self._compute_info()
 
-        logger.debug("===========是否单智能体?::",self.single_agent)
-
-        logger.debug("=====================step end=====================")
+        if self.step_counter % self.print_interval == 0:
+            print(f"==========SumoEnv-321:step {self.step_counter}::info==========")
+            pprint(info)
 
         if self.single_agent:
             return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], terminated, truncated, info
@@ -356,7 +397,7 @@ class SumoEnv(gym.Env):
         return info
 
     def _compute_observations(self):
-        logger.debug("====================_compute_observations====================")
+        logger.debug("_compute_observations begin")
         self.observations.update(
             {
                 ts: self.traffic_signals[ts].compute_observation()
@@ -364,6 +405,7 @@ class SumoEnv(gym.Env):
                 if self.traffic_signals[ts].time_to_act or self.fixed_ts
             }
         )
+        logger.debug("_compute_observations end")
         return {
             ts: self.observations[ts].copy()
             for ts in self.observations.keys()
@@ -371,7 +413,7 @@ class SumoEnv(gym.Env):
         }
 
     def _compute_rewards(self):
-        logger.debug("====================_compute_rewards====================")
+        logger.debug("_compute_rewards begin")
         self.rewards.update(
             {
                 ts: self.traffic_signals[ts].compute_reward()
@@ -379,6 +421,7 @@ class SumoEnv(gym.Env):
                 if self.traffic_signals[ts].time_to_act or self.fixed_ts
             }
         )
+        logger.debug("_compute_rewards end")
         return {ts: self.rewards[ts] for ts in self.rewards.keys() if
                 self.traffic_signals[ts].time_to_act or self.fixed_ts}
 
@@ -523,20 +566,28 @@ class SumoEnvPZ(AECEnv, EzPickle):
         self.truncations = {a: False for a in self.agents}
         self.infos = {a: {} for a in self.agents}
 
+        self.step_counter = 0
+        self.print_interval = 1000  # 默认每100步打印一次
+
     def seed(self, seed=None):
         """Set the seed for the environment."""
         self.randomizer, seed = seeding.np_random(seed)
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
         """Reset the environment."""
-        self.env.reset(seed=seed, options=options)
-        self.agents = self.possible_agents[:]
-        self.agent_selection = self._agent_selector.reset()
-        self.rewards = {agent: 0 for agent in self.agents}
-        self._cumulative_rewards = {agent: 0 for agent in self.agents}
-        self.terminations = {a: False for a in self.agents}
-        self.truncations = {a: False for a in self.agents}
-        self.compute_info()
+        try:
+            self.env.reset(seed=seed, options=options)
+            self.agents = self.possible_agents[:]
+            self.agent_selection = self._agent_selector.reset()
+            self.rewards = {agent: 0 for agent in self.agents}
+            self._cumulative_rewards = {agent: 0 for agent in self.agents}
+            self.terminations = {a: False for a in self.agents}
+            self.truncations = {a: False for a in self.agents}
+            self.compute_info()
+            self.step_counter = 0
+        except Exception as e:
+            logger.error(f"Error in reset: {e}")
+            logger.error(traceback.format_exc())
 
     def compute_info(self):
         """Compute the info for the current step."""
@@ -574,39 +625,41 @@ class SumoEnvPZ(AECEnv, EzPickle):
 
     def step(self, action):
         """Step the environment."""
-        logger.debug("=================step start=================")
-        if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
-            return self._was_dead_step(action)
-        agent = self.agent_selection
-        if not self.action_spaces[agent].contains(action):
-            raise Exception(
-                "Action for agent {} must be in Discrete({})."
-                "It is currently {}".format(agent, self.action_spaces[agent].n, action)
-            )
+        try:
+            if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
+                return self._was_dead_step(action)
+            agent = self.agent_selection
+            if not self.action_spaces[agent].contains(action):
+                raise Exception(
+                    "Action for agent {} must be in Discrete({})."
+                    "It is currently {}".format(agent, self.action_spaces[agent].n, action)
+                )
 
-        if not self.env.fixed_ts:
-            self.env._apply_actions({agent: action})
-
-        if self._agent_selector.is_last():
             if not self.env.fixed_ts:
-                self.env._run_steps()
+                self.env._apply_actions({agent: action})
+
+            if self._agent_selector.is_last():
+                if not self.env.fixed_ts:
+                    self.env._run_steps()
+                else:
+                    for _ in range(self.env.delta_time):
+                        self.env._sumo_step()
+
+                self.env._compute_observations()
+                self.rewards = self.env._compute_rewards()
+                self.compute_info()
             else:
-                for _ in range(self.env.delta_time):
-                    self.env._sumo_step()
+                self._clear_rewards()
 
-            self.env._compute_observations()
-            self.rewards = self.env._compute_rewards()
-            self.compute_info()
-        else:
-            self._clear_rewards()
+            done = self.env._compute_dones()["__all__"]
+            self.truncations = {a: done for a in self.agents}
 
-        done = self.env._compute_dones()["__all__"]
-        self.truncations = {a: done for a in self.agents}
-
-        self.agent_selection = self._agent_selector.next()
-        self._cumulative_rewards[agent] = 0
-        self._accumulate_rewards()
-        logger.debug("=================step end=================")
+            self.agent_selection = self._agent_selector.next()
+            self._cumulative_rewards[agent] = 0
+            self._accumulate_rewards()
+        except Exception as e:
+            logger.error(f"Error in step: {e}")
+            logger.error(traceback.format_exc())
 
 
 # 连续型环境对step，_apply_actions函数进行了修改，处理了连续动作空间与离散动作空间的转换。
@@ -1079,7 +1132,6 @@ def continuous_to_discrete_actions(actions):
         discrete_actions[tl] = int(discrete_action)
 
     return discrete_actions
-
 
 
 """

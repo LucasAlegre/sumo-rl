@@ -13,8 +13,10 @@ from gymnasium import spaces
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+
 
 class TrafficSignal:
     """This class represents a Traffic Signal controlling an intersection.
@@ -110,8 +112,7 @@ class TrafficSignal:
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
         if self.env.fixed_ts:
-            self.num_green_phases = len(
-                phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
+            self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
             return
 
         self.green_phases = []
@@ -180,15 +181,16 @@ class TrafficSignal:
 
     def compute_observation(self):
         """Computes the observation of the traffic signal."""
+        # logger.debug("##########compute_observation::call _observation_fn_default ##########")
         return self.observation_fn()
 
     def compute_reward(self):
         """Computes the reward of the traffic signal."""
-        logger.debug("====================compute_reward=====================")
+        # logger.debug("##########compute_reward begin::call _diff_waiting_time_reward ##########")
         self.last_reward = self.reward_fn(self)
-        logger.debug(f"=====reward: {self.last_reward}")
+        # logger.debug(f"##########compute_reward end::call _diff_waiting_time_reward ##########: {self.last_reward}")
         if np.isnan(self.last_reward):
-            logger.warning("======Reward is NaN!")
+            logger.warning("Reward is NaN!")
         return self.last_reward
 
     def _pressure_reward(self):
@@ -201,19 +203,20 @@ class TrafficSignal:
         return -self.get_total_queued()
 
     def _diff_waiting_time_reward(self):
-        logger.debug("========================_diff_waiting_time_reward================")
         ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
-        logger.debug("=====================reward==========:",reward)
+        logger.debug("##########TrafficSignal._diff_waiting_time_reward##########:%s",reward)
         return reward
 
     def _observation_fn_default(self):
+        logger.debug("##########_observation_fn_default begin##########")
         phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
         min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
         density = self.get_lanes_density()
         queue = self.get_lanes_queue()
         observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
+        logger.debug("##########_observation_fn_default end::%s##########", observation)
         return observation
 
     def get_accumulated_waiting_time_per_lane(self) -> List[float]:
@@ -513,6 +516,7 @@ class ContinuousTrafficSignal:
         ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
         reward = self.last_measure - ts_wait
         self.last_measure = ts_wait
+        logger.debug("##########ContinuousTrafficSignal._diff_waiting_time_reward##########:%s", reward)
         return reward
 
     def _observation_fn_default(self):

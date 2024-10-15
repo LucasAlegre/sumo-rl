@@ -179,3 +179,5 @@ nohup.out
 /aits/outputs/
 /ray_results/
 /aits/temp.json
+/dqn_debug_tensorboard/
+/aits/trial_last_result.json

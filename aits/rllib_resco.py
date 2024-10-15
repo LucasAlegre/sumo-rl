@@ -10,7 +10,7 @@ from pprint import pprint
 
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 if "SUMO_HOME" in os.environ:
@@ -70,10 +70,10 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
         })
         .env_runners(
             num_env_runners=num_env_runners,
-            rollout_fragment_length=128
+            rollout_fragment_length=256
         )
         .training(
-            train_batch_size=512,
+            train_batch_size=1024,
             lr=2e-5,
             gamma=0.99,
             lambda_=0.95,
@@ -91,6 +91,7 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
 
     stop = {
         "training_iteration": num_iterations,
+        "time_total_s": 3600,  # 1小时
     }
 
     # 使用绝对路径
@@ -107,8 +108,9 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
             checkpoint_at_end=True,
             name="resco_ppo",
             storage_path=storage_path,
-            verbose=0,
-            # log_to_file=True,
+            verbose=3,
+            log_to_file=True,
+            raise_on_failed_trial=False,
         )
         logger.debug(f"=====================训练过程正常=====================")
     except Exception as e:
@@ -125,6 +127,13 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
 
     best_trial = results.get_best_trial("env_runners/episode_reward_mean", mode="max")
     logger.debug(f"最佳试验: {best_trial}")
+
+    if best_trial:
+        logger.debug("=====================最佳试验的详细信息=====================")
+        logger.debug("最佳试验的配置:")
+        pprint(best_trial, indent=2)
+        logger.debug(f"最佳试验的训练时长: {best_trial.last_result['time_total_s']} 秒")
+        logger.debug(f"最佳试验完成的迭代次数: {best_trial.last_result['training_iteration']}")
 
     best_reward = get_episode_reward_mean(best_trial)
     logger.debug(f"最佳试验的平均奖励: {best_reward}")

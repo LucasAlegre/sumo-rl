@@ -15,6 +15,8 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from torch import nn
 
 sys.path.append('..')
+# 将项目根目录添加到 Python 路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from aits.RealWorldEnv import RealWorldEnv
 
@@ -173,11 +175,12 @@ class TrainingManager:
 def main():
     parser = argparse.ArgumentParser(description='Run Traffic Control System Training')
     parser.add_argument('operation', choices=['debug', 'test', 'train'], help='Execution parameter')
-    parser.add_argument('algorythm', choices=['DQN', 'PPO', 'A2C', 'SAC'], help='Algorithm to use')
+    parser.add_argument('algorithm', choices=['DQN', 'PPO', 'A2C', 'SAC'], help='Algorithm to use')
     args = parser.parse_args()
 
-    config_file = f"{args.algorythm.lower()}-{args.operation}.json"
-    config_path = os.path.join("config", config_file)
+    config_file = f"{args.algorithm.lower()}-{args.operation}.json"
+    # config_path = os.path.join("config", config_file)
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", config_file)
 
     if not os.path.exists(config_path):
         print(f"Error: Configuration file {config_path} not found.")
@@ -191,3 +194,57 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+这个 `TrainingManager` 类是一个用于管理强化学习训练过程的综合工具。其功能和逻辑：
+
+1. 初始化 (`__init__`):
+   - 加载配置文件
+   - 确定使用的算法和动作空间类型
+   - 创建环境
+   - 设置模型保存路径
+
+2. 配置加载 (`load_config`):
+   - 从 JSON 文件加载训练配置
+
+3. 环境创建 (`_create_env`):
+   - 创建 `RealWorldEnv` 环境
+   - 应用观察空间扁平化包装器
+   - 使用 `Monitor` 包装器记录训练数据
+   - 创建向量化环境和标准化包装器
+
+4. 模型创建 (`_create_model`):
+   - 根据配置的算法（DQN, PPO, A2C, SAC）创建相应的模型
+   - 处理模型参数，包括激活函数的设置
+
+5. 训练过程 (`train`):
+   - 创建评估回调和奖励记录器
+   - 执行模型训练
+   - 保存最终模型
+
+6. 评估 (`evaluate`):
+   - 对训练好的模型进行评估
+
+7. 模型保存和加载 (`save_model`, `load_model`):
+   - 提供保存和加载模型的功能
+
+8. 训练可视化 (`visualize_training`):
+   - 使用 TensorBoard 可视化训练日志
+
+9. 主函数 (`main`):
+   - 解析命令行参数
+   - 根据参数选择配置文件
+   - 创建 `TrainingManager` 实例并执行训练、评估和保存过程
+
+主要特点和逻辑：
+
+1. 灵活性：支持多种强化学习算法（DQN, PPO, A2C, SAC）。
+2. 可配置性：使用 JSON 配置文件来设置训练参数。
+3. 环境适应性：使用包装器来处理观察空间和动作空间的兼容性。
+4. 评估和监控：集成了评估回调和奖励记录器。
+5. 模型管理：提供了保存和加载模型的功能。
+6. 可视化：支持使用 TensorBoard 进行训练过程可视化。
+
+这个程序设计得非常全面，适合用于各种强化学习任务，特别是在交通控制系统的训练中。它提供了从配置加载到模型训练、评估、保存的完整流程，同时保持了良好的模块化和可扩展性。
+
+"""
