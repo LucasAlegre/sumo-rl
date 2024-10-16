@@ -575,19 +575,15 @@ class SumoEnvPZ(AECEnv, EzPickle):
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
         """Reset the environment."""
-        try:
-            self.env.reset(seed=seed, options=options)
-            self.agents = self.possible_agents[:]
-            self.agent_selection = self._agent_selector.reset()
-            self.rewards = {agent: 0 for agent in self.agents}
-            self._cumulative_rewards = {agent: 0 for agent in self.agents}
-            self.terminations = {a: False for a in self.agents}
-            self.truncations = {a: False for a in self.agents}
-            self.compute_info()
-            self.step_counter = 0
-        except Exception as e:
-            logger.error(f"Error in reset: {e}")
-            logger.error(traceback.format_exc())
+        self.env.reset(seed=seed, options=options)
+        self.agents = self.possible_agents[:]
+        self.agent_selection = self._agent_selector.reset()
+        self.rewards = {agent: 0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.terminations = {a: False for a in self.agents}
+        self.truncations = {a: False for a in self.agents}
+        self.compute_info()
+        self.step_counter = 0
 
     def compute_info(self):
         """Compute the info for the current step."""
@@ -625,42 +621,33 @@ class SumoEnvPZ(AECEnv, EzPickle):
 
     def step(self, action):
         """Step the environment."""
-        try:
-            if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
-                return self._was_dead_step(action)
-            agent = self.agent_selection
-            if not self.action_spaces[agent].contains(action):
-                raise Exception(
-                    "Action for agent {} must be in Discrete({})."
-                    "It is currently {}".format(agent, self.action_spaces[agent].n, action)
-                )
-
+        if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
+            return self._was_dead_step(action)
+        agent = self.agent_selection
+        if not self.action_spaces[agent].contains(action):
+            raise Exception(
+                "Action for agent {} must be in Discrete({})."
+                "It is currently {}".format(agent, self.action_spaces[agent].n, action)
+            )
+        if not self.env.fixed_ts:
+            self.env._apply_actions({agent: action})
+        if self._agent_selector.is_last():
             if not self.env.fixed_ts:
-                self.env._apply_actions({agent: action})
-
-            if self._agent_selector.is_last():
-                if not self.env.fixed_ts:
-                    self.env._run_steps()
-                else:
-                    for _ in range(self.env.delta_time):
-                        self.env._sumo_step()
-
-                self.env._compute_observations()
-                self.rewards = self.env._compute_rewards()
-                self.compute_info()
+                self.env._run_steps()
             else:
-                self._clear_rewards()
-
-            done = self.env._compute_dones()["__all__"]
-            self.truncations = {a: done for a in self.agents}
-
-            self.agent_selection = self._agent_selector.next()
-            self._cumulative_rewards[agent] = 0
-            self._accumulate_rewards()
-        except Exception as e:
-            logger.error(f"Error in step: {e}")
-            logger.error(traceback.format_exc())
-
+                for _ in range(self.env.delta_time):
+                    self.env._sumo_step()
+            self.env._compute_observations()
+            self.rewards = self.env._compute_rewards()
+            self.compute_info()
+        else:
+            self._clear_rewards()
+            
+        done = self.env._compute_dones()["__all__"]
+        self.truncations = {a: done for a in self.agents}
+        self.agent_selection = self._agent_selector.next()
+        self._cumulative_rewards[agent] = 0
+        self._accumulate_rewards()
 
 # 连续型环境对step，_apply_actions函数进行了修改，处理了连续动作空间与离散动作空间的转换。
 class ContinuousSumoEnv(gym.Env):

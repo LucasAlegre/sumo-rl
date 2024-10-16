@@ -10,7 +10,7 @@ from pprint import pprint
 
 import logging
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 if "SUMO_HOME" in os.environ:
@@ -60,6 +60,7 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
     logger.debug("=====================train_resco_ppo=====================")
     ray.init()
 
+
     config = (
         PPOConfig()
         .environment("sumo_env", env_config={
@@ -70,7 +71,7 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
         })
         .env_runners(
             num_env_runners=num_env_runners,
-            rollout_fragment_length=256
+            rollout_fragment_length=128
         )
         .training(
             train_batch_size=1024,
@@ -99,23 +100,18 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
 
     logger.debug("=====================start tune.run====================")
 
-    try:
-        results = tune.run(
-            "PPO",
-            config=config.to_dict(),
-            stop=stop,
-            checkpoint_freq=10,
-            checkpoint_at_end=True,
-            name="resco_ppo",
-            storage_path=storage_path,
-            verbose=3,
-            log_to_file=True,
-            raise_on_failed_trial=False,
-        )
-        logger.debug(f"=====================训练过程正常=====================")
-    except Exception as e:
-        logger.debug(f"=====================训练过程中发生错误=====================:\n {e}")
-        raise
+    results = tune.run(
+        "PPO",
+        config=config.to_dict(),
+        stop=stop,
+        checkpoint_freq=10,
+        checkpoint_at_end=True,
+        name="resco_ppo",
+        storage_path=storage_path,
+        verbose=3,
+        log_to_file=True,
+        raise_on_failed_trial=False,
+    )
 
     logger.debug("=====================end tune.run=====================")
 
