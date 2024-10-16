@@ -196,3 +196,4 @@ aits/sac_test_tensorboard/
 aits/sac_train_tensorboard/
 ui/file1/
 ui/tensorboard/
+/out.gif
