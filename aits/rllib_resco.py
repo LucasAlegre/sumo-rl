@@ -9,7 +9,7 @@ from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
 from pprint import pprint
-
+import re
 import logging
 
 os.environ['COLORFUL_DISABLE'] = '1'
@@ -28,7 +28,6 @@ sys.path.append('../')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from mysumo.envs.resco_envs import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
-
 
 def env_creator(config):
     env_name = config.get("env_name", "arterial4x4")
@@ -252,10 +251,10 @@ if __name__ == "__main__":
     parser.add_argument("--num_env_runners", type=int, default=4, help="环境运行器数量")
     parser.add_argument("--operation", type=str, default="TRAIN", help="操作指示")
     parser.add_argument("--saved_model_path", type=str,
-                        default="/Users/xnpeng/sumoptis/sumo-rl/ray_results/saved_models/best_model_arterial4x4",
+                        default="",
                         help="模型路径")
     parser.add_argument("--checkpoint_path", type=str,
-                        default="/Users/xnpeng/sumoptis/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_e6e52_00000_0_2024-10-17_17-19-25/checkpoint_000000",
+                        default="",
                         help="检查点路径")
     
     args = parser.parse_args()
@@ -420,9 +419,23 @@ g) 不同场景测试：
 """
 
 """
+MacBook 
 最佳试验的训练时长: 869.3429336547852 秒
 最佳试验完成的迭代次数: 50
 最佳试验的平均奖励: -27.194285714285744
 最佳检查点: Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_e6e52_00000_0_2024-10-17_17-19-25/checkpoint_000000)
 最佳模型已保存到: /Users/xnpeng/sumoptis/sumo-rl/ray_results/saved_models/best_model_arterial4x4
+"""
+"""
+Ubuntu GPU
+最佳试验的训练时长: 1647.0169277191162 秒
+最佳试验完成的迭代次数: 300
+最佳试验的平均奖励: -9.396799999999988
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_f0c0e_00000_0_2024-10-18_10-44-48/checkpoint_000016)
+
+最佳试验的训练时长: 1045.5579164028168 秒
+最佳试验完成的迭代次数: 400
+最佳试验的平均奖励: -13.772099999999956
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_78bf4_00000_0_2024-10-18_11-45-52/checkpoint_000000)
+
 """

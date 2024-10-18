@@ -197,3 +197,7 @@ aits/sac_train_tensorboard/
 ui/file1/
 ui/tensorboard/
 /out.gif
+/resco_ppo/
+/resco_ppo-1018.tar.gz
+/outputs/
+/arterial4x4/
