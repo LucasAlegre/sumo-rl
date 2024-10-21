@@ -11,10 +11,12 @@ else:
 
 from linear_rl.true_online_sarsa import TrueOnlineSarsaLambda
 
-sys.path.append('..')
+sys.path.append('../')
 import mysumo.envs  # 确保自定义环境被注册
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from mysumo import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
+
+from mysumo.envs.resco_envs import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
 
 
 def run(use_gui=False, episodes=1, load_model=False, save_model=True):

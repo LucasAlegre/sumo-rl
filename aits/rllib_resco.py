@@ -157,7 +157,7 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
 
 # checkpoint_path="/Users/xnpeng/sumoptis/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_81136_00000_0_2024-10-16_18-43-39/checkpoint_000000"
 # saved_model_path="/Users/xnpeng/sumoptis/sumo-rl/ray_results/saved_models/best_model_arterial4x4"
-def predict_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gpu=False):
+def predict_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=False):
     logger.debug("=====================predict_resco_ppo=====================")
 
     # 检查 Ray 是否已初始化，如果没有，则初始化
@@ -166,7 +166,7 @@ def predict_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gpu=Fal
 
     # 加载保存的模型
     loaded_model = PPO.from_checkpoint(saved_model_path)
-    env = env_creator({"env_name": env_name, "use_gui": use_gpu})  # 使用GUI进行可视化
+    env = env_creator({"env_name": env_name, "use_gui": use_gui})  # 使用GUI进行可视化
 
     obs, _ = env.reset()
 
@@ -204,6 +204,7 @@ def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gpu=Fa
 
     # 加载保存的模型
     loaded_model = PPO.from_checkpoint(saved_model_path)
+    loaded_model.evaluate()
     env = env_creator({"env_name": env_name, "use_gui": use_gpu})  # 使用GUI进行可视化
 
     obs, _ = env.reset()
@@ -248,14 +249,11 @@ if __name__ == "__main__":
     parser.add_argument("--env_name", type=str, default="arterial4x4", help="环境名称")
     parser.add_argument("--num_iterations", type=int, default=200, help="训练迭代次数")
     parser.add_argument("--use_gpu", action="store_true", help="是否使用GPU")
+    parser.add_argument("--use_gui", action="store_true", help="是否使用GUI进行可视化")
     parser.add_argument("--num_env_runners", type=int, default=4, help="环境运行器数量")
     parser.add_argument("--operation", type=str, default="TRAIN", help="操作指示")
-    parser.add_argument("--saved_model_path", type=str,
-                        default="",
-                        help="模型路径")
-    parser.add_argument("--checkpoint_path", type=str,
-                        default="",
-                        help="检查点路径")
+    parser.add_argument("--saved_model_path", type=str, help="模型路径")
+    parser.add_argument("--checkpoint_path", type=str, help="检查点路径")
     
     args = parser.parse_args()
 
@@ -270,7 +268,7 @@ if __name__ == "__main__":
     elif args.operation == "PREDICT":
         predict_resco_ppo(args.saved_model_path,
                           env_name=args.env_name,
-                          use_gpu=args.use_gpu)
+                          use_gui=args.use_gui)
     elif args.operation == "EVALUATE":
         evaluate_resco_ppo(args.saved_model_path,
                           env_name=args.env_name,
