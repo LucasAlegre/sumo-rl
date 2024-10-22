@@ -4,7 +4,7 @@ import sys
 import ray
 import torch
 from ray import tune
-from ray.rllib.algorithms import PPO
+from ray.rllib.algorithms.ppo import PPO
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.env.wrappers.pettingzoo_env import ParallelPettingZooEnv
 from ray.tune.registry import register_env
@@ -28,6 +28,7 @@ sys.path.append('../')
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from mysumo.envs.resco_envs import grid4x4, arterial4x4, cologne1, cologne3, cologne8, ingolstadt1, ingolstadt7, ingolstadt21
+
 
 def env_creator(config):
     env_name = config.get("env_name", "arterial4x4")
@@ -56,7 +57,7 @@ def env_creator(config):
     return env
 
 
-register_env("sumo_env", lambda config: ParallelPettingZooEnv(env_creator(config)))
+register_env("sumo_env", lambda config: ParallelPettingZooEnv(env_creator(config)))  # config里只有4个参数：out_csv_name, use_gui, yellow_time, fixed_ts
 
 
 def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, num_env_runners=4, checkpoint_path=None):
@@ -155,6 +156,7 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
 
     ray.shutdown()
 
+
 # checkpoint_path="/Users/xnpeng/sumoptis/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_81136_00000_0_2024-10-16_18-43-39/checkpoint_000000"
 # saved_model_path="/Users/xnpeng/sumoptis/sumo-rl/ray_results/saved_models/best_model_arterial4x4"
 def predict_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=False):
@@ -204,10 +206,8 @@ def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=Fa
 
     # 加载保存的模型
     loaded_model = PPO.from_checkpoint(saved_model_path)
-    loaded_model.evaluate()
-    env = env_creator({"env_name": env_name, "use_gui": use_gui})  # 使用GUI进行可视化
-
-    obs, _ = env.reset()
+    # 创建评估环境
+    env = env_creator({"env_name": env_name, "use_gui": use_gui})
 
     # 评估模型性能
     num_episodes = 5
@@ -243,7 +243,6 @@ def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=Fa
     if ray.is_initialized():
         ray.shutdown()
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="训练PPO-RESCO代理")
     parser.add_argument("--env_name", type=str, default="arterial4x4", help="环境名称")
@@ -254,7 +253,7 @@ if __name__ == "__main__":
     parser.add_argument("--operation", type=str, default="TRAIN", help="操作指示")
     parser.add_argument("--saved_model_path", type=str, help="模型路径")
     parser.add_argument("--checkpoint_path", type=str, help="检查点路径")
-    
+
     args = parser.parse_args()
 
     if args.operation == "TRAIN":
@@ -271,8 +270,8 @@ if __name__ == "__main__":
                           use_gui=args.use_gui)
     elif args.operation == "EVALUATE":
         evaluate_resco_ppo(args.saved_model_path,
-                          env_name=args.env_name,
-                          use_gui=args.use_gui)
+                           env_name=args.env_name,
+                           use_gui=args.use_gui)
     else:
         raise Exception("no such operation")
 
