@@ -195,7 +195,7 @@ def predict_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=Fal
         ray.shutdown()
 
 
-def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gpu=False):
+def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=False):
     logger.debug("=====================evaluate_resco_ppo=====================")
 
     # 检查 Ray 是否已初始化，如果没有，则初始化
@@ -205,7 +205,7 @@ def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gpu=Fa
     # 加载保存的模型
     loaded_model = PPO.from_checkpoint(saved_model_path)
     loaded_model.evaluate()
-    env = env_creator({"env_name": env_name, "use_gui": use_gpu})  # 使用GUI进行可视化
+    env = env_creator({"env_name": env_name, "use_gui": use_gui})  # 使用GUI进行可视化
 
     obs, _ = env.reset()
 
@@ -272,7 +272,7 @@ if __name__ == "__main__":
     elif args.operation == "EVALUATE":
         evaluate_resco_ppo(args.saved_model_path,
                           env_name=args.env_name,
-                          use_gpu=args.use_gpu)
+                          use_gui=args.use_gui)
     else:
         raise Exception("no such operation")
 
@@ -435,5 +435,91 @@ Ubuntu GPU
 最佳试验完成的迭代次数: 400
 最佳试验的平均奖励: -13.772099999999956
 最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_78bf4_00000_0_2024-10-18_11-45-52/checkpoint_000000)
+
+"""
+
+"""
+predict_resco_ppo:
+
+在ubuntu上使用自己训练过的模型进行推理时，运行正常，结果正常：
+总奖励: -13.620000000000095
+总步数: 721
+
+"""
+
+"""
+train_resco_ppo(cologne1):
+
+(1)从头训练50次：
+最佳试验的训练时长: 38.127357721328735 秒
+最佳试验完成的迭代次数: 50
+最佳试验的平均奖励: -0.9767647058823532
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_cb00d_00000_0_2024-10-21_17-13-53/checkpoint_000004)
+
+(2)从头训练100次：
+最佳试验的训练时长: 76.57234215736389 秒
+最佳试验完成的迭代次数: 100
+最佳试验的平均奖励: -3.7790999999999992
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_197dc_00000_0_2024-10-21_17-16-05/checkpoint_000001)
+
+(3)从检查点继续训练150次：
+最佳试验的训练时长: 99.4317524433136 秒
+最佳试验完成的迭代次数: 150
+最佳试验的平均奖励: -0.1748
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_9168c_00000_0_2024-10-21_17-19-26/checkpoint_000012)
+
+(4)从检查点训练200次：
+最佳试验的训练时长: 148.24950098991394 秒
+最佳试验完成的迭代次数: 200
+最佳试验的平均奖励: -12.717099999999995
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_d0b8d_00000_0_2024-10-21_18-25-38/checkpoint_000015)
+
+最佳模型已保存到: /home/kemove/Projects/sumo-rl/ray_results/saved_models/best_model_cologne1
+
+predict_resco_ppo(cologne1):
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (1x18 and 21x256):
+输入张量（形状为 1x18）无法与权重矩阵（形状为 21x256）相乘。
+
+"""
+
+"""
+(1)
+train_resco_ppo(ingolstadt1):
+最佳试验的训练时长: 145.3516674041748 秒
+最佳试验完成的迭代次数: 200
+最佳试验的平均奖励: -0.03640000000000006
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_c921c_00000_0_2024-10-21_18-46-53/checkpoint_000018)
+最佳模型已保存到: /home/kemove/Projects/sumo-rl/ray_results/saved_models/best_model_ingolstadt1
+
+predict_resco_ppo(ingolstadt1):
+总奖励: -687.8899999999992
+总步数: 721
+
+(2)train_resco_ppo(ingolstadt1):
+最佳试验的训练时长: 144.5515923500061 秒
+最佳试验完成的迭代次数: 200
+最佳试验的平均奖励: -0.06270000000000006
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_a7f44_00000_0_2024-10-21_18-53-07/checkpoint_000019)
+最佳模型已保存到: /home/kemove/Projects/sumo-rl/ray_results/saved_models/best_model_ingolstadt1
+
+predict_resco_ppo(ingolstadt1):
+总奖励: -675.6300000000016
+总步数: 721
+
+(3)train_resco_ppo(ingolstadt7):
+
+"""
+
+"""
+2024-10-22:Ubuntu GPU:
+
+(1)train_resco_ppo(arterial4x4):
+python aits/rllib_resco.py --operation=TRAIN --env_name=arterial4x4 --use_gpu --num_iterations=70 --checkpoint_path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_86912_00000_0_2024-10-22_13-36-02/checkpoint_000004
+最佳试验的训练时长: 171.69962978363037 秒
+最佳试验完成的迭代次数: 70
+最佳试验的平均奖励: -27.328571428571394
+最佳检查点: Checkpoint(filesystem=local, path=/home/kemove/Projects/sumo-rl/ray_results/resco_ppo/PPO_sumo_env_9c8f8_00000_0_2024-10-22_13-50-58/checkpoint_000000)
+最佳模型已保存到: /home/kemove/Projects/sumo-rl/ray_results/saved_models/best_model_arterial4x4
+
 
 """
