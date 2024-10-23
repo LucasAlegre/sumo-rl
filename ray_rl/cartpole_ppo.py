@@ -61,7 +61,8 @@ def train(num_iterations: int = 20) -> str:
             print(f"评估结果: {eval_results['env_runners']['episode_reward_mean']}")
 
     # 保存模型
-    checkpoint_dir = algo.save()
+    storage_path = os.path.abspath("./ray_results/cartpole_ppo/")
+    checkpoint_dir = algo.save(storage_path)
     print(f"模型保存在: {checkpoint_dir.checkpoint.path}")
 
     # 清理算法实例
@@ -133,7 +134,7 @@ def main():
 
         # 测试模型
         print("\n开始测试...")
-        episode_rewards = test(checkpoint_path, num_episodes=5, render=True)
+        episode_rewards = test(checkpoint_path, num_episodes=5, render=False)
 
         # 输出平均奖励
         avg_reward = sum(episode_rewards.values()) / len(episode_rewards)
