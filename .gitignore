@@ -201,3 +201,4 @@ ui/tensorboard/
 /resco_ppo-1018.tar.gz
 /outputs/
 /arterial4x4/
+/best_model_arterial4x4.tar.gz

@@ -66,12 +66,13 @@ def train_resco_ppo(env_name="arterial4x4", num_iterations=200, use_gpu=False, n
 
     config = (
         PPOConfig()
-        .environment("sumo_env", env_config={
-            "env_name": env_name,
-            "use_gui": False,
-            "yellow_time": 2,
-            "fixed_ts": False
-        })
+        .environment("sumo_env",
+                     env_config={
+                         "env_name": env_name,
+                         "use_gui": False,
+                         "yellow_time": 2,
+                         "fixed_ts": False
+                     })
         .env_runners(
             num_env_runners=num_env_runners,
             rollout_fragment_length=128
@@ -204,8 +205,21 @@ def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=Fa
     if not ray.is_initialized():
         ray.init()
 
+    config = (
+        PPOConfig()
+        .environment("sumo_env",
+                     env_config={
+                         "env_name": env_name,
+                         "use_gui": False,
+                         "yellow_time": 2,
+                         "fixed_ts": False
+                     })
+        .env_runners(num_gpus_per_env_runner=0)
+        .learners(num_gpus_per_learner=0)
+        .resources(num_gpus=0)
+    )
     # 加载保存的模型
-    loaded_model = PPO.from_checkpoint(saved_model_path)
+    loaded_model = PPO(config=config.to_dict()).from_checkpoint(saved_model_path)
     # 创建评估环境
     env = env_creator({"env_name": env_name, "use_gui": use_gui})
 
@@ -242,6 +256,7 @@ def evaluate_resco_ppo(saved_model_path: str, env_name="arterial4x4", use_gui=Fa
     # 如果在这个函数中初始化了 Ray，记得在结束时关闭
     if ray.is_initialized():
         ray.shutdown()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="训练PPO-RESCO代理")
