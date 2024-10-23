@@ -202,3 +202,4 @@ ui/tensorboard/
 /outputs/
 /arterial4x4/
 /best_model_arterial4x4.tar.gz
+/cartpole_ppo_linux_gpu.tar.gz
