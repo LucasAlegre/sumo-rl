@@ -126,7 +126,7 @@ def main():
     try:
         # 训练模型
         print("开始训练...")
-        checkpoint_path = train(num_iterations=20)
+        # checkpoint_path = train(num_iterations=20)
 
         # 等待几秒，确保训练环境完全关闭
         import time
@@ -134,6 +134,8 @@ def main():
 
         # 测试模型
         print("\n开始测试...")
+        # 这是linux训练出来的模型，没有GPU参数，估计没有使用GPU训练，在Mac上测试成功
+        checkpoint_path = "/Users/xnpeng/sumoptis/sumo-rl/ray_results/cartpole_ppo_linux_cpu"
         episode_rewards = test(checkpoint_path, num_episodes=5, render=False)
 
         # 输出平均奖励
