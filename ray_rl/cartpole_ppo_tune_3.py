@@ -1,0 +1,177 @@
+import gymnasium as gym
+import numpy as np
+import ray
+from ray import tune
+from ray.rllib.algorithms.ppo import PPO
+from ray.rllib.algorithms.ppo import PPOConfig
+from ray.tune.logger import pretty_print
+import os
+
+CURRENT_DIR = os.path.abspath(os.getcwd())
+
+
+# 基础PPO配置
+def get_ppo_config(use_tune=True):
+    config = (
+        PPOConfig()
+        .environment("CartPole-v1")
+        .framework("torch")
+        .rollouts(num_rollout_workers=2)
+        .training(
+            train_batch_size=4000,
+            lr=2e-5,
+            gamma=0.99,
+            lambda_=0.95,
+            entropy_coeff=0.01,
+            clip_param=0.2,
+            num_sgd_iter=10,
+        )
+    )
+
+    if use_tune:
+        # Tune搜索空间
+        config.training(
+            lr=tune.loguniform(1e-5, 1e-3),
+            entropy_coeff=tune.uniform(0.0, 0.02),
+            clip_param=tune.uniform(0.1, 0.3),
+        )
+
+    return config
+
+
+# 训练函数（不使用Tune）
+def train_ppo():
+    checkpoint_dir = os.path.join(CURRENT_DIR, "checkpoints")
+
+    config = get_ppo_config(use_tune=False)
+    algo = config.build()
+
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    best_reward = float('-inf')
+    best_checkpoint = None
+
+    # 训练循环
+    for i in range(10):
+        result = algo.train()
+        print(f"================algo.train::Iteration {i}: ", result['env_runners']['episode_reward_mean'])
+
+        # 每5轮评估一次
+        if i % 5 == 0:
+            mean_reward = evaluate_ppo(algo)
+            if mean_reward > best_reward:
+                best_reward = mean_reward
+                checkpoint_path = os.path.join(checkpoint_dir, f"checkpoint_{i}")
+                algo.save(checkpoint_path)
+                best_checkpoint = checkpoint_path
+
+    return algo, best_checkpoint
+
+
+# 使用Tune进行训练
+def train_ppo_with_tune():
+    local_dir = os.path.join(CURRENT_DIR, "ray_results")
+    os.makedirs(local_dir, exist_ok=True)
+
+    config = get_ppo_config(use_tune=True)
+
+    # 定义tune实验
+    analysis = tune.run(
+        "PPO",
+        config=config.to_dict(),
+        stop={"training_iteration": 10},
+        num_samples=4,  # 运行4次不同的超参数组合
+        metric="env_runners/episode_reward_mean",
+        mode="max",
+        verbose=0,
+        storage_path=local_dir,
+        checkpoint_at_end=True  # 确保在训练结束时保存checkpoint
+    )
+
+    # 获取最佳试验结果
+    best_trial = analysis.best_trial
+
+    if best_trial:
+        best_checkpoint = analysis.best_checkpoint
+        if best_checkpoint:
+            best_checkpoint_dir = best_checkpoint.path
+            best_config = best_trial.config
+            print("**************************tune::run:Best hyperparameters:num_env_runners", best_config["num_env_runners"])
+            return best_checkpoint_dir, best_config
+
+    return None, None
+
+
+# 评估函数
+def evaluate_ppo(algo, num_episodes=10):
+    env = gym.make("CartPole-v1")
+    total_rewards = []
+
+    for _ in range(num_episodes):
+        episode_reward = 0
+        obs, _ = env.reset()
+        done = False
+        while not done:
+            action = algo.compute_single_action(obs)
+            obs, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
+            episode_reward += reward
+        total_rewards.append(episode_reward)
+
+    mean_reward = np.mean(total_rewards)
+    print(f"@@@@@@@@@@@@@@@@@@@@@@@@@@@@Evaluation over {num_episodes} episodes: {mean_reward:.2f}")
+    return mean_reward
+
+
+# 推理函数
+def inference_ppo(algo, render=True):
+    env = gym.make("CartPole-v1", render_mode="human" if render else None)
+    obs, _ = env.reset()
+    done = False
+    total_reward = 0
+
+    while not done:
+        action = algo.compute_single_action(obs)
+        obs, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
+        total_reward += reward
+        if render:
+            env.render()
+
+    env.close()
+    return total_reward
+
+
+if __name__ == "__main__":
+    ray.init()
+
+    # 不使用Tune的训练
+    print("----------------------------Training without Tune:")
+    algo, checkpoint_path = train_ppo()
+
+    # 使用Tune的训练
+    print("\n----------------------------Training with Tune:")
+    best_checkpoint_dir, best_config = train_ppo_with_tune()
+
+    # 加载不使用Tune训练的最佳检查点
+    print("\n############################Evaluating model trained without Tune:")
+    if checkpoint_path:
+        algo.restore(checkpoint_path)
+        evaluate_ppo(algo)
+        # 进行推理演示
+        print("\n========================Running inference with best model:")
+        inference_ppo(algo)
+
+    # 加载使用Tune训练的最佳检查点
+    print("\n############################Evaluating model trained with Tune:")
+    if best_checkpoint_dir and best_config:
+        best_algo = PPO(config=best_config)
+        best_algo.restore(best_checkpoint_dir)
+        evaluate_ppo(best_algo)
+
+        # 进行推理演示
+        print("\n========================Running inference with best model:")
+        inference_ppo(best_algo)
+    else:
+        print("No best checkpoint found from Tune training")
+
+    ray.shutdown()

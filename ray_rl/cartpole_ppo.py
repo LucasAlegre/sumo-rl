@@ -47,7 +47,7 @@ def train(num_iterations: int = 20) -> str:
 
     # 训练循环
     for i in range(num_iterations):
-        result = algo.train()
+        result = algo.train()  # result: 一个描述训练过程的字典dict -> algo_train_result.txt
 
         # 打印训练信息
         print(f"第 {i} 轮训练")

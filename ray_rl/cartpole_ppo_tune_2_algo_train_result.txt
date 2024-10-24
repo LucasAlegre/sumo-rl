@@ -1,0 +1,130 @@
+agent_timesteps_total: 72000
+counters:
+  num_agent_steps_sampled: 72000
+  num_agent_steps_trained: 72000
+  num_env_steps_sampled: 72000
+  num_env_steps_trained: 72000
+custom_metrics: {}
+date: 2024-10-24_13-50-33
+done: false
+env_runners:
+  connector_metrics:
+    ObsPreprocessorConnector_ms: 0.002120494842529297
+    StateBufferConnector_ms: 0.00157928466796875
+    ViewRequirementAgentConnector_ms: 0.03667402267456055
+  custom_metrics: {}
+  episode_len_mean: 299.35
+  episode_media: {}
+  episode_return_max: 500.0
+  episode_return_mean: 299.35
+  episode_return_min: 121.0
+  episode_reward_max: 500.0
+  episode_reward_mean: 299.35
+  episode_reward_min: 121.0
+  episodes_this_iter: 11
+  episodes_timesteps_total: 29935
+  hist_stats:
+    episode_lengths: [255, 221, 271, 145, 286, 204, 202, 238, 363, 230, 301, 324,
+      160, 179, 241, 264, 198, 142, 369, 243, 157, 500, 250, 170, 278, 246, 220, 197,
+      282, 177, 304, 248, 292, 500, 121, 172, 161, 299, 194, 201, 311, 289, 273, 464,
+      322, 340, 441, 500, 248, 353, 500, 290, 329, 181, 500, 235, 243, 391, 411, 241,
+      440, 323, 155, 280, 282, 318, 309, 237, 409, 239, 220, 228, 448, 500, 277, 494,
+      278, 208, 138, 500, 259, 403, 216, 500, 249, 157, 500, 395, 202, 500, 500, 500,
+      500, 332, 273, 236, 500, 306, 148, 309]
+    episode_reward: [255.0, 221.0, 271.0, 145.0, 286.0, 204.0, 202.0, 238.0, 363.0,
+      230.0, 301.0, 324.0, 160.0, 179.0, 241.0, 264.0, 198.0, 142.0, 369.0, 243.0,
+      157.0, 500.0, 250.0, 170.0, 278.0, 246.0, 220.0, 197.0, 282.0, 177.0, 304.0,
+      248.0, 292.0, 500.0, 121.0, 172.0, 161.0, 299.0, 194.0, 201.0, 311.0, 289.0,
+      273.0, 464.0, 322.0, 340.0, 441.0, 500.0, 248.0, 353.0, 500.0, 290.0, 329.0,
+      181.0, 500.0, 235.0, 243.0, 391.0, 411.0, 241.0, 440.0, 323.0, 155.0, 280.0,
+      282.0, 318.0, 309.0, 237.0, 409.0, 239.0, 220.0, 228.0, 448.0, 500.0, 277.0,
+      494.0, 278.0, 208.0, 138.0, 500.0, 259.0, 403.0, 216.0, 500.0, 249.0, 157.0,
+      500.0, 395.0, 202.0, 500.0, 500.0, 500.0, 500.0, 332.0, 273.0, 236.0, 500.0,
+      306.0, 148.0, 309.0]
+    policy_default_policy_reward: [255.0, 221.0, 271.0, 145.0, 286.0, 204.0, 202.0,
+      238.0, 363.0, 230.0, 301.0, 324.0, 160.0, 179.0, 241.0, 264.0, 198.0, 142.0,
+      369.0, 243.0, 157.0, 500.0, 250.0, 170.0, 278.0, 246.0, 220.0, 197.0, 282.0,
+      177.0, 304.0, 248.0, 292.0, 500.0, 121.0, 172.0, 161.0, 299.0, 194.0, 201.0,
+      311.0, 289.0, 273.0, 464.0, 322.0, 340.0, 441.0, 500.0, 248.0, 353.0, 500.0,
+      290.0, 329.0, 181.0, 500.0, 235.0, 243.0, 391.0, 411.0, 241.0, 440.0, 323.0,
+      155.0, 280.0, 282.0, 318.0, 309.0, 237.0, 409.0, 239.0, 220.0, 228.0, 448.0,
+      500.0, 277.0, 494.0, 278.0, 208.0, 138.0, 500.0, 259.0, 403.0, 216.0, 500.0,
+      249.0, 157.0, 500.0, 395.0, 202.0, 500.0, 500.0, 500.0, 500.0, 332.0, 273.0,
+      236.0, 500.0, 306.0, 148.0, 309.0]
+  num_episodes: 11
+  num_faulty_episodes: 0
+  policy_reward_max:
+    default_policy: 500.0
+  policy_reward_mean:
+    default_policy: 299.35
+  policy_reward_min:
+    default_policy: 121.0
+  sampler_perf:
+    mean_action_processing_ms: 0.03995450311157341
+    mean_env_render_ms: 0.0
+    mean_env_wait_ms: 0.015461829098948771
+    mean_inference_ms: 0.31885332557041823
+    mean_raw_obs_processing_ms: 0.10398357663448192
+episode_media: {}
+hostname: apen.local
+info:
+  learner:
+    default_policy:
+      custom_metrics: {}
+      diff_num_grad_updates_vs_sampler_policy: 154.5
+      learner_stats:
+        allreduce_latency: 0.0
+        cur_kl_coeff: 6.1035156249999995e-06
+        cur_lr: 2.0e-05
+        entropy: 0.5592561566060589
+        entropy_coeff: 0.01
+        grad_gnorm: 0.5777761340141296
+        kl: 0.003085505875696932
+        policy_loss: -0.019860722737446906
+        total_loss: 9.871896097736974
+        vf_explained_var: -0.29618618719039425
+        vf_loss: 9.897349412979619
+      model: {}
+      num_agent_steps_trained: 128.0
+      num_grad_updates_lifetime: 5425.5
+  num_agent_steps_sampled: 72000
+  num_agent_steps_trained: 72000
+  num_env_steps_sampled: 72000
+  num_env_steps_trained: 72000
+iterations_since_restore: 18
+node_ip: 127.0.0.1
+num_agent_steps_sampled: 72000
+num_agent_steps_sampled_lifetime: 72000
+num_agent_steps_trained: 72000
+num_env_steps_sampled: 72000
+num_env_steps_sampled_lifetime: 72000
+num_env_steps_sampled_this_iter: 4000
+num_env_steps_sampled_throughput_per_sec: 2506.1796243064477
+num_env_steps_trained: 72000
+num_env_steps_trained_this_iter: 4000
+num_env_steps_trained_throughput_per_sec: 2506.1796243064477
+num_healthy_workers: 2
+num_in_flight_async_sample_reqs: 0
+num_remote_worker_restarts: 0
+num_steps_trained_this_iter: 4000
+perf:
+  cpu_util_percent: 50.150000000000006
+  ram_util_percent: 73.9
+pid: 36874
+time_since_restore: 28.602408409118652
+time_this_iter_s: 1.5983121395111084
+time_total_s: 28.602408409118652
+timers:
+  learn_throughput: 6491.532
+  learn_time_ms: 616.187
+  load_throughput: 21432314.768
+  load_time_ms: 0.187
+  restore_workers_time_ms: 0.008
+  sample_time_ms: 980.501
+  synch_weights_time_ms: 2.583
+  training_iteration_time_ms: 1599.649
+  training_step_time_ms: 1599.625
+timestamp: 1729749033
+timesteps_total: 72000
+training_iteration: 18
+trial_id: default
