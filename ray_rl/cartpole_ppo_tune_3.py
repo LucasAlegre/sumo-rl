@@ -1,3 +1,5 @@
+import warnings
+
 import gymnasium as gym
 import numpy as np
 import ray
@@ -123,22 +125,66 @@ def evaluate_ppo(algo, num_episodes=10):
 
 
 # 推理函数
-def inference_ppo(algo, render=True):
-    env = gym.make("CartPole-v1", render_mode="human" if render else None)
-    obs, _ = env.reset()
-    done = False
-    total_reward = 0
+def inference_ppo(algo, num_episodes=5, try_render=True):
+    render_mode = None
+    if try_render:
+        try:
+            # 尝试创建带渲染的环境
+            test_env = gym.make("CartPole-v1", render_mode="human")
+            test_env.close()
+            render_mode = "human"
+        except Exception as e:
+            warnings.warn(f"无法创建渲染环境，将使用无渲染模式运行: {e}")
+            render_mode = None
 
-    while not done:
-        action = algo.compute_single_action(obs)
-        obs, reward, terminated, truncated, _ = env.step(action)
-        done = terminated or truncated
-        total_reward += reward
-        if render:
-            env.render()
+    env = gym.make("CartPole-v1", render_mode=render_mode)
+    episode_rewards = []
+
+    for episode in range(num_episodes):
+        obs, _ = env.reset()
+        done = False
+        total_reward = 0
+        step_count = 0
+
+        while not done:
+            action = algo.compute_single_action(obs)
+            obs, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
+            total_reward += reward
+            step_count += 1
+            if render_mode:
+                env.render()
+
+        episode_rewards.append(total_reward)
+        print(f"Episode {episode + 1}: 总步数 = {step_count}, 总奖励 = {total_reward}")
 
     env.close()
-    return total_reward
+
+    # 打印统计信息
+    mean_reward = np.mean(episode_rewards)
+    std_reward = np.std(episode_rewards)
+    print(f"\n推理统计:")
+    print(f"平均奖励: {mean_reward:.2f} ± {std_reward:.2f}")
+    print(f"最高奖励: {max(episode_rewards)}")
+    print(f"最低奖励: {min(episode_rewards)}")
+
+    return episode_rewards
+
+
+# 保存性能指标到文件
+def save_metrics(metrics, filename="performance_metrics.txt"):
+    filepath = os.path.join(CURRENT_DIR, filename)
+    with open(filepath, "w") as f:
+        f.write("性能指标统计:\n")
+        f.write(f"样本数: {len(metrics)}\n")
+        f.write(f"平均奖励: {np.mean(metrics):.2f}\n")
+        f.write(f"标准差: {np.std(metrics):.2f}\n")
+        f.write(f"最高奖励: {max(metrics)}\n")
+        f.write(f"最低奖励: {min(metrics)}\n")
+        f.write("\n详细记录:\n")
+        for i, reward in enumerate(metrics, 1):
+            f.write(f"Episode {i}: {reward}\n")
+    print(f"指标已保存到: {filepath}")
 
 
 if __name__ == "__main__":
@@ -159,7 +205,7 @@ if __name__ == "__main__":
         evaluate_ppo(algo)
         # 进行推理演示
         print("\n========================Running inference with best model:")
-        inference_ppo(algo)
+        inference_ppo(algo, num_episodes=10)
 
     # 加载使用Tune训练的最佳检查点
     print("\n############################Evaluating model trained with Tune:")
@@ -170,7 +216,7 @@ if __name__ == "__main__":
 
         # 进行推理演示
         print("\n========================Running inference with best model:")
-        inference_ppo(best_algo)
+        inference_ppo(best_algo, num_episodes=10)
     else:
         print("No best checkpoint found from Tune training")
 
