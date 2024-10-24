@@ -8,12 +8,14 @@ from ray.rllib.algorithms.ppo import PPO
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.logger import pretty_print
 import os
+import torch
 
 CURRENT_DIR = os.path.abspath(os.getcwd())
 
 
 # 基础PPO配置
 def get_ppo_config(use_tune=True):
+    num_gpus = 1 if torch.cuda.is_available() else 0
     config = (
         PPOConfig()
         .environment("CartPole-v1")
@@ -28,6 +30,7 @@ def get_ppo_config(use_tune=True):
             clip_param=0.2,
             num_sgd_iter=10,
         )
+        .resources(num_gpus=num_gpus)
     )
 
     if use_tune:
@@ -205,7 +208,9 @@ if __name__ == "__main__":
         evaluate_ppo(algo)
         # 进行推理演示
         print("\n========================Running inference with best model:")
-        inference_ppo(algo, num_episodes=10)
+        performance_metrics = inference_ppo(algo, num_episodes=10)
+        # 保存性能指标
+        save_metrics(performance_metrics, filename="performance_metrics_without_tune.txt")
 
     # 加载使用Tune训练的最佳检查点
     print("\n############################Evaluating model trained with Tune:")
@@ -216,7 +221,10 @@ if __name__ == "__main__":
 
         # 进行推理演示
         print("\n========================Running inference with best model:")
-        inference_ppo(best_algo, num_episodes=10)
+        performance_metrics = inference_ppo(best_algo, num_episodes=10)
+
+        # 保存性能指标
+        save_metrics(performance_metrics, filename="performance_metrics_tune.txt")
     else:
         print("No best checkpoint found from Tune training")
 
