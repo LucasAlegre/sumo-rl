@@ -88,7 +88,7 @@ def train_ppo_with_tune():
         num_samples=4,  # 运行4次不同的超参数组合
         metric="env_runners/episode_reward_mean",
         mode="max",
-        verbose=0,
+        verbose=1,
         storage_path=local_dir,
         checkpoint_at_end=True  # 确保在训练结束时保存checkpoint
     )
