@@ -1,3 +1,4 @@
+import argparse
 import warnings
 
 import gymnasium as gym
@@ -129,16 +130,7 @@ def evaluate_ppo(algo, num_episodes=10):
 
 # 推理函数
 def inference_ppo(algo, num_episodes=5, try_render=True):
-    render_mode = None
-    if try_render:
-        try:
-            # 尝试创建带渲染的环境
-            test_env = gym.make("CartPole-v1", render_mode="human")
-            test_env.close()
-            render_mode = "human"
-        except Exception as e:
-            warnings.warn(f"无法创建渲染环境，将使用无渲染模式运行: {e}")
-            render_mode = "rgb_array"
+    render_mode = "human"
 
     env = gym.make("CartPole-v1", render_mode=render_mode)
     episode_rewards = []
@@ -152,6 +144,8 @@ def inference_ppo(algo, num_episodes=5, try_render=True):
         while not done:
             action = algo.compute_single_action(obs)
             obs, reward, terminated, truncated, _ = env.step(action)
+            if try_render:
+                env.render()
             done = terminated or truncated
             total_reward += reward
             step_count += 1
@@ -189,6 +183,10 @@ def save_metrics(metrics, filename="performance_metrics.txt"):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--render', action='store_true', help='Enable rendering of the environment')
+    args = parser.parse_args()
+
     ray.init()
 
     # 不使用Tune的训练
@@ -206,7 +204,7 @@ if __name__ == "__main__":
         evaluate_ppo(algo)
         # 进行推理演示
         print("\n========================Running inference with best model:")
-        performance_metrics = inference_ppo(algo, num_episodes=10)
+        performance_metrics = inference_ppo(algo, num_episodes=10, try_render=args.render)
         # 保存性能指标
         save_metrics(performance_metrics, filename="performance_metrics_without_tune.txt")
 
@@ -219,7 +217,7 @@ if __name__ == "__main__":
 
         # 进行推理演示
         print("\n========================Running inference with best model:")
-        performance_metrics = inference_ppo(best_algo, num_episodes=10)
+        performance_metrics = inference_ppo(best_algo, num_episodes=10, try_render=args.render)
 
         # 保存性能指标
         save_metrics(performance_metrics, filename="performance_metrics_tune.txt")
