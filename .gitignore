@@ -204,3 +204,5 @@ ui/tensorboard/
 /best_model_arterial4x4.tar.gz
 /cartpole_ppo_linux_gpu.tar.gz
 /checkpoints/
+/performance_metrics_tune.txt
+/performance_metrics_without_tune.txt

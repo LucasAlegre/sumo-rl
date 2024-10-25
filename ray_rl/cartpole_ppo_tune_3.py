@@ -155,8 +155,6 @@ def inference_ppo(algo, num_episodes=5, try_render=True):
             done = terminated or truncated
             total_reward += reward
             step_count += 1
-            if render_mode:
-                env.render()
 
         episode_rewards.append(total_reward)
         print(f"Episode {episode + 1}: 总步数 = {step_count}, 总奖励 = {total_reward}")
