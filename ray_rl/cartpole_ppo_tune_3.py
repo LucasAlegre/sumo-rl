@@ -138,7 +138,7 @@ def inference_ppo(algo, num_episodes=5, try_render=True):
             render_mode = "human"
         except Exception as e:
             warnings.warn(f"无法创建渲染环境，将使用无渲染模式运行: {e}")
-            render_mode = None
+            render_mode = "rgb_array"
 
     env = gym.make("CartPole-v1", render_mode=render_mode)
     episode_rewards = []
