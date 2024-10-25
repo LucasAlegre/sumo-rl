@@ -130,9 +130,8 @@ def evaluate_ppo(algo, num_episodes=10):
 
 # 推理函数
 def inference_ppo(algo, num_episodes=5, try_render=True):
-    render_mode = "human"
-
-    env = gym.make("CartPole-v1", render_mode=render_mode)
+    print("=====try_render=", try_render)
+    env = gym.make("CartPole-v1", render_mode="human" if try_render else None)
     episode_rewards = []
 
     for episode in range(num_episodes):
