@@ -206,3 +206,4 @@ ui/tensorboard/
 /checkpoints/
 /performance_metrics_tune.txt
 /performance_metrics_without_tune.txt
+/performance_metrics.txt
