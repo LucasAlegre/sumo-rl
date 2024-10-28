@@ -20,10 +20,10 @@ class TrainingConfig:
     def __init__(
             self,
             num_iterations: int = 20,  # 训练轮次
-            num_episodes_per_iter: int = 200,  # 每轮训练的回合数
+            num_episodes: int = 200,  # 每轮训练的回合数
             eval_interval: int = 5,  # 评估间隔
-            checkpoint_interval: int = 5,  # checkpoint保存间隔
-            checkpoint_path: Optional[str] = None,  # 加载的checkpoint路径
+            checkpoint_tune: Optional[str] = None,  # 加载的checkpoint with tune路径
+            checkpoint_no_tune: Optional[str] = None,  # 加载的checkpoint no tune路径
             num_workers: int = 2,  # worker数量
             batch_size: int = 4000,  # 批次大小
             lr: float = 2e-5,  # 学习率
@@ -35,10 +35,10 @@ class TrainingConfig:
             exp_name: Optional[str] = None  # 实验名称
     ):
         self.num_iterations = num_iterations
-        self.num_episodes_per_iter = num_episodes_per_iter
+        self.num_episodes = num_episodes
         self.eval_interval = eval_interval
-        self.checkpoint_interval = checkpoint_interval
-        self.checkpoint_path = checkpoint_path
+        self.checkpoint_tune = checkpoint_tune
+        self.checkpoint_no_tune = checkpoint_no_tune
         self.num_workers = num_workers
         self.batch_size = batch_size
         self.lr = lr
@@ -89,23 +89,24 @@ def train_ppo(config: TrainingConfig) -> Tuple[PPO, Optional[str]]:
     """
     训练PPO智能体，支持从checkpoint继续训练
     """
-    checkpoint_dir = os.path.join(CURRENT_DIR, "checkpoints")
+    local_dir = os.path.join(CURRENT_DIR, "ray_results")
+    checkpoint_dir = os.path.join(local_dir, "checkpoint_no_tune")
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     ppo_config = get_ppo_config(config, use_tune=False)
 
     # 创建或加载算法
-    if config.checkpoint_path and os.path.exists(config.checkpoint_path):
-        print(f"Loading checkpoint from: {config.checkpoint_path}")
+    if config.checkpoint_no_tune and os.path.exists(config.checkpoint_no_tune):
+        print(f"Loading checkpoint from: {config.checkpoint_no_tune}")
         algo = ppo_config.build()
-        algo.restore(config.checkpoint_path)
+        algo.restore(config.checkpoint_no_tune)
         print("Successfully loaded checkpoint")
     else:
         print("Starting training from scratch")
         algo = ppo_config.build()
 
     best_reward = float('-inf')
-    best_checkpoint = None
+    best_checkpoint_no_tune = None
 
     # 训练循环
     for i in range(config.num_iterations):
@@ -117,17 +118,11 @@ def train_ppo(config: TrainingConfig) -> Tuple[PPO, Optional[str]]:
             mean_reward = evaluate_ppo(algo)
             if mean_reward > best_reward:
                 best_reward = mean_reward
-                best_checkpoint = os.path.join(checkpoint_dir, f"checkpoint_{i}")
-                algo.save(best_checkpoint)
-                print(f"New best model saved with reward: {mean_reward:.2f}")
+                best_checkpoint_no_tune = os.path.join(checkpoint_dir, f"checkpoint_{i}")
+                algo.save(best_checkpoint_no_tune)
+                print(f"New best model saved: {best_checkpoint_no_tune}")
 
-        # 定期保存checkpoint
-        if i % config.checkpoint_interval == 0:
-            checkpoint_path = os.path.join(checkpoint_dir, f"checkpoint_iter_{i}")
-            algo.save(checkpoint_path)
-            print(f"Saved checkpoint at iteration {i}")
-
-    return algo, best_checkpoint
+    return algo, best_checkpoint_no_tune
 
 
 def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
@@ -140,7 +135,7 @@ def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional
     tune_config = get_ppo_config(config, use_tune=True)
 
     # 如果提供了checkpoint，设置restore参数
-    restore_path = config.checkpoint_path if config.checkpoint_path and os.path.exists(config.checkpoint_path) else None
+    restore_path = config.checkpoint_tune if config.checkpoint_tune and os.path.exists(config.checkpoint_tune) else None
 
     analysis = tune.run(
         "PPO",
@@ -152,7 +147,8 @@ def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional
         storage_path=local_dir,
         checkpoint_at_end=True,
         name=config.exp_name,
-        restore=restore_path
+        restore=restore_path,
+        verbose=0,
     )
 
     best_trial = analysis.best_trial
@@ -160,10 +156,10 @@ def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional
     if best_trial:
         best_checkpoint = analysis.best_checkpoint
         if best_checkpoint:
-            best_checkpoint_dir = best_checkpoint.path
+            best_checkpoint_path = best_checkpoint.path
             best_config = best_trial.config
-            print("**************************tune::run:Best hyperparameters:num_env_runners", best_config["num_env_runners"])
-            return best_checkpoint_dir, best_config
+            print("tune::run:Best hyperparameters:best_config[num_env_runners]", best_config["num_env_runners"])
+            return best_checkpoint_path, best_config
 
     return None, None
 
@@ -187,7 +183,7 @@ def evaluate_ppo(algo: PPO, num_episodes: int = 10) -> float:
         total_rewards.append(episode_reward)
 
     mean_reward = np.mean(total_rewards)
-    print(f"@@@@@@@@@@@@@@@@@@@@@@@@@@@@Evaluation over {num_episodes} episodes: {mean_reward:.2f}")
+    print(f"Evaluation over {num_episodes} episodes: {mean_reward:.2f}")
     return mean_reward
 
 
@@ -250,9 +246,9 @@ def parse_arguments():
     parser.add_argument('--num-iterations', type=int, default=10, help='训练轮次')
     parser.add_argument('--exp-name', type=str, default='ppo_cartpole', help='实验名称')
     parser.add_argument('--checkpoint-interval', type=int, default=10, help='checkpoint保存间隔')
-    parser.add_argument('--checkpoint-path', type=str, help='测试时的检查点路径')
+    parser.add_argument('--checkpoint-tune', type=str, help='tune测试时的检查点路径')
+    parser.add_argument('--checkpoint-no-tune', type=str, help='no tune测试时的检查点路径')
     parser.add_argument('--eval-interval', type=int, default=5, help='评估间隔')
-
     parser.add_argument('--no-render', action='store_true', help='测试时不渲染环境')
     return parser.parse_args()
 
@@ -266,31 +262,82 @@ if __name__ == "__main__":
     config = TrainingConfig(
         num_iterations=args.num_iterations,  # 训练轮次
         eval_interval=args.eval_interval,  # 评估间隔
-        checkpoint_interval=args.checkpoint_interval,  # checkpoint保存间隔
-        checkpoint_path=args.checkpoint_path  # 如果存在，从此checkpoint继续训练
+        checkpoint_tune=args.checkpoint_tune,  # 如果存在，从此checkpoint继续训练
+        checkpoint_no_tune=args.checkpoint_no_tune  # 如果存在，从此checkpoint继续训练
     )
 
     # 不使用Tune的训练
-    print("Training without Tune:")
-    algo, checkpoint_path = train_ppo(config)
+    print("\n\n==============================Training without Tune:")
+    algo, checkpoint_no_tune = train_ppo(config)
+    print("==============================checkpoint_no_tune:", checkpoint_no_tune)
+
+    # 加载和评估模型
+    if algo is not None:
+        performance_metrics = inference_ppo(algo,num_episodes=10)
+        save_metrics(performance_metrics, filename="performance_metrics_no_tune.txt")
 
     # 使用Tune的训练
-    print("\nTraining with Tune:")
-    best_checkpoint_dir, best_config = train_ppo_with_tune(config)
+    print("\n\n==============================Training with Tune:")
+    best_checkpoint_tune, best_config = train_ppo_with_tune(config)
+    print("==============================best_checkpoint_tune:", best_checkpoint_tune)
 
     # 加载和评估最佳模型
-    if best_checkpoint_dir and best_config:
-        print("\nLoading and evaluating best model from Tune training...")
+    if best_checkpoint_tune and best_config:
         best_algo = PPO(config=best_config)
-        best_algo.restore(best_checkpoint_dir)
+        best_algo.restore(best_checkpoint_tune)
 
-        # 运行推理并收集指标
-        print("\nRunning inference with best model:")
         performance_metrics = inference_ppo(best_algo, num_episodes=10)
-
-        # 保存性能指标
         save_metrics(performance_metrics, filename="performance_metrics_tune.txt")
     else:
         print("No best checkpoint found from Tune training")
 
     ray.shutdown()
+
+"""
+训练
+python ray_rl/cartpole_ppo_tune_4.py
+
+(1)非tune训练
+checkpoint_no_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/checkpoint_no_tune/checkpoint_5
+
+Episode 1: Steps = 500, Reward = 500.0
+Episode 2: Steps = 419, Reward = 419.0
+Episode 3: Steps = 265, Reward = 265.0
+Episode 4: Steps = 500, Reward = 500.0
+Episode 5: Steps = 270, Reward = 270.0
+Episode 6: Steps = 297, Reward = 297.0
+Episode 7: Steps = 500, Reward = 500.0
+Episode 8: Steps = 500, Reward = 500.0
+Episode 9: Steps = 188, Reward = 188.0
+Episode 10: Steps = 168, Reward = 168.0
+
+Inference Statistics:
+Mean reward: 360.70 ± 130.16
+Max reward: 500.0
+Min reward: 168.0
+Metrics saved to: /Users/xnpeng/sumoptis/sumo-rl/performance_metrics_no_tune.txt
+
+
+(2)tune训练
+best_checkpoint_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/PPO_2024-10-28_17-11-56/PPO_CartPole-v1_ae002_00000_0_clip_param=0.1402,entropy_coeff=0.0006,lr=0.0004_2024-10-28_17-11-56/checkpoint_000000 
+ 
+Episode 1: Steps = 203, Reward = 203.0
+Episode 2: Steps = 500, Reward = 500.0
+Episode 3: Steps = 297, Reward = 297.0
+Episode 4: Steps = 242, Reward = 242.0
+Episode 5: Steps = 300, Reward = 300.0
+Episode 6: Steps = 235, Reward = 235.0
+Episode 7: Steps = 151, Reward = 151.0
+Episode 8: Steps = 216, Reward = 216.0
+Episode 9: Steps = 450, Reward = 450.0
+Episode 10: Steps = 383, Reward = 383.0
+
+Inference Statistics:
+Mean reward: 297.70 ± 107.52
+Max reward: 500.0
+Min reward: 151.0
+Metrics saved to: /Users/xnpeng/sumoptis/sumo-rl/performance_metrics_tune.txt
+
+
+
+"""
