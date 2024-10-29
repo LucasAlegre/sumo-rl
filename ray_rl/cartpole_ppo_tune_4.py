@@ -27,11 +27,11 @@ class TrainingConfig:
             checkpoint_no_tune: Optional[str] = None,  # 加载的checkpoint no tune路径
             num_workers: int = 2,  # worker数量
             batch_size: int = 4000,  # 批次大小
-            lr: float = 2e-5,  # 学习率
+            lr: float = 7e-5,  # 学习率
             gamma: float = 0.99,  # 折扣因子
             lambda_: float = 0.95,  # GAE参数
             entropy_coeff: float = 0.01,  # 熵系数
-            clip_param: float = 0.2,  # PPO裁剪参数
+            clip_param: float = 0.1,  # PPO裁剪参数
             num_sgd_iter: int = 10,  # SGD迭代次数
             exp_name: Optional[str] = None,  # 实验名称
             try_render: bool = False
@@ -337,6 +337,7 @@ MacOS:/Users/xnpeng/sumoptis/sumo-rl/ray_results/PPO_2024-10-28_17-11-56/PPO_Car
 Ubuntu:
 /home/kemove/Projects/sumo-rl/ray_results/ppo_cartpole/PPO_CartPole-v1_b69e9_00001_1_clip_param=0.1510,entropy_coeff=0.0109,lr=0.0003_2024-10-29_10-58-45/checkpoint_000000
 /home/kemove/Projects/sumo-rl/ray_results/ppo_cartpole/PPO_CartPole-v1_d15d3_00001_1_clip_param=0.2020,entropy_coeff=0.0122,lr=0.0003_2024-10-29_12-03-56/checkpoint_000000
+/home/kemove/Projects/sumo-rl/ray_results/checkpoint_tune/PPO_CartPole-v1_b64b7_00003_3_clip_param=0.2767,entropy_coeff=0.0190,lr=0.0005_2024-10-29_15-52-14/checkpoint_000000
 
 Episode 1: Steps = 500, Reward = 500.0
 Episode 2: Steps = 500, Reward = 500.0
