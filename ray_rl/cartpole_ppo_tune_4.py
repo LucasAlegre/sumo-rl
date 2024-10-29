@@ -153,7 +153,7 @@ def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional
         checkpoint_at_end=True,
         name=config.exp_name,
         restore=restore_path,
-        verbose=0,
+        verbose=1,
     )
 
     best_trial = analysis.best_trial
