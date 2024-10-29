@@ -32,7 +32,8 @@ class TrainingConfig:
             entropy_coeff: float = 0.01,  # 熵系数
             clip_param: float = 0.2,  # PPO裁剪参数
             num_sgd_iter: int = 10,  # SGD迭代次数
-            exp_name: Optional[str] = None  # 实验名称
+            exp_name: Optional[str] = None,  # 实验名称
+            try_render: bool = False
     ):
         self.num_iterations = num_iterations
         self.num_episodes = num_episodes
@@ -48,6 +49,7 @@ class TrainingConfig:
         self.clip_param = clip_param
         self.num_sgd_iter = num_sgd_iter
         self.exp_name = exp_name
+        self.try_render = try_render
 
 
 def get_ppo_config(config: TrainingConfig, use_tune: bool = True) -> PPOConfig:
@@ -245,11 +247,10 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='使用Ray Tune进行PPO算法实验')
     parser.add_argument('--num-iterations', type=int, default=10, help='训练轮次')
     parser.add_argument('--exp-name', type=str, default='ppo_cartpole', help='实验名称')
-    parser.add_argument('--checkpoint-interval', type=int, default=10, help='checkpoint保存间隔')
     parser.add_argument('--checkpoint-tune', type=str, help='tune测试时的检查点路径')
     parser.add_argument('--checkpoint-no-tune', type=str, help='no tune测试时的检查点路径')
     parser.add_argument('--eval-interval', type=int, default=5, help='评估间隔')
-    parser.add_argument('--no-render', action='store_true', help='测试时不渲染环境')
+    parser.add_argument('--try-render', action='store_true', help='测试时不渲染环境')
     return parser.parse_args()
 
 
@@ -262,6 +263,8 @@ if __name__ == "__main__":
     config = TrainingConfig(
         num_iterations=args.num_iterations,  # 训练轮次
         eval_interval=args.eval_interval,  # 评估间隔
+        exp_name=args.exp_name,
+        try_render=args.try_render,
         checkpoint_tune=args.checkpoint_tune,  # 如果存在，从此checkpoint继续训练
         checkpoint_no_tune=args.checkpoint_no_tune  # 如果存在，从此checkpoint继续训练
     )
@@ -273,7 +276,7 @@ if __name__ == "__main__":
 
     # 加载和评估模型
     if algo is not None:
-        performance_metrics = inference_ppo(algo,num_episodes=10)
+        performance_metrics = inference_ppo(algo,num_episodes=10, try_render=config.try_render)
         save_metrics(performance_metrics, filename="performance_metrics_no_tune.txt")
 
     # 使用Tune的训练
@@ -286,7 +289,7 @@ if __name__ == "__main__":
         best_algo = PPO(config=best_config)
         best_algo.restore(best_checkpoint_tune)
 
-        performance_metrics = inference_ppo(best_algo, num_episodes=10)
+        performance_metrics = inference_ppo(best_algo, num_episodes=10, try_render=config.try_render)
         save_metrics(performance_metrics, filename="performance_metrics_tune.txt")
     else:
         print("No best checkpoint found from Tune training")
@@ -337,6 +340,8 @@ Mean reward: 297.70 ± 107.52
 Max reward: 500.0
 Min reward: 151.0
 Metrics saved to: /Users/xnpeng/sumoptis/sumo-rl/performance_metrics_tune.txt
+
+/home/kemove/Projects/sumo-rl/ray_results/PPO_2024-10-28_17-29-26/PPO_CartPole-v1_20257_00003_3_clip_param=0.1343,entropy_coeff=0.0003,lr=0.0006_2024-10-28_17-29-26/checkpoint_000000
 
 
 
