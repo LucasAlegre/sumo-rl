@@ -303,6 +303,22 @@ if __name__ == "__main__":
 
     ray.shutdown()
 
+
+"""
+程序设计要求：
+（1）使用两种框架训练,非tune方法 和 tune方法，保存训练结果：最佳模型 和 最侍检查点；并从检查点继续训练；
+（2）使用GPU训练的智能体，部署在CPU机器上推理；
+（3）在无图形显示的情况下，使用数据记录推理结果；
+
+实验结果：
+（1）no tune 训练结果 比 tune训练结果明显差；
+（2）GPU训练结果 可以在 CPU上使用。
+
+继续测试：
+（1）并发实验parallel_env
+（2）多智能体多环境交通环境RESCO的训练
+
+"""
 """
 训练
 python ray_rl/cartpole_ppo_tune_4.py
@@ -332,7 +348,6 @@ Min reward: 231.0
 
 (2)tune训练
 MacOS:/Users/xnpeng/sumoptis/sumo-rl/ray_results/PPO_2024-10-28_17-11-56/PPO_CartPole-v1_ae002_00000_0_clip_param=0.1402,entropy_coeff=0.0006,lr=0.0004_2024-10-28_17-11-56/checkpoint_000000
-
 
 Ubuntu:
 /home/kemove/Projects/sumo-rl/ray_results/ppo_cartpole/PPO_CartPole-v1_b69e9_00001_1_clip_param=0.1510,entropy_coeff=0.0109,lr=0.0003_2024-10-29_10-58-45/checkpoint_000000
