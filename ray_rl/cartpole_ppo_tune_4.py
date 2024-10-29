@@ -20,6 +20,7 @@ class TrainingConfig:
     def __init__(
             self,
             num_iterations: int = 20,  # 训练轮次
+            tune_iterations: int = 20, # tune 训练轮次
             num_episodes: int = 200,  # 每轮训练的回合数
             eval_interval: int = 5,  # 评估间隔
             checkpoint_tune: Optional[str] = None,  # 加载的checkpoint with tune路径
@@ -36,6 +37,7 @@ class TrainingConfig:
             try_render: bool = False
     ):
         self.num_iterations = num_iterations
+        self.tune_iterations = tune_iterations
         self.num_episodes = num_episodes
         self.eval_interval = eval_interval
         self.checkpoint_tune = checkpoint_tune
@@ -145,7 +147,7 @@ def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional
     analysis = tune.run(
         "PPO",
         config=tune_config.to_dict(),
-        stop={"training_iteration": config.num_iterations},
+        stop={"training_iteration": config.tune_iterations},
         num_samples=4,
         metric="env_runners/episode_reward_mean",
         mode="max",
@@ -248,8 +250,9 @@ def save_metrics(metrics: list, filename: str = "performance_metrics.txt"):
 def parse_arguments():
     """解析命令行参数"""
     parser = argparse.ArgumentParser(description='使用Ray Tune进行PPO算法实验')
-    parser.add_argument('--num-iterations', type=int, default=10, help='训练轮次')
-    parser.add_argument('--exp-name', type=str, default='ppo_cartpole', help='实验名称')
+    parser.add_argument('--num-iterations', type=int, default=10, help='no tune训练轮次')
+    parser.add_argument('--tune-iterations', type=int, default=20, help='tune训练轮次')
+    parser.add_argument('--exp-name', type=str, default='checkpoint_tune', help='实验名称')
     parser.add_argument('--checkpoint-tune', type=str, help='tune测试时的检查点路径')
     parser.add_argument('--checkpoint-no-tune', type=str, help='no tune测试时的检查点路径')
     parser.add_argument('--eval-interval', type=int, default=5, help='评估间隔')
@@ -265,6 +268,7 @@ if __name__ == "__main__":
     # 创建训练配置
     config = TrainingConfig(
         num_iterations=args.num_iterations,  # 训练轮次
+        tune_iterations=args.tune_iterations,
         eval_interval=args.eval_interval,  # 评估间隔
         exp_name=args.exp_name,
         try_render=args.try_render,
@@ -349,7 +353,5 @@ Inference Statistics:
 Mean reward: 500.00 ± 0.00
 Max reward: 500.0
 Min reward: 500.0
-
-
 
 """
