@@ -97,6 +97,8 @@ def train_ppo(config: TrainingConfig) -> Tuple[PPO, Optional[str]]:
 
     ppo_config = get_ppo_config(config, use_tune=False)
 
+    print("==========config.checkpoint_no_tune:", config.checkpoint_no_tune)
+
     # 创建或加载算法
     if config.checkpoint_no_tune and os.path.exists(config.checkpoint_no_tune):
         print(f"Loading checkpoint from: {config.checkpoint_no_tune}")
@@ -136,6 +138,7 @@ def train_ppo_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional
 
     tune_config = get_ppo_config(config, use_tune=True)
 
+    print("==========config.checkpoint_tune:",config.checkpoint_tune)
     # 如果提供了checkpoint，设置restore参数
     restore_path = config.checkpoint_tune if config.checkpoint_tune and os.path.exists(config.checkpoint_tune) else None
 
@@ -300,48 +303,52 @@ if __name__ == "__main__":
 训练
 python ray_rl/cartpole_ppo_tune_4.py
 
+ubuntu: python ray_rl/cartpole_ppo_tune_4.py --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/ppo_cartpole/PPO_CartPole-v1_b69e9_00001_1_clip_param=0.1510,entropy_coeff=0.0109,lr=0.0003_2024-10-29_10-58-45/checkpoint_000000" --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/checkpoint_no_tune/checkpoint_40" --num-iterations=50
+
+
 (1)非tune训练
 checkpoint_no_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/checkpoint_no_tune/checkpoint_5
 
-Episode 1: Steps = 500, Reward = 500.0
-Episode 2: Steps = 419, Reward = 419.0
-Episode 3: Steps = 265, Reward = 265.0
-Episode 4: Steps = 500, Reward = 500.0
-Episode 5: Steps = 270, Reward = 270.0
-Episode 6: Steps = 297, Reward = 297.0
-Episode 7: Steps = 500, Reward = 500.0
-Episode 8: Steps = 500, Reward = 500.0
-Episode 9: Steps = 188, Reward = 188.0
-Episode 10: Steps = 168, Reward = 168.0
+Ubuntu:/home/kemove/Projects/sumo-rl/ray_results/checkpoint_no_tune/checkpoint_40
+Episode 1: Steps = 455, Reward = 455.0
+Episode 2: Steps = 406, Reward = 406.0
+Episode 3: Steps = 500, Reward = 500.0
+Episode 4: Steps = 295, Reward = 295.0
+Episode 5: Steps = 341, Reward = 341.0
+Episode 6: Steps = 231, Reward = 231.0
+Episode 7: Steps = 382, Reward = 382.0
+Episode 8: Steps = 460, Reward = 460.0
+Episode 9: Steps = 371, Reward = 371.0
+Episode 10: Steps = 319, Reward = 319.0
 
 Inference Statistics:
-Mean reward: 360.70 ± 130.16
+Mean reward: 376.00 ± 78.55
 Max reward: 500.0
-Min reward: 168.0
-Metrics saved to: /Users/xnpeng/sumoptis/sumo-rl/performance_metrics_no_tune.txt
-
+Min reward: 231.0
 
 (2)tune训练
-best_checkpoint_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/PPO_2024-10-28_17-11-56/PPO_CartPole-v1_ae002_00000_0_clip_param=0.1402,entropy_coeff=0.0006,lr=0.0004_2024-10-28_17-11-56/checkpoint_000000 
- 
-Episode 1: Steps = 203, Reward = 203.0
+MacOS:/Users/xnpeng/sumoptis/sumo-rl/ray_results/PPO_2024-10-28_17-11-56/PPO_CartPole-v1_ae002_00000_0_clip_param=0.1402,entropy_coeff=0.0006,lr=0.0004_2024-10-28_17-11-56/checkpoint_000000
+
+
+Ubuntu:
+/home/kemove/Projects/sumo-rl/ray_results/ppo_cartpole/PPO_CartPole-v1_b69e9_00001_1_clip_param=0.1510,entropy_coeff=0.0109,lr=0.0003_2024-10-29_10-58-45/checkpoint_000000
+/home/kemove/Projects/sumo-rl/ray_results/ppo_cartpole/PPO_CartPole-v1_d15d3_00001_1_clip_param=0.2020,entropy_coeff=0.0122,lr=0.0003_2024-10-29_12-03-56/checkpoint_000000
+
+Episode 1: Steps = 500, Reward = 500.0
 Episode 2: Steps = 500, Reward = 500.0
-Episode 3: Steps = 297, Reward = 297.0
-Episode 4: Steps = 242, Reward = 242.0
-Episode 5: Steps = 300, Reward = 300.0
-Episode 6: Steps = 235, Reward = 235.0
-Episode 7: Steps = 151, Reward = 151.0
-Episode 8: Steps = 216, Reward = 216.0
-Episode 9: Steps = 450, Reward = 450.0
-Episode 10: Steps = 383, Reward = 383.0
+Episode 3: Steps = 500, Reward = 500.0
+Episode 4: Steps = 500, Reward = 500.0
+Episode 5: Steps = 500, Reward = 500.0
+Episode 6: Steps = 500, Reward = 500.0
+Episode 7: Steps = 500, Reward = 500.0
+Episode 8: Steps = 500, Reward = 500.0
+Episode 9: Steps = 500, Reward = 500.0
+Episode 10: Steps = 500, Reward = 500.0
 
 Inference Statistics:
-Mean reward: 297.70 ± 107.52
+Mean reward: 500.00 ± 0.00
 Max reward: 500.0
-Min reward: 151.0
-Metrics saved to: /Users/xnpeng/sumoptis/sumo-rl/performance_metrics_tune.txt
-
-/home/kemove/Projects/sumo-rl/ray_results/PPO_2024-10-28_17-29-26/PPO_CartPole-v1_20257_00003_3_clip_param=0.1343,entropy_coeff=0.0003,lr=0.0006_2024-10-28_17-29-26/checkpoint_000000
+Min reward: 500.0
 
 
 
