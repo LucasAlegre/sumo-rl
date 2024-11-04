@@ -18,10 +18,10 @@ CURRENT_DIR = os.path.abspath(os.getcwd())
 class TrainingConfig:
     def __init__(
             self,
-            iterations_no_tune: int = 10,  # 训练轮次
+            iterations_no_tune: int = 20,  # 训练轮次
             iterations_tune: int = 20,  # tune 训练轮次
-            num_episodes: int = 200,  # 每轮训练的回合数
-            eval_interval: int = 5,  # 评估间隔
+            num_episodes: int = 200,  # 每轮次的回合数
+            eval_interval: int = 5,  # 评估间隔轮次
             checkpoint_tune: Optional[str] = None,  # 加载的checkpoint with tune路径
             checkpoint_no_tune: Optional[str] = None,  # 加载的checkpoint no tune路径
             num_workers: int = 2,  # worker数量
@@ -261,6 +261,8 @@ def save_metrics(metrics: list, filename: str = "performance_metrics.txt"):
 def parse_arguments():
     """解析命令行参数"""
     parser = argparse.ArgumentParser(description='使用Ray Tune进行SAC算法实验')
+    parser.add_argument('--operation', type=str, choices=['TRAIN', 'INFERENCE'],
+                        required=True, help='操作类型: TRAIN-训练, INFERENCE-推理')
     parser.add_argument('--iterations-tune', type=int, default=20, help='tune训练轮次')
     parser.add_argument('--iterations-no-tune', type=int, default=10, help='no tune训练轮次')
     parser.add_argument('--checkpoint-tune', type=str, help='tune测试时的检查点路径')
@@ -286,29 +288,132 @@ if __name__ == "__main__":
         try_render=args.try_render,
     )
 
-    # 不使用Tune的训练
-    print("\n\n==============================Training without Tune:")
-    algo, checkpoint_no_tune = train_sac(config)
-    print("==============================checkpoint_no_tune:", checkpoint_no_tune)
+    if args.operation == 'TRAIN':
+        # 不使用Tune的训练
+        print("\n\n==============================Training without Tune:")
+        algo, checkpoint_no_tune = train_sac(config)
+        print("==============================checkpoint_no_tune:", checkpoint_no_tune)
 
-    # 加载和评估模型
-    if algo is not None:
-        performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
-        save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_no_tune.txt")
+        # 加载和评估模型
+        if algo is not None:
+            performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
+            save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_no_tune.txt")
 
-    # 使用Tune的训练
-    print("\n\n==============================Training with Tune:")
-    best_checkpoint_tune, best_config = train_sac_with_tune(config)
-    print("==============================best_checkpoint_tune:", best_checkpoint_tune)
+        # 使用Tune的训练
+        print("\n\n==============================Training with Tune:")
+        best_checkpoint_tune, best_config = train_sac_with_tune(config)
+        print("==============================best_checkpoint_tune:", best_checkpoint_tune)
 
-    # 加载和评估最佳模型
-    if best_checkpoint_tune and best_config:
-        best_algo = SAC(config=best_config)
-        best_algo.restore(best_checkpoint_tune)
+        # 加载和评估最佳模型
+        if best_checkpoint_tune and best_config:
+            best_algo = SAC(config=best_config)
+            best_algo.restore(best_checkpoint_tune)
 
-        performance_metrics = inference_sac(best_algo, num_episodes=10, try_render=config.try_render)
-        save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_tune.txt")
-    else:
-        print("No best checkpoint found from Tune training")
+            performance_metrics = inference_sac(best_algo, num_episodes=10, try_render=config.try_render)
+            save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_tune.txt")
+        else:
+            print("No best checkpoint found from Tune training")
+    
+    elif args.operation == 'INFERENCE':
+        # 检查是否提供了检查点路径
+        if not (args.checkpoint_tune or args.checkpoint_no_tune):
+            raise ValueError("推理模式需要提供至少一个检查点路径 (--checkpoint-tune 或 --checkpoint-no-tune)")
+
+        # 如果提供了no-tune检查点，加载并评估
+        if args.checkpoint_no_tune:
+            print("\n==============================Loading no-tune checkpoint:")
+            sac_config = get_sac_config(config, use_tune=False)
+            algo = sac_config.build()
+            algo.restore(args.checkpoint_no_tune)
+            performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
+            save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_no_tune.txt")
+
+        # 如果提供了tune检查点，加载并评估
+        if args.checkpoint_tune:
+            print("\n==============================Loading tune checkpoint:")
+            tune_config = get_sac_config(config, use_tune=True).to_dict()
+            algo = SAC(config=tune_config)
+            algo.restore(args.checkpoint_tune)
+            performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
+            save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_tune.txt")
 
     ray.shutdown()
+
+"""
+(1)Ubuntu:
+ python ray_rl/pendulum_sac_tune.py --iterations-tune=400 --iterations-no-tune=50 \
+ --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b41ec_00002_2_initial_alpha=0.2049,actor_learning_rate=0.0003,critic_learning_rate=0.0005,entropy_learning_rate=0._2024-11-04_09-11-21/checkpoint_000000" \
+ --checkpoint-no-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_80"
+
+--no-tune:
+checkpoint_no_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_5
+Episode 1: Steps = 200, Reward = -1.479035394261019
+Episode 2: Steps = 200, Reward = -884.9222940178998
+Episode 3: Steps = 200, Reward = -888.6182699151921
+Episode 4: Steps = 200, Reward = -769.3482924883454
+Episode 5: Steps = 200, Reward = -0.9325495365174847
+Episode 6: Steps = 200, Reward = -897.7704440652453
+Episode 7: Steps = 200, Reward = -770.8271331440368
+Episode 8: Steps = 200, Reward = -738.1726931594903
+Episode 9: Steps = 200, Reward = -916.6450709755005
+Episode 10: Steps = 200, Reward = -871.9310219517179
+
+Inference Statistics:
+Mean reward: -674.06 ± 341.55
+Max reward: -0.9325495365174847
+Min reward: -916.6450709755005
+Metrics saved to: /home/kemove/Projects/sumo-rl/performance_metrics_pendulum_sac_no_tune.txt
+
+--tune
+checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b41ec_00002_2_initial_alpha=0.2049,actor_learning_rate=0.0003,critic_learning_rate=0.0005,entropy_learning_rate=0._2024-11-04_09-11-21/checkpoint_000000"
+Episode 1: Steps = 200, Reward = -129.8839824417047
+Episode 2: Steps = 200, Reward = -123.1287426688013
+Episode 3: Steps = 200, Reward = -130.76487668182077
+Episode 4: Steps = 200, Reward = -291.7253349382669
+Episode 5: Steps = 200, Reward = -369.172969862427
+Episode 6: Steps = 200, Reward = -2.5119956045702407
+Episode 7: Steps = 200, Reward = -122.13189700443708
+Episode 8: Steps = 200, Reward = -247.90041723507747
+Episode 9: Steps = 200, Reward = -127.7395137407737
+Episode 10: Steps = 200, Reward = -126.9328233794857
+
+Inference Statistics:
+Mean reward: -167.19 ± 99.90
+Max reward: -2.5119956045702407
+Min reward: -369.172969862427
+Metrics saved to: /home/kemove/Projects/sumo-rl/performance_metrics_pendulum_sac_tune.txt
+
+checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_a716f_00002_2_initial_alpha=0.3671,actor_learning_rate=0.0002,critic_learning_rate=0.0008,entropy_learning_rate=0._2024-11-04_10-01-06/checkpoint_000000"
+Episode 1: Steps = 200, Reward = -367.60862384928106
+Episode 2: Steps = 200, Reward = -871.7382073043447
+Episode 3: Steps = 200, Reward = -780.6702178597513
+Episode 4: Steps = 200, Reward = -706.182844414461
+Episode 5: Steps = 200, Reward = -524.3347096208906
+Episode 6: Steps = 200, Reward = -901.2835488892741
+Episode 7: Steps = 200, Reward = -662.6300159435667
+Episode 8: Steps = 200, Reward = -775.1062328180774
+Episode 9: Steps = 200, Reward = -774.3495687709152
+Episode 10: Steps = 200, Reward = -916.9484087079585
+
+Inference Statistics:
+Mean reward: -728.09 ± 164.21
+Max reward: -367.60862384928106
+Min reward: -916.9484087079585
+Metrics saved to: /home/kemove/Projects/sumo-rl/performance_metrics_pendulum_sac_tune.txt
+
+
+(2) Mac OS inference:
+
+python ray_rl/pendulum_sac_tune.py --operation=INFERENCE \
+ --checkpoint-tune="/Users/xnpeng/sumoptis/sumo-rl/ray_results/checkpoint_000000" \
+ --checkpoint-no-tune="/Users/xnpeng/sumoptis/sumo-rl/ray_results/checkpoint_5"
+
+
+(3) Ubuntu inference:
+
+python ray_rl/pendulum_sac_tune.py --operation=INFERENCE \
+ --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b41ec_00002_2_initial_alpha=0.2049,actor_learning_rate=0.0003,critic_learning_rate=0.0005,entropy_learning_rate=0._2024-11-04_09-11-21/checkpoint_000000" \
+ --checkpoint-no-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune"
+
+
+"""
