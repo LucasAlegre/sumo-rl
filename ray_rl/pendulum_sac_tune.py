@@ -331,7 +331,7 @@ if __name__ == "__main__":
         # 如果提供了tune检查点，加载并评估
         if args.checkpoint_tune:
             print("\n==============================Loading tune checkpoint:")
-            tune_config = get_sac_config(config, use_tune=True).to_dict()
+            tune_config = get_sac_config(config, use_tune=True)
             algo = SAC(config=tune_config)
             algo.restore(args.checkpoint_tune)
             performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
@@ -341,7 +341,7 @@ if __name__ == "__main__":
 
 """
 (1)Ubuntu:
- python ray_rl/pendulum_sac_tune.py --iterations-tune=400 --iterations-no-tune=50 \
+ python ray_rl/pendulum_sac_tune.py --operation=TRAIN --iterations-tune=410 --iterations-no-tune=10 \
  --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b41ec_00002_2_initial_alpha=0.2049,actor_learning_rate=0.0003,critic_learning_rate=0.0005,entropy_learning_rate=0._2024-11-04_09-11-21/checkpoint_000000" \
  --checkpoint-no-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_80"
 
@@ -413,7 +413,15 @@ python ray_rl/pendulum_sac_tune.py --operation=INFERENCE \
 
 python ray_rl/pendulum_sac_tune.py --operation=INFERENCE \
  --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b41ec_00002_2_initial_alpha=0.2049,actor_learning_rate=0.0003,critic_learning_rate=0.0005,entropy_learning_rate=0._2024-11-04_09-11-21/checkpoint_000000" \
- --checkpoint-no-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune"
+ --checkpoint-no-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_5"
 
+(4) Ubuntu:
+checkpoint_no_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_80
+checkpoint_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b41ec_00002_2_initial_alpha=0.2049,actor_learning_rate=0.0003,critic_learning_rate=0.0005,entropy_learning_rate=0._2024-11-04_09-11-21/checkpoint_000000
+
+checkpoint_no_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0
+checkpoint_tune:/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_f9bd5_00003_3_initial_alpha=0.3057,actor_learning_rate=0.0001,critic_learning_rate=0.0001,entropy_learning_rate=0._2024-11-04_13-52-28/checkpoint_000000
+
+checkpoint_tune:/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_75939_00000_0_initial_alpha=0.1164,actor_learning_rate=0.0001,critic_learning_rate=0.0001,entropy_learning_rate=0._2024-11-04_14-10-15/checkpoint_000000
 
 """
