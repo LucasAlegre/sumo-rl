@@ -17,10 +17,8 @@ class TrainingConfig:
     def __init__(
             self,
             iterations_no_tune: int = 20,  # 训练轮次
-            iterations_tune: int = 20,  # tune 训练轮次
             num_episodes: int = 200,  # 每轮次的回合数
             eval_interval: int = 5,  # 评估间隔轮次
-            checkpoint_tune: Optional[str] = None,  # 加载的checkpoint with tune路径
             checkpoint_no_tune: Optional[str] = None,  # 加载的checkpoint no tune路径
             num_workers: int = 2,  # worker数量
             buffer_size: int = 50000,  # 经验回放缓冲区大小
@@ -35,10 +33,8 @@ class TrainingConfig:
             try_render: bool = False
     ):
         self.iterations_no_tune = iterations_no_tune
-        self.iterations_tune = iterations_tune
         self.num_episodes = num_episodes
         self.eval_interval = eval_interval
-        self.checkpoint_tune = checkpoint_tune
         self.checkpoint_no_tune = checkpoint_no_tune
         self.num_workers = num_workers
         self.buffer_size = buffer_size
@@ -53,7 +49,7 @@ class TrainingConfig:
         self.try_render = try_render
 
 
-def get_sac_config(config: TrainingConfig, use_tune: bool = True) -> SACConfig:
+def get_sac_config(config: TrainingConfig) -> SACConfig:
     """
     获取SAC配置
     """
@@ -83,18 +79,6 @@ def get_sac_config(config: TrainingConfig, use_tune: bool = True) -> SACConfig:
         .resources(num_gpus=num_gpus)
     )
 
-    if use_tune:
-        # Tune搜索空间
-        base_config.training(
-            optimization_config={
-                "actor_learning_rate": tune.loguniform(1e-4, 1e-3),
-                "critic_learning_rate": tune.loguniform(1e-4, 1e-3),
-                "entropy_learning_rate": tune.loguniform(1e-4, 1e-3)
-            },
-            tau=tune.uniform(0.001, 0.01),
-            initial_alpha=tune.uniform(0.1, 0.5),
-        )
-
     return base_config
 
 
@@ -106,7 +90,7 @@ def train_sac(config: TrainingConfig) -> Tuple[SAC, Optional[str]]:
     checkpoint_dir = os.path.join(local_dir, "pendulum_sac_no_tune")
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    sac_config = get_sac_config(config, use_tune=False)
+    sac_config = get_sac_config(config)
 
     print("==========config.checkpoint_no_tune:", config.checkpoint_no_tune)
 
@@ -138,60 +122,6 @@ def train_sac(config: TrainingConfig) -> Tuple[SAC, Optional[str]]:
                 print(f"New best model saved: {best_checkpoint_no_tune}")
 
     return algo, best_checkpoint_no_tune
-
-
-def train_sac_with_tune(config: TrainingConfig) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
-    """
-    使用Tune训练SAC，支持从checkpoint继续训练
-    """
-    local_dir = os.path.join(CURRENT_DIR, "ray_results")
-    os.makedirs(local_dir, exist_ok=True)
-
-    tune_config = get_sac_config(config, use_tune=True)
-
-    print("==========config.checkpoint_tune:", config.checkpoint_tune)
-    # 如果提供了checkpoint，设置restore参数
-    restore_path = config.checkpoint_tune if config.checkpoint_tune and os.path.exists(config.checkpoint_tune) else None
-
-    analysis = tune.run(
-        "SAC",
-        config=tune_config.to_dict(),
-        stop={"training_iteration": config.iterations_tune},
-        num_samples=4,
-        metric="env_runners/episode_reward_mean",
-        mode="max",
-        storage_path=local_dir,
-        checkpoint_at_end=True,
-        name=config.exp_name,
-        restore=restore_path,
-        verbose=1,
-    )
-
-    best_trial = analysis.best_trial
-
-    if best_trial:
-        best_checkpoint = analysis.best_checkpoint
-        if best_checkpoint:
-            best_checkpoint_path = best_checkpoint.path
-            best_config = best_trial.config
-            print("tune::run:Best hyperparameters:", best_config)
-
-            # 使用best_config创建新的SAC实例并加载最佳checkpoint
-            save_dir = os.path.join(local_dir, "best_sac_model")
-            os.makedirs(save_dir, exist_ok=True)
-            best_model_path = os.path.join(save_dir, "sac_model.pkl")
-
-            # 创建一个新的SAC实例并加载最佳checkpoint
-            best_algo = SAC(config=best_config)
-            best_algo.restore(best_checkpoint_path)
-
-            # 保存模型
-            best_algo.save(best_model_path)
-            print(f"Best model saved to: {best_model_path}")
-
-            return best_checkpoint_path, best_config
-
-    return None, None
 
 
 def evaluate_sac(algo: SAC, num_episodes: int = 10) -> float:
@@ -275,9 +205,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='使用Ray Tune进行SAC算法实验')
     parser.add_argument('--operation', type=str, choices=['TRAIN', 'INFERENCE'],
                         required=True, help='操作类型: TRAIN-训练, INFERENCE-推理')
-    parser.add_argument('--iterations-tune', type=int, default=20, help='tune训练轮次')
     parser.add_argument('--iterations-no-tune', type=int, default=10, help='no tune训练轮次')
-    parser.add_argument('--checkpoint-tune', type=str, help='tune测试时的检查点路径')
     parser.add_argument('--checkpoint-no-tune', type=str, help='no tune测试时的检查点路径')
     parser.add_argument('--exp-name', type=str, default='pendulum_sac_tune', help='实验名称')
     parser.add_argument('--eval-interval', type=int, default=5, help='评估间隔')
@@ -291,9 +219,7 @@ if __name__ == "__main__":
 
     # 创建训练配置
     config = TrainingConfig(
-        iterations_tune=args.iterations_tune,
         iterations_no_tune=args.iterations_no_tune,
-        checkpoint_tune=args.checkpoint_tune,
         checkpoint_no_tune=args.checkpoint_no_tune,
         eval_interval=args.eval_interval,
         exp_name=args.exp_name,
@@ -311,91 +237,40 @@ if __name__ == "__main__":
         #     performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
         #     save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_no_tune.txt")
 
-        # 使用Tune的训练
-        print("\n\n==============================Training with Tune:")
-        best_checkpoint_tune, best_config = train_sac_with_tune(config)
-        print("==============================best_checkpoint_tune:", best_checkpoint_tune)
-
-        # 加载和评估最佳模型
-        # if best_checkpoint_tune and best_config:
-        #     best_algo = SAC(config=best_config)
-        #     best_algo.restore(best_checkpoint_tune)
-        #
-        #     performance_metrics = inference_sac(best_algo, num_episodes=10, try_render=config.try_render)
-        #     save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_tune.txt")
-        # else:
-        #     print("No best checkpoint found from Tune training")
-
     elif args.operation == 'INFERENCE':
         # 检查是否提供了检查点路径
-        if not (args.checkpoint_tune or args.checkpoint_no_tune):
-            raise ValueError("推理模式需要提供至少一个检查点路径 (--checkpoint-tune 或 --checkpoint-no-tune)")
+        if not args.checkpoint_no_tune:
+            raise ValueError("推理模式需要提供一个检查点路径 (--checkpoint-no-tune)")
 
         # 如果提供了no-tune检查点，加载并评估
         if args.checkpoint_no_tune:
             print("\n==============================Loading no-tune checkpoint:")
-            sac_config = get_sac_config(config, use_tune=False)
+            sac_config = get_sac_config(config)
             algo = sac_config.build()
             algo.restore(args.checkpoint_no_tune)
             performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
             save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_no_tune.txt")
 
-        # 如果提供了tune检查点，加载并评估
-        if args.checkpoint_tune:
-            print("\n==============================Loading tune checkpoint:")
-            tune_config = get_sac_config(config, use_tune=True)
-            algo = tune_config.build()
-            algo.restore(args.checkpoint_tune)
-            print("===========================================================")
-            performance_metrics = inference_sac(algo, num_episodes=10, try_render=config.try_render)
-            save_metrics(performance_metrics, filename="performance_metrics_pendulum_sac_tune.txt")
-
     ray.shutdown()
 
 """
 (1)Ubuntu - train:
- python ray_rl/pendulum_sac_tune.py --operation=TRAIN --iterations-tune=500 --iterations-no-tune=20 \
- --checkpoint-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_f9bd5_00003_3_initial_alpha=0.3057,actor_learning_rate=0.0001,critic_learning_rate=0.0001,entropy_learning_rate=0._2024-11-04_13-52-28/checkpoint_000000" \
+ python ray_rl/pendulum_sac_no_tune.py --operation=TRAIN --iterations-no-tune=20 \
  --checkpoint-no-tune="/home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0"
-
-checkpoint_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_cef31_00003_3_initial_alpha=0.2283,actor_learning_rate=0.0005,critic_learning_rate=0.0006,entropy_learning_rate=0._2024-11-04_15-02-52/checkpoint_000000
-Mean reward: -316.55 ± 105.03
-checkpoint_no_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_5
-Mean reward: -1040.17 ± 54.26
-
-checkpoint_no_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0
-Mean reward: -1158.53 ± 90.89
-checkpoint_tune: /home/kemove/Projects/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_b44ba_00003_3_initial_alpha=0.3096,actor_learning_rate=0.0003,critic_learning_rate=0.0002,entropy_learning_rate=0._2024-11-04_15-23-35/checkpoint_000000
-Mean reward: -1056.73 ± 189.44
 
 
 (2) Ubuntu - inference:
 
 
 (3) Mac OS - train:
-python ray_rl/pendulum_sac_tune.py --operation=TRAIN --iterations-tune=70 --iterations-no-tune=20 \
+python ray_rl/pendulum_sac_no_tune.py --operation=TRAIN --iterations-no-tune=20 \
 --checkpoint-no-tune="/Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0" \
---checkpoint-tune="/Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_617b3_00002_2_initial_alpha=0.3514,actor_learning_rate=0.0006,critic_learning_rate=0.0004,entropy_learning_rate=0._2024-11-04_14-59-48/checkpoint_000000"
-第4轮训练出错！！（莫名其妙！）重新运行，顺利完成。
-
-checkpoint_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_c3025_00000_0_initial_alpha=0.4881,actor_learning_rate=0.0004,critic_learning_rate=0.0004,entropy_learning_rate=0._2024-11-04_15-16-51/checkpoint_000000
-Mean reward: -535.76 ± 347.76
-checkpoint_no_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0
-Mean reward: -1569.41 ± 78.09
-
-checkpoint_no_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0
-Mean reward: -1473.33 ± 117.38
-checkpoint_tune: /Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_533c2_00002_2_initial_alpha=0.4048,actor_learning_rate=0.0002,critic_learning_rate=0.0004,entropy_learning_rate=0._2024-11-04_15-28-02/checkpoint_000000
-Mean reward: -287.13 ± 89.66
 
 
 (4) Mac OS - inference:
 
-python ray_rl/pendulum_sac_tune.py --operation=INFERENCE \
+python ray_rl/pendulum_sac_no_tune.py --operation=INFERENCE \
 --checkpoint-no-tune="/Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_no_tune/checkpoint_0" \
---checkpoint-tune="/Users/xnpeng/sumoptis/sumo-rl/ray_results/pendulum_sac_tune/SAC_Pendulum-v1_c3025_00000_0_initial_alpha=0.4881,actor_learning_rate=0.0004,critic_learning_rate=0.0004,entropy_learning_rate=0._2024-11-04_15-16-51/checkpoint_000000"
-
-TypeError: loop of ufunc does not support argument 0 of type Float which has no callable log method
 
 
 """

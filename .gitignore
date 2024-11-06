@@ -212,3 +212,4 @@ ui/tensorboard/
 /pendulum_sac_performance_metrics_tune.txt
 /performance_metrics_pendulum_sac_no_tune.txt
 /performance_metrics_pendulum_sac_tune.txt
+/data/
