@@ -79,12 +79,13 @@ trainer = ray.train.torch.TorchTrainer(
     # run_config=ray.train.RunConfig(storage_path="s3://..."),
 )
 result = trainer.fit()
+print(result.metrics)
 
 # [6] Load the trained model.
 with result.checkpoint.as_directory() as checkpoint_dir:
-    model_state_dict = torch.load(os.path.join(checkpoint_dir, "model.pt"))
+    model_state_dict = torch.load(os.path.join(checkpoint_dir, "model.pt"), weights_only=True)
     model = resnet18(num_classes=10)
     model.conv1 = torch.nn.Conv2d(
         1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
     )
-    model.load_state_dict(model_state_dict)
+    model.load_state_dict(model_state_dict, weights_only=True)
