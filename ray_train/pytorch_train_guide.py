@@ -51,8 +51,11 @@ def train_func():
         # [3] Report metrics and checkpoint.
         metrics = {"loss": loss.item(), "epoch": epoch}
         with tempfile.TemporaryDirectory() as temp_checkpoint_dir:
+            # Fix: Handle both single-GPU and multi-GPU cases
+            # 在使用ray.train.torch.prepare_model()时，对于单GPU训练的情况，模型并没有被包装成DistributedDataParallel，所以没有module属性。
+            state_dict = model.module.state_dict() if hasattr(model, "module") else model.state_dict()
             torch.save(
-                model.module.state_dict(),
+                state_dict,
                 os.path.join(temp_checkpoint_dir, "model.pt")
             )
             ray.train.report(
