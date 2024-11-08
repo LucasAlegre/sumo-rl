@@ -6,7 +6,7 @@ from ray.train.torch import TorchTrainer
 
 # Set this to True to use GPU.
 # If False, do CPU training instead of GPU training.
-use_gpu = False
+use_gpu = True if torch.cuda.is_available() else False
 
 # Step 1: Create a Ray Dataset from in-memory Python lists.
 # You can also create a Ray Dataset from many other sources and file
@@ -28,11 +28,11 @@ def train_func():
 
     # Step 4: Access the dataset shard for the training worker via
     # ``get_dataset_shard``.
-    train_data_shard = train.get_dataset_shard("train")
+    train_data_shard = train.get_dataset_shard("train")  # 1/n
     # `iter_torch_batches` returns an iterable object that
     # yield tensor batches. Ray Data automatically moves the Tensor batches
     # to GPU if you enable GPU training.
-    train_dataloader = train_data_shard.iter_torch_batches(
+    train_dataloader = train_data_shard.iter_torch_batches(  # 它将数据转换为 PyTorch 可以直接使用的批次。
         batch_size=batch_size, dtypes=torch.float32
     )
 
