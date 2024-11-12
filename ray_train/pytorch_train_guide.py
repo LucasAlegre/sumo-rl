@@ -79,7 +79,6 @@ trainer = ray.train.torch.TorchTrainer(
     # run_config=ray.train.RunConfig(storage_path="s3://..."),
 )
 result = trainer.fit()
-print(f"loss:{result.metrics['loss']}", f"epoch:{result.metrics['epoch']}")
 
 # [6] Load the trained model.
 with result.checkpoint.as_directory() as checkpoint_dir:
