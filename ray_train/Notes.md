@@ -10,3 +10,11 @@
 ```
 train_loop_config={"num_epochs": 10} 
 ```
+
+## save and load checkpoint
+
+- save_load_checkpoint.py OK
+- save_load_checkpoint_config.py OK
+- save_load_checkpoint_inspect.py OK
+- save_load_checkpoint_restore.py OK
+
