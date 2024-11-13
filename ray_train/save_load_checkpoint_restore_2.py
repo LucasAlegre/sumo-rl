@@ -30,7 +30,7 @@ def train_func(config):
     model = ray.train.torch.prepare_model(model)
 
     """
-    创建了一个简单的线性回归模型，输入维度为4，输出维度为1。
+    创建了一个简单的线性回归模型，输入为4列，输出为1列。
     使用 Adam 优化器 和 均方误差损失。
     调用 ray.train.torch.prepare_model(model) 以使模型可以在 Ray 的分布式训练环境下运行。
     """
@@ -72,10 +72,10 @@ def train_func(config):
         with tempfile.TemporaryDirectory() as temp_checkpoint_dir:
             checkpoint = None
 
-            should_checkpoint = epoch % config.get("checkpoint_freq", 1) == 0
+            # should_checkpoint = epoch % config.get("checkpoint_freq", 1) == 0
             # In standard DDP training, where the model is the same across all ranks,
             # only the global rank 0 worker needs to save and report the checkpoint
-            if train.get_context().get_world_rank() == 0 and should_checkpoint:
+            if train.get_context().get_world_rank() == 0:  #and should_checkpoint:
                 # === Make sure to save all state needed for resuming training ===
                 torch.save(
                     model.module.state_dict(),  # NOTE: Unwrap the model.
@@ -91,7 +91,7 @@ def train_func(config):
                 )
                 # ================================================================
                 checkpoint = Checkpoint.from_directory(temp_checkpoint_dir)
-
+            print("\nCheckpoint created at epoch:", epoch)
             train.report(metrics, checkpoint=checkpoint)
 
         # if epoch == 1:
@@ -120,37 +120,55 @@ run_config = train.RunConfig(
     failure_config=train.FailureConfig(max_failures=1),
 )
 
+train_loop_config={"num_epochs": 5, "checkpoint_freq": 1}
+
 trainer = TorchTrainer(
     train_func,
-    train_loop_config={"num_epochs": 5},
+    train_loop_config=train_loop_config,
     scaling_config=ScalingConfig(num_workers=2),
     run_config=run_config,
 )
 result = trainer.fit()
 
-# Seed a training run with a checkpoint using `resume_from_checkpoint`
-trainer = TorchTrainer(
-    train_func,
-    train_loop_config={"num_epochs": 5},
-    scaling_config=ScalingConfig(num_workers=2),
-    resume_from_checkpoint=result.checkpoint,
-    run_config=run_config,
-)
-result2 = trainer.fit()
-
 print("result-1:\n", result)
 print("result.checkpoint=", result.checkpoint)
 print("result.checkpoint.path=", result.checkpoint.path)
 
-print("result-2:\n", result2)
-print("result.checkpoint=", result2.checkpoint)
-print("result.checkpoint.path=", result2.checkpoint.path)
+train_loop_config={"num_epochs": 5, "checkpoint_freq": 2}
+# Seed a training run with a checkpoint using `resume_from_checkpoint`
+trainer = TorchTrainer(
+    train_func,
+    train_loop_config=train_loop_config,
+    scaling_config=ScalingConfig(num_workers=2),
+    resume_from_checkpoint=result.checkpoint, # 恢复不成功
+    run_config=run_config,
+)
+result2 = trainer.fit()
 
+print("\nresult-2:\n", result2)
+print("result.checkpoint=", result2.checkpoint)
+# print("result.checkpoint.path=", result2.checkpoint.path)
+
+
+train_loop_config={"num_epochs": 5, "checkpoint_freq": 3}
+# Seed a training run with a checkpoint using `resume_from_checkpoint`
+trainer = TorchTrainer(
+    train_func,
+    train_loop_config=train_loop_config,
+    scaling_config=ScalingConfig(num_workers=2),
+    resume_from_checkpoint=result.checkpoint, # 恢复不成功
+    run_config=run_config,
+)
+result3 = trainer.fit()
+
+print("\nresult-3:\n", result3)
+print("result.checkpoint=", result3.checkpoint)
+print("result.checkpoint.path=", result3.checkpoint.path)
 
 """
 如果上一步的训练成功完成并返回了一个检查点（result.checkpoint），则可以通过 resume_from_checkpoint 参数来从这个检查点恢复训练，继续训练。
-"""
-"""
+https://docs.ray.io/en/latest/train/user-guides/checkpoints.html
+
 result-2:
  Result(
   metrics={},
@@ -164,7 +182,7 @@ Traceback (most recent call last):
     print("result.checkpoint.path=", result2.checkpoint.path)
 AttributeError: 'NoneType' object has no attribute 'path'
 
-问题： resume_from_checkpoint = result.checkpoint 在训练后，其结果result中checkpoint为None. 为什么？
+问题： resume_from_checkpoint = result.checkpoint 在训练后，其结果result中checkpoint为None. 为什么不能恢复训练？
 https://docs.ray.io/en/latest/train/user-guides/checkpoints.html
 
 

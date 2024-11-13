@@ -84,9 +84,39 @@ example_checkpoint_dir = result.checkpoint.path
 # Create the checkpoint, which is a reference to the directory.
 checkpoint = Checkpoint.from_directory(example_checkpoint_dir)  # 从路径名(不含model.pt)加载checkpoint
 
+print("\ncheckpoint:\n", checkpoint)
+
 # Inspect the checkpoint's contents with either `as_directory` or `to_directory`:
 with checkpoint.as_directory() as checkpoint_dir:  # 作为文件夹，其中存在文件model.pt
     assert Path(checkpoint_dir).joinpath("model.pt").exists()
+    checkpoint_path = Path(checkpoint_dir).joinpath("model.pt")
+    print("checkpoint_path:\n", checkpoint_path)
 
 checkpoint_dir = checkpoint.to_directory()  # 转变为文件夹，其中存在文件model.pt
 assert Path(checkpoint_dir).joinpath("model.pt").exists()
+print("checkpoint_dir:\n", checkpoint_dir)
+
+"""
+运行结果：
+result:
+ Result(
+  metrics={'loss': 1.6687583923339844},
+  path='/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-44-58/TorchTrainer_66977_00000_0_2024-11-12_16-44-59',
+  filesystem='local',
+  checkpoint=Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-44-58/TorchTrainer_66977_00000_0_2024-11-12_16-44-59/checkpoint_000004)
+)
+result.metrics= {'loss': 1.6687583923339844, 'timestamp': 1731401103, 'checkpoint_dir_name': 'checkpoint_000004', 'should_checkpoint': True, 'done': True, 'training_iteration': 5, 'trial_id': '66977_00000', 'date': '2024-11-12_16-45-03', 'time_this_iter_s': 0.0011529922485351562, 'time_total_s': 2.000298023223877, 'pid': 15829, 'hostname': 'apen.local', 'node_ip': '127.0.0.1', 'config': {'train_loop_config': {'num_epochs': 5}}, 'time_since_restore': 2.000298023223877, 'iterations_since_restore': 5, 'experiment_tag': '0'}
+result.metrics['loss']= 1.6687583923339844
+result.path= /Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-44-58/TorchTrainer_66977_00000_0_2024-11-12_16-44-59
+result.filesystem= <pyarrow._fs.LocalFileSystem object at 0x11ea841f0>
+result.checkpoint= Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-44-58/TorchTrainer_66977_00000_0_2024-11-12_16-44-59/checkpoint_000004)
+result.checkpoint.path= /Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-44-58/TorchTrainer_66977_00000_0_2024-11-12_16-44-59/checkpoint_000004
+
+checkpoint:
+ Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-13_07-23-12/TorchTrainer_179b8_00000_0_2024-11-13_07-23-15/checkpoint_000004)
+checkpoint_path:
+ /Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-13_07-23-12/TorchTrainer_179b8_00000_0_2024-11-13_07-23-15/checkpoint_000004/model.pt
+checkpoint_dir:
+ /var/folders/yk/xs1byz1x1hdbbwk36sy03jym0000gn/T/checkpoint_tmp_7312a8a7507e4e9b8eef191dcb732501
+
+"""

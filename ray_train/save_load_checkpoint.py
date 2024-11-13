@@ -4,6 +4,7 @@ import tempfile
 import numpy as np
 import torch
 import torch.nn as nn
+from ray.air import RunConfig, CheckpointConfig
 from torch.optim import Adam
 
 import ray.train.torch
@@ -49,10 +50,22 @@ def train_func(config):
 
             train.report(metrics, checkpoint=checkpoint)
 
+local_dir = "/Users/xnpeng/sumoptis/sumo-rl/ray_results"
+run_config = RunConfig(
+    checkpoint_config=CheckpointConfig(
+        num_to_keep=1,
+        checkpoint_score_attribute="loss",
+        checkpoint_score_order="min",
+    ),
+    storage_path=local_dir,
+)
 
 trainer = TorchTrainer(
     train_func,
     train_loop_config={"num_epochs": 5},
     scaling_config=ScalingConfig(num_workers=2),
+    run_config=run_config,
 )
 result = trainer.fit()
+
+print("result:\n", result)

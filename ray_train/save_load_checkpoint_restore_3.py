@@ -94,8 +94,8 @@ def train_func(config):
 
             train.report(metrics, checkpoint=checkpoint)
 
-        if epoch == 1:
-            raise RuntimeError("故意出错。Intentional error to showcase restoration!")
+        # if epoch == 1:
+        #     raise RuntimeError("故意出错。Intentional error to showcase restoration!")
 
 
 """
@@ -121,11 +121,16 @@ run_config = train.RunConfig(
 
 trainer = TorchTrainer(
     train_func,
-    train_loop_config={"num_epochs": 5},
+    train_loop_config={"num_epochs": 5, "checkpoint_freq": 2},
     scaling_config=ScalingConfig(num_workers=2),
     run_config=run_config,
 )
 result = trainer.fit()
+
+print("result-1:\n", result)
+print("result.checkpoint=", result.checkpoint)
+print("result.checkpoint.path=", result.checkpoint.path)
+
 
 checkpoint = Checkpoint.from_directory(result.checkpoint.path)
 trainer = TorchTrainer(
@@ -139,3 +144,21 @@ result3 = trainer.fit()
 print("result-3:\n", result3)
 print("result.checkpoint=", result3.checkpoint)
 print("result.checkpoint.path=", result3.checkpoint.path)
+
+"""
+恢复训练，结果不正确。说明“resume_from_checkpoint=checkpoint”这句不成功。
+
+result-3:
+ Result(
+  metrics={},
+  path='/Users/xnpeng/ray_results/TorchTrainer_2024-11-12_18-25-15/TorchTrainer_681c8_00000_0_2024-11-12_18-25-15',
+  filesystem='local',
+  checkpoint=None
+)
+result.checkpoint= None
+Traceback (most recent call last):
+  File "/Users/xnpeng/sumoptis/sumo-rl/ray_train/save_load_checkpoint_restore_3.py", line 146, in <module>
+    print("result.checkpoint.path=", result3.checkpoint.path)
+AttributeError: 'NoneType' object has no attribute 'path'
+
+"""

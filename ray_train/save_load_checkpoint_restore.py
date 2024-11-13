@@ -92,8 +92,8 @@ def train_func(config):
 
             train.report(metrics, checkpoint=checkpoint)
 
-        if epoch == 1:
-            raise RuntimeError("故意出错。Intentional error to showcase restoration!")
+        # if epoch == 1:
+        #     raise RuntimeError("故意出错。Intentional error to showcase restoration!")
 
 
 """
@@ -113,7 +113,7 @@ local_dir = "/Users/xnpeng/sumoptis/sumo-rl/ray_results"
 run_config = train.RunConfig(
     checkpoint_config=train.CheckpointConfig(
         num_to_keep=2,
-        checkpoint_frequency=1,
+        # checkpoint_frequency=1,
         # checkpoint_score_attribute="loss",
         # checkpoint_score_order="min",
     ),
@@ -131,3 +131,16 @@ result = trainer.fit()
 print("result-1:\n", result)
 print("result.checkpoint=", result.checkpoint)
 print("result.checkpoint.path=", result.checkpoint.path)
+
+"""
+result-1:
+ Result(
+  metrics={'loss': 0.9999486804008484},
+  path='/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-48-58/TorchTrainer_f5c0d_00000_0_2024-11-12_16-48-59',
+  filesystem='local',
+  checkpoint=Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-48-58/TorchTrainer_f5c0d_00000_0_2024-11-12_16-48-59/checkpoint_000004)
+)
+result.checkpoint= Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-48-58/TorchTrainer_f5c0d_00000_0_2024-11-12_16-48-59/checkpoint_000004)
+result.checkpoint.path= /Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-48-58/TorchTrainer_f5c0d_00000_0_2024-11-12_16-48-59/checkpoint_000004
+
+"""
