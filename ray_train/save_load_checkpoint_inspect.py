@@ -30,7 +30,7 @@ def train_func(config):
     model = ray.train.torch.prepare_model(model)
 
     """
-    创建了一个简单的线性回归模型，输入为4列，输出为1列。
+    创建了一个简单的线性回归模型，输入维度为4，输出维度为1。
     使用 Adam 优化器 和 均方误差损失。
     调用 ray.train.torch.prepare_model(model) 以使模型可以在 Ray 的分布式训练环境下运行。
     """
@@ -72,10 +72,10 @@ def train_func(config):
         with tempfile.TemporaryDirectory() as temp_checkpoint_dir:
             checkpoint = None
 
-            # should_checkpoint = epoch % config.get("checkpoint_freq", 1) == 0
+            should_checkpoint = epoch % config.get("checkpoint_freq", 1) == 0
             # In standard DDP training, where the model is the same across all ranks,
             # only the global rank 0 worker needs to save and report the checkpoint
-            if train.get_context().get_world_rank() == 0:  #and should_checkpoint:
+            if train.get_context().get_world_rank() == 0 and should_checkpoint:
                 # === Make sure to save all state needed for resuming training ===
                 torch.save(
                     model.module.state_dict(),  # NOTE: Unwrap the model.
@@ -91,24 +91,28 @@ def train_func(config):
                 )
                 # ================================================================
                 checkpoint = Checkpoint.from_directory(temp_checkpoint_dir)
-            print("\nCheckpoint created at epoch:", epoch)
+
             train.report(metrics, checkpoint=checkpoint)
 
         # if epoch == 1:
         #     raise RuntimeError("故意出错。Intentional error to showcase restoration!")
 
 
-"""
-训练过程中：
-每个epoch计算一次损失，并通过反向传播更新模型。
-如果满足保存检查点的条件（例如每个epoch保存一次），则将当前模型、优化器和epoch状态保存到临时目录，并通过 train.report() 向 Ray 提交当前的损失和检查点。
-如果出现错误（例如 epoch == 1），则展示训练恢复的功能。
-"""
+def load_model_from_checkpoint(checkpoint_path):
+    # 创建新的模型实例
+    model = nn.Linear(4, 1)
+    model = ray.train.torch.prepare_model(model)
+    optimizer = Adam(model.parameters(), lr=3e-4)
+    criterion = nn.MSELoss()
 
-"""
-使用 TorchTrainer 来启动训练，指定训练函数 train_func，设置训练的 epoch 数量为 5，使用 2 个工作节点（num_workers=2）。
-配置失败处理（max_failures=1），即最多允许一次失败。
-"""
+    # 加载模型权重
+    model_state_dict = torch.load(os.path.join(checkpoint_path, "model.pt"), weights_only=True)
+    model.module.load_state_dict(model_state_dict)
+    optimizer.load_state_dict(torch.load(os.path.join(checkpoint_path, "optimizer.pt"), weights_only=True))
+    start_epoch = (torch.load(os.path.join(checkpoint_path, "extra_state.pt"), weights_only=True)["epoch"] + 1)
+
+    return model, optimizer, start_epoch
+
 
 local_dir = "/Users/xnpeng/sumoptis/sumo-rl/ray_results"
 
@@ -120,7 +124,7 @@ run_config = train.RunConfig(
     failure_config=train.FailureConfig(max_failures=1),
 )
 
-train_loop_config={"num_epochs": 5, "checkpoint_freq": 1}
+train_loop_config = {"num_epochs": 50, "checkpoint_freq": 2}
 
 trainer = TorchTrainer(
     train_func,
@@ -130,60 +134,29 @@ trainer = TorchTrainer(
 )
 result = trainer.fit()
 
-print("result-1:\n", result)
+print("result:\n", result)
 print("result.checkpoint=", result.checkpoint)
-print("result.checkpoint.path=", result.checkpoint.path)
+print("result.metrics=", result.metrics)
 
-train_loop_config={"num_epochs": 5, "checkpoint_freq": 2}
-# Seed a training run with a checkpoint using `resume_from_checkpoint`
-trainer = TorchTrainer(
-    train_func,
-    train_loop_config=train_loop_config,
-    scaling_config=ScalingConfig(num_workers=2),
-    resume_from_checkpoint=result.checkpoint, # 恢复不成功
-    run_config=run_config,
-)
-result2 = trainer.fit()
+df = result.metrics_dataframe
+print("Minimum loss=", min(df["loss"]))
 
-print("\nresult-2:\n", result2)
-print("result.checkpoint=", result2.checkpoint)
-# print("result.checkpoint.path=", result2.checkpoint.path)
+# Print available checkpoints
+for checkpoint, metrics in result.best_checkpoints:
+    print("Loss=", metrics["loss"], "checkpoint=", checkpoint)
 
+# Get checkpoint with minimal loss
+best_checkpoint = min(
+    result.best_checkpoints, key=lambda checkpoint: checkpoint[1]["loss"]
+)[0]
 
-train_loop_config={"num_epochs": 5, "checkpoint_freq": 3}
-# Seed a training run with a checkpoint using `resume_from_checkpoint`
-trainer = TorchTrainer(
-    train_func,
-    train_loop_config=train_loop_config,
-    scaling_config=ScalingConfig(num_workers=2),
-    resume_from_checkpoint=result.checkpoint, # 恢复不成功
-    run_config=run_config,
-)
-result3 = trainer.fit()
+min_loss = min(
+    result.best_checkpoints, key=lambda checkpoint: checkpoint[1]["loss"]
+)[1]
 
-print("\nresult-3:\n", result3)
-print("result.checkpoint=", result3.checkpoint)
-print("result.checkpoint.path=", result3.checkpoint.path)
+print("MinimumLoss=:", min_loss, " BestCheckpoint=:", best_checkpoint)
 
 """
-如果上一步的训练成功完成并返回了一个检查点（result.checkpoint），则可以通过 resume_from_checkpoint 参数来从这个检查点恢复训练，继续训练。
-https://docs.ray.io/en/latest/train/user-guides/checkpoints.html
-
-result-2:
- Result(
-  metrics={},
-  path='/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-08_10-51-52/TorchTrainer_68a8c_00000_0_2024-11-08_10-51-52',
-  filesystem='local',
-  checkpoint=None
-)
-result.checkpoint= None
-Traceback (most recent call last):
-  File "/Users/xnpeng/sumoptis/sumo-rl/ray_train/save_load_checkpoint_restore_2.py", line 147, in <module>
-    print("result.checkpoint.path=", result2.checkpoint.path)
-AttributeError: 'NoneType' object has no attribute 'path'
-
-问题： resume_from_checkpoint = result.checkpoint 在训练后，其结果result中checkpoint为None. 为什么不能恢复训练？
-https://docs.ray.io/en/latest/train/user-guides/checkpoints.html
 
 
 """

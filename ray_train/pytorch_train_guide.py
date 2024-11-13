@@ -88,3 +88,7 @@ with result.checkpoint.as_directory() as checkpoint_dir:
         1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
     )
     model.load_state_dict(model_state_dict)
+
+"""
+在GPU上运行正常
+"""

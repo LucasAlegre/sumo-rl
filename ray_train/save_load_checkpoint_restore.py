@@ -110,12 +110,12 @@ def train_func(config):
 
 local_dir = "/Users/xnpeng/sumoptis/sumo-rl/ray_results"
 
+train_loop_config = {"num_epochs": 5, "checkpoint_freq": 1}
 run_config = train.RunConfig(
     checkpoint_config=train.CheckpointConfig(
-        num_to_keep=2,
-        # checkpoint_frequency=1,
-        # checkpoint_score_attribute="loss",
-        # checkpoint_score_order="min",
+        num_to_keep=1,
+        checkpoint_score_attribute="loss",
+        checkpoint_score_order="min",
     ),
     storage_path=local_dir,
     failure_config=train.FailureConfig(max_failures=1),
@@ -123,7 +123,7 @@ run_config = train.RunConfig(
 
 trainer = TorchTrainer(
     train_func,
-    train_loop_config={"num_epochs": 5},
+    train_loop_config=train_loop_config,
     scaling_config=ScalingConfig(num_workers=2),
     run_config=run_config,
 )
@@ -131,6 +131,22 @@ result = trainer.fit()
 print("result-1:\n", result)
 print("result.checkpoint=", result.checkpoint)
 print("result.checkpoint.path=", result.checkpoint.path)
+
+
+train_loop_config={"num_epochs": 10, "checkpoint_freq": 1}
+# Seed a training run with a checkpoint using `resume_from_checkpoint`
+trainer = TorchTrainer(
+    train_func,
+    train_loop_config=train_loop_config,
+    scaling_config=ScalingConfig(num_workers=2),
+    resume_from_checkpoint=result.checkpoint,
+    run_config=run_config,
+)
+result2 = trainer.fit()
+
+print("\nresult-2:\n", result2)
+print("result.checkpoint=", result2.checkpoint)
+print("result.checkpoint.path=", result2.checkpoint.path)
 
 """
 result-1:
@@ -142,5 +158,15 @@ result-1:
 )
 result.checkpoint= Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-48-58/TorchTrainer_f5c0d_00000_0_2024-11-12_16-48-59/checkpoint_000004)
 result.checkpoint.path= /Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-12_16-48-58/TorchTrainer_f5c0d_00000_0_2024-11-12_16-48-59/checkpoint_000004
+
+result-2:
+ Result(
+  metrics={'loss': 0.8999086022377014},
+  path='/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-13_15-35-30/TorchTrainer_dc42a_00000_0_2024-11-13_15-35-30',
+  filesystem='local',
+  checkpoint=Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-13_15-35-30/TorchTrainer_dc42a_00000_0_2024-11-13_15-35-30/checkpoint_000001)
+)
+result.checkpoint= Checkpoint(filesystem=local, path=/Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-13_15-35-30/TorchTrainer_dc42a_00000_0_2024-11-13_15-35-30/checkpoint_000001)
+result.checkpoint.path= /Users/xnpeng/sumoptis/sumo-rl/ray_results/TorchTrainer_2024-11-13_15-35-30/TorchTrainer_dc42a_00000_0_2024-11-13_15-35-30/checkpoint_000001
 
 """
