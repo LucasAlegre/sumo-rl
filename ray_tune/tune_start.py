@@ -73,11 +73,11 @@ def train_mnist(config):
          transforms.Normalize((0.1307,), (0.3081,))])
 
     train_loader = DataLoader(
-        datasets.MNIST("~/data", train=True, download=True, transform=mnist_transforms),
+        datasets.MNIST("./data", train=True, download=True, transform=mnist_transforms),
         batch_size=64,
         shuffle=True)
     test_loader = DataLoader(
-        datasets.MNIST("~/data", train=False, transform=mnist_transforms),
+        datasets.MNIST("./data", train=False, transform=mnist_transforms),
         batch_size=64,
         shuffle=True)
 
@@ -86,8 +86,7 @@ def train_mnist(config):
     model = ConvNet()
     model.to(device)
 
-    optimizer = optim.SGD(
-        model.parameters(), lr=config["lr"], momentum=config["momentum"])
+    optimizer = optim.SGD(model.parameters(), lr=config["lr"], momentum=config["momentum"])
     for i in range(10):
         train_func(model, optimizer, train_loader)
         acc = test_func(model, test_loader)
