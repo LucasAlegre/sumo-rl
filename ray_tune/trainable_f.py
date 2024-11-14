@@ -101,6 +101,9 @@ def tune_result():
     best_result_df = best_result.metrics_dataframe  # Get best result as pandas dataframe
 
 if __name__ == "__main__":
+    # tune_trail()
+    num_samples()
+    # search_space()
     # tune_scheduler()
     # tune_result()
-    bayesopt()
+    # bayesopt()
