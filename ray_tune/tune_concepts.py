@@ -1,5 +1,6 @@
 from ray import train, tune
 from ray.tune.search.bayesopt import BayesOptSearch
+from ray.tune.search.hyperopt import HyperOptSearch
 
 
 def objective(x, a, b):  # Define an objective function.
@@ -12,6 +13,19 @@ def trainable(config):  # Pass a "config" dictionary into your trainable.
         score = objective(x, config["a"], config["b"])
 
         train.report({"score": score})  # Send the score to Tune.
+
+
+class Trainable(tune.Trainable):
+    def setup(self, config):
+        # config (dict): A dict of hyperparameters
+        self.x = 0
+        self.a = config["a"]
+        self.b = config["b"]
+
+    def step(self):  # This is called iteratively.
+        score = objective(self.x, self.a, self.b)
+        self.x += 1
+        return {"score": score}
 
 
 def tune_trail():
@@ -44,13 +58,15 @@ def bayesopt():
     search_space = {"a": tune.uniform(0, 1), "b": tune.uniform(0, 20)}
 
     # algo = BayesOptSearch(random_search_steps=4)
+    # Use HyperOptSearch instead of BayesOptSearch
+    algo = HyperOptSearch(metric="score", mode="min")
 
     tuner = tune.Tuner(
         trainable,
         tune_config=tune.TuneConfig(
             metric="score",
             mode="min",
-            # search_alg=algo,
+            search_alg=algo,
         ),
         run_config=train.RunConfig(stop={"training_iteration": 50}),
         param_space=search_space,
@@ -77,7 +93,7 @@ def tune_scheduler():
     tuner.fit()
 
 
-def tune_result():
+def tune_trainable_function():
     config = {"a": tune.uniform(0, 1), "b": tune.uniform(0, 1)}
     tuner = tune.Tuner(
         trainable,
@@ -100,10 +116,41 @@ def tune_result():
     best_metrics = best_result.metrics  # Get best trial's last results
     best_result_df = best_result.metrics_dataframe  # Get best result as pandas dataframe
 
+
+def tune_trainable_class():
+    # Define the search space for hyperparameters.
+    config = {
+        "a": tune.uniform(0.1, 2.0),  # Hyperparameter 'a' will be uniformly sampled between 0.1 and 2.0
+        "b": tune.uniform(-1.0, 1.0),  # Hyperparameter 'b' will be uniformly sampled between -1.0 and 1.0
+    }
+
+    stop_criteria = {
+        "score": 0.1,  # Stop when the score is below 0.1
+        "training_iteration": 20  # Stop after 20 training iterations
+    }
+
+    # Run the hyperparameter optimization using `tune.run`
+    results = tune.run(
+        Trainable,
+        config=config,
+        num_samples=100,  # Number of random hyperparameter configurations to try
+        resources_per_trial={"cpu": 1},  # Each trial will use 1 CPU
+        metric="score",  # Metric to optimize
+        mode="min",  # Minimize the score
+        stop=stop_criteria,
+        # checkpoint_at_end=True,
+        name="tune_trainable_class"
+    )
+
+    # Print the best result found
+    print("Best hyperparameters found: ", results.best_config)
+
+
 if __name__ == "__main__":
     # tune_trail()
-    num_samples()
+    # num_samples()
     # search_space()
     # tune_scheduler()
-    # tune_result()
-    # bayesopt()
+    bayesopt()
+    # tune_trainable_function()
+    # tune_trainable_class()
