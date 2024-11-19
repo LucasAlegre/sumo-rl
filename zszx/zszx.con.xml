@@ -1,0 +1,122 @@
+<connections>
+    <!--从北到南,直行-->
+    <connection from="n_t" to="t_s" fromLane="1" toLane="0"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="1"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="2"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="3"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="4"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="5"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="6"/>
+
+    <connection from="n_t" to="t_s" fromLane="2" toLane="0"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="1"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="2"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="3"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="4"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="5"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="6"/>
+
+    <connection from="n_t" to="t_s" fromLane="3" toLane="0"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="1"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="2"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="3"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="4"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="5"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="6"/>
+
+    <!--从北到南,左转-->
+    <connection from="n_t" to="t_e" fromLane="4" toLane="0"/>
+    <connection from="n_t" to="t_e" fromLane="4" toLane="1"/>
+    <connection from="n_t" to="t_e" fromLane="4" toLane="2"/>
+    <connection from="n_t" to="t_e" fromLane="4" toLane="3"/>
+
+    <connection from="n_t" to="t_e" fromLane="5" toLane="0"/>
+    <connection from="n_t" to="t_e" fromLane="5" toLane="1"/>
+    <connection from="n_t" to="t_e" fromLane="5" toLane="2"/>
+    <connection from="n_t" to="t_e" fromLane="5" toLane="3"/>
+
+    <!--从南到北，直行-->
+    <connection from="s_t" to="t_n" fromLane="1" toLane="0"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="1"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="2"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="3"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="4"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="5"/>
+
+    <connection from="s_t" to="t_n" fromLane="2" toLane="0"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="1"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="2"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="3"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="4"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="5"/>
+
+    <connection from="s_t" to="t_n" fromLane="3" toLane="0"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="1"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="2"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="3"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="4"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="5"/>
+
+    <!--从南到北，左转-->
+    <connection from="s_t" to="t_w" fromLane="4" toLane="0"/>
+    <connection from="s_t" to="t_w" fromLane="4" toLane="1"/>
+    <connection from="s_t" to="t_w" fromLane="4" toLane="2"/>
+
+    <connection from="s_t" to="t_w" fromLane="5" toLane="0"/>
+    <connection from="s_t" to="t_w" fromLane="5" toLane="1"/>
+    <connection from="s_t" to="t_w" fromLane="5" toLane="2"/>
+
+    <!--从东到西，直行-->
+    <connection from="e_t" to="t_w" fromLane="0" toLane="0"/>
+    <connection from="e_t" to="t_w" fromLane="0" toLane="1"/>
+    <connection from="e_t" to="t_w" fromLane="0" toLane="2"/>
+
+    <connection from="e_t" to="t_w" fromLane="1" toLane="0"/>
+    <connection from="e_t" to="t_w" fromLane="1" toLane="1"/>
+    <connection from="e_t" to="t_w" fromLane="1" toLane="2"/>
+
+    <connection from="e_t" to="t_w" fromLane="2" toLane="0"/>
+    <connection from="e_t" to="t_w" fromLane="2" toLane="1"/>
+    <connection from="e_t" to="t_w" fromLane="2" toLane="2"/>
+
+    <!--从东到西，左转-->
+    <connection from="e_t" to="t_s" fromLane="3" toLane="0"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="1"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="2"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="3"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="4"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="5"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="6"/>
+
+    <!--从西到东，直行-->
+    <connection from="w_t" to="t_e" fromLane="1" toLane="0"/>
+    <connection from="w_t" to="t_e" fromLane="1" toLane="1"/>
+    <connection from="w_t" to="t_e" fromLane="1" toLane="2"/>
+    <connection from="w_t" to="t_e" fromLane="1" toLane="3"/>
+
+    <connection from="w_t" to="t_e" fromLane="2" toLane="0"/>
+    <connection from="w_t" to="t_e" fromLane="2" toLane="1"/>
+    <connection from="w_t" to="t_e" fromLane="2" toLane="2"/>
+    <connection from="w_t" to="t_e" fromLane="2" toLane="3"/>
+
+    <connection from="w_t" to="t_e" fromLane="3" toLane="0"/>
+    <connection from="w_t" to="t_e" fromLane="3" toLane="1"/>
+    <connection from="w_t" to="t_e" fromLane="3" toLane="2"/>
+    <connection from="w_t" to="t_e" fromLane="3" toLane="3"/>
+
+    <!--从西到东，左转-->
+    <connection from="w_t" to="t_n" fromLane="5" toLane="0"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="1"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="2"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="3"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="4"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="5"/>
+
+    <connection from="w_t" to="t_n" fromLane="4" toLane="0"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="1"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="2"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="3"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="4"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="5"/>
+
+</connections>
