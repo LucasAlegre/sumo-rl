@@ -7,7 +7,7 @@ data = pd.read_csv('./zszx/output_data.txt', sep='\t', header=None, names=['time
 with open("./zszx/zszx.rou.xml", "w") as routes:
     print(
         """<routes>
-    <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="25" sigma="0.5" />
+    <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="30" sigma="0.5" />
     <route id="WN" edges="w_t t_n"/>
     <route id="WE" edges="w_t t_e"/>
     <route id="WS" edges="w_t t_s"/>
@@ -42,7 +42,7 @@ with open("./zszx/zszx.rou.xml", "w") as routes:
         depart_time = (timestamp - start_time).total_seconds()
 
         print(
-            '    <vehicle id="%s" type="standard_car" route="%s" depart="%s" departLane="random" departSpeed="10" />'
+            '    <vehicle id="%s" type="standard_car" route="%s" depart="%s" departLane="random" departSpeed="20" />'
             % (vehicle_id, direction, depart_time),
             file=routes,
         )

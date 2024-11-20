@@ -52,6 +52,65 @@ def convert(file_path):
     print("数据已成功转换并保存到 output_data.txt")
 
 
+def minute_flow(file_path):
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    from matplotlib import rcParams
+    import matplotlib.dates as mdates
+
+    # 设置支持中文字体，避免乱码
+    rcParams['font.sans-serif'] = ['KaiTi']  # 使用SimHei字体，支持中文
+    rcParams['axes.unicode_minus'] = False  # 解决负号显示为方块的问题
+
+    # 读取数据文件
+    df_output = pd.read_csv(file_path, sep='\t', header=None, names=['日期时间', '路口号+车道号', '车牌'])
+
+    # 由于'路口号+车道号'和'日期时间'可能是被误混合的，我们需要将它们分开。
+    # 使用正则表达式从'日期时间'列中提取出日期时间部分，并移除方向信息
+    df_output['日期时间'] = df_output['日期时间'].str.extract(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})')[0]
+    df_output['路口号+车道号'] = df_output['路口号+车道号'].str.extract(r'([A-Za-z]+)')[0]  # 提取方向信息
+
+    print(df_output.head())
+    # 将日期时间列转换为日期时间格式
+    df_output['日期时间'] = pd.to_datetime(df_output['日期时间'])
+    print(df_output.head())
+
+    # 生成分钟列
+    df_output['分钟'] = df_output['日期时间'].dt.floor('T')  # 按分钟进行聚合
+
+    # 按方向和分钟统计车流量
+    traffic_flow_minutely = df_output.groupby([df_output['分钟'], '路口号+车道号']).size().reset_index(name='车流量')
+    traffic_flow_minutely.to_csv('./zszx/traffic_flow_minutely.csv', index=False)
+
+    # 获取所有流向（方向）
+    directions = traffic_flow_minutely['路口号+车道号'].unique()
+
+    # 绘制每个方向的时间-车流量曲线
+    plt.figure(figsize=(24, 8))
+
+    for direction in directions:
+        # 获取该方向的数据
+        direction_data = traffic_flow_minutely[traffic_flow_minutely['路口号+车道号'] == direction]
+
+        # 绘制该方向的时间-车流量曲线
+        plt.plot(direction_data['分钟'], direction_data['车流量'], label=direction)
+
+    # 设置图形的标题和标签
+    plt.title('各方向车流量分钟序列')
+    plt.xlabel('时间')
+    plt.ylabel('车流量')
+    plt.xticks(rotation=45)
+    plt.yticks(rotation=45)
+    plt.legend(title='方向')
+
+    # 格式化X轴的时间显示，设置为分钟
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%H-%M'))  # 只显示小时和分钟
+    plt.gca().xaxis.set_major_locator(mdates.HourLocator())  # 设置每小时为一个刻度
+
+    # 显示图形
+    plt.tight_layout()
+    plt.show()
+
 def hourly_flow(file_path):
     import pandas as pd
     import matplotlib.pyplot as plt
@@ -94,7 +153,7 @@ def hourly_flow(file_path):
         plt.plot(direction_data['小时'], direction_data['车流量'], label=direction)
 
     # 设置图形的标题和标签
-    plt.title('各方向车流量时间序列')
+    plt.title('各方向车流量小时序列')
     plt.xlabel('时间')
     plt.ylabel('车流量')
     plt.xticks(rotation=45)
@@ -153,7 +212,7 @@ def daily_flow(file_path):
         plt.plot(direction_data['日期'], direction_data['车流量'], marker='o', label=direction)
 
     # 设置图形的标题和标签
-    plt.title('每日各方向车流量')  # 设置中文标题
+    plt.title('各方向车流量小时序列')  # 设置中文标题
     plt.xlabel('日期')  # 设置中文X轴标签
     plt.ylabel('车流量')  # 设置中文Y轴标签
     plt.legend(title='方向')  # 设置图例
@@ -169,5 +228,6 @@ if __name__ == '__main__':
     # convert()
     output_file = './zszx/output_data.txt'
     # plot_data(output_file)
-    hourly_flow(output_file)
+    minute_flow(output_file)
+    # hourly_flow(output_file)
     # daily_flow(output_file)
