@@ -1,0 +1,18 @@
+<routes>
+    <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="30" sigma="0.5" />
+    <route id="WN" edges="w_t t_n"/>
+    <route id="WE" edges="w_t t_e"/>
+    <route id="WS" edges="w_t t_s"/>
+
+    <route id="NW" edges="n_t t_w"/>
+    <route id="NE" edges="n_t t_e"/>
+    <route id="NS" edges="n_t t_s"/>
+
+    <route id="EW" edges="e_t t_w"/>
+    <route id="EN" edges="e_t t_n"/>
+    <route id="ES" edges="e_t t_s"/>
+
+    <route id="SW" edges="s_t t_w"/>
+    <route id="SN" edges="s_t t_n"/>
+    <route id="SE" edges="s_t t_e"/>
+</routes>

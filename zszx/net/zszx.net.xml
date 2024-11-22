@@ -210,7 +210,7 @@
         <phase duration="20" state="GGGGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
         <phase duration="3"  state="yyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
         <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrrrrrr"/>
         <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGrrrrrrrrrrrr"/>
         <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyrrrrrrrrrrrr"/>
         <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGG"/>
