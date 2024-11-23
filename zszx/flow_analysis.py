@@ -29,8 +29,8 @@ plt.ylabel('Traffic Count')
 plt.xticks(range(0, 24))
 plt.legend()
 plt.grid(True)
+plt.savefig('zszx/flow/hourly_flow_by_direction.png')
 plt.show()
-plt.savefig('zszx/flow/Traffic_Flow_by_Hour_and_Direction.png')
 
 
 # 使用简单的趋势线（如线性回归）来观察流量趋势

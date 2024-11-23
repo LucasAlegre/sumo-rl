@@ -115,8 +115,8 @@ def parserArgs(args):
     # 创建 ArgumentParser 对象
     parser = argparse.ArgumentParser(description="Process some integers.")
     # 添加命令行参数
-    parser.add_argument('-n', '--net_file', required=False, type=str, default="net/cross.net.xml", help='网络配置文件')
-    parser.add_argument('-r', '--rou_file', required=False, type=str, default="net/cross.rou.xml", help='需求配置文件')
+    parser.add_argument('-n', '--net_file', required=True, type=str, help='网络配置文件,net/cross.net.xml')
+    parser.add_argument('-r', '--rou_file', required=True, type=str, help='需求配置文件,net/cross.rou.xml')
     parser.add_argument('-o', '--out_csv_name', required=False, type=str, default="out/cross-algo", help='训练过程输出')
     parser.add_argument('-d', '--model_file', required=False, type=str, default="model/cross-model", help='模型保存文件')
     parser.add_argument('-b', '--tensorboard_log', required=False, type=str, default="logs/cross-log", help='tensorboard目录')
@@ -307,3 +307,11 @@ if __name__ == "__main__":
 
     env.close()
     del model
+
+"""
+可以正常运行的训练工作流程序。
+1，创建网络: .net.xml
+2，创建需求: .rou.xml
+3，传进参数运行: python AtscWorkflow.py -n my-intersection.net.xml -r my-intersection-number.rou.xml -q SAC -f ALL -s 20000 -e 20 -l 100000 -t 2024
+4，检查结果: model-file，eval-result, predict-result
+"""

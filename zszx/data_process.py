@@ -2,9 +2,6 @@ import pandas as pd
 
 
 def convert(file_path):
-    # 假设输入文件为 input.txt，读取文件内容
-    # file_path = './zszx/input_data.txt'
-
     # 读取文件时，使用正则分隔符（多个空格），并确保日期时间字段不被分开
     df = pd.read_csv(file_path, sep=r'\s{2,}', header=None, engine='python')
 
@@ -47,7 +44,7 @@ def convert(file_path):
     print(df_output.head())
 
     # 输出为新的文本文件
-    df_output.to_csv('./zszx/output_data.txt', sep='\t', header=False, index=False)
+    df_output.to_csv('./zszx/data/output_data.txt', sep='\t', header=False, index=False)
 
     print("数据已成功转换并保存到 output_data.txt")
 
@@ -79,18 +76,18 @@ def minute_flow(file_path):
     df_output['分钟'] = df_output['日期时间'].dt.floor('T')  # 按分钟进行聚合
 
     # 按方向和分钟统计车流量
-    traffic_flow_minutely = df_output.groupby([df_output['分钟'], '路口号+车道号']).size().reset_index(name='车流量')
-    traffic_flow_minutely.to_csv('./zszx/traffic_flow_minutely.csv', index=False)
+    traffic_flow_minute = df_output.groupby([df_output['分钟'], '路口号+车道号']).size().reset_index(name='车流量')
+    traffic_flow_minute.to_csv('./zszx/flow/traffic_flow_minute.csv', index=False)
 
     # 获取所有流向（方向）
-    directions = traffic_flow_minutely['路口号+车道号'].unique()
+    directions = traffic_flow_minute['路口号+车道号'].unique()
 
     # 绘制每个方向的时间-车流量曲线
     plt.figure(figsize=(24, 8))
 
     for direction in directions:
         # 获取该方向的数据
-        direction_data = traffic_flow_minutely[traffic_flow_minutely['路口号+车道号'] == direction]
+        direction_data = traffic_flow_minute[traffic_flow_minute['路口号+车道号'] == direction]
 
         # 绘制该方向的时间-车流量曲线
         plt.plot(direction_data['分钟'], direction_data['车流量'], label=direction)
@@ -109,7 +106,9 @@ def minute_flow(file_path):
 
     # 显示图形
     plt.tight_layout()
+    plt.savefig('./zszx/flow/traffic_flow_minute.png')
     plt.show()
+
 
 def hourly_flow(file_path):
     import pandas as pd
@@ -137,7 +136,7 @@ def hourly_flow(file_path):
 
     # 按方向和小时统计车流量
     traffic_flow_hourly = df_output.groupby([df_output['小时'], '路口号+车道号']).size().reset_index(name='车流量')
-    traffic_flow_hourly.to_csv('./zszx/traffic_flow_hourly.csv', index=False)
+    traffic_flow_hourly.to_csv('./zszx/flow/traffic_flow_hourly.csv', index=False)
 
     # 获取所有流向（方向）
     directions = traffic_flow_hourly['路口号+车道号'].unique()
@@ -166,6 +165,7 @@ def hourly_flow(file_path):
 
     # 显示图形
     plt.tight_layout()
+    plt.savefig('./zszx/flow/traffic_flow_hourly.png')
     plt.show()
 
 
@@ -198,7 +198,7 @@ def daily_flow(file_path):
     print(traffic_flow_daily)
 
     # 将统计结果保存为CSV文件
-    traffic_flow_daily.to_csv('./zszx/traffic_flow_daily.csv', index=False)
+    traffic_flow_daily.to_csv('./zszx/flow/traffic_flow_daily.csv', index=False)
 
     # 绘制流量曲线
     directions = traffic_flow_daily['路口号+车道号'].unique()  # 获取所有方向
@@ -220,14 +220,14 @@ def daily_flow(file_path):
     # 显示图形
     plt.xticks(rotation=45)  # 让日期刻度倾斜，避免重叠
     plt.tight_layout()
+    plt.savefig('./zszx/flow/traffic_flow_daily.png')
     plt.show()
 
 
 if __name__ == '__main__':
-    input_file = './zszx/input_data.txt'
+    input_file = './zszx/data/input_data.txt'
     # convert()
-    output_file = './zszx/output_data.txt'
-    # plot_data(output_file)
-    minute_flow(output_file)
+    output_file = './zszx/data/output_data.txt'
+    # minute_flow(output_file)
     # hourly_flow(output_file)
-    # daily_flow(output_file)
+    daily_flow(output_file)
