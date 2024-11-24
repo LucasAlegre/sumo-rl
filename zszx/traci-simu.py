@@ -8,7 +8,7 @@ counter = 0
 
 
 # 逐批加载流量数据的函数，改进版本，避免每次打开文件
-def load_traffic_data_batch(file, batch_size=100):
+def load_traffic_data_batch(file, batch_size=50):
     """
     逐批读取历史流量数据。
     :param file: 已经打开的文件对象
@@ -40,7 +40,7 @@ def load_traffic_data_batch(file, batch_size=100):
 
 
 # 启动仿真并逐步加载流量数据
-def run_simulation_with_dynamic_traffic(file_path, sumo_binary="sumo",
+def run_simulation_with_dynamic_traffic(file_path, sumo_binary="sumo-gui",
                                         sumo_config_file="zszx/net/zszx.sumocfg",
                                         batch_size=50,
                                         steps_per_batch=100):
@@ -102,6 +102,8 @@ if __name__ == "__main__":
     run_simulation_with_dynamic_traffic(file_path)
 
 """
+这个程序是利用历史数据仿真信控过程。流量是历史数据，配时方案是真实的固定配时。
+
 在仿真过程中分批次加载历史数据进入仿真系统，而不是一次性加载数据造成内存耗尽的情况。
 比如，运行100个仿真步加载一批50条数据。注意，100仿真远小于100秒，所以加载的历史数据的发车时间(depart)不能小于100仿真步所需要的时间
 （具体时间跟硬件相关），否则这些车辆超过了发车时间而被抛弃。

@@ -59,7 +59,7 @@ for direction in hourly_flow_by_direction.index:
     plt.show()
 
 # 将按方向和小时统计的流量保存为 CSV 文件
-hourly_flow_by_direction.to_csv('zszx/flow/hourly_flow_by_direction.csv', header=True)
+hourly_flow_by_direction.T.to_csv('zszx/flow/hourly_flow_by_direction.csv', header=True)
 
 # 如果需要按方向和小时+分钟保存
-minute_flow_by_direction.to_csv('zszx/flow/minute_flow_by_direction.csv', header=True)
+minute_flow_by_direction.T.to_csv('zszx/flow/minute_flow_by_direction.csv', header=True)
