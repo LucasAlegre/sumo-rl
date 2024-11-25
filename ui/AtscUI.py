@@ -10,6 +10,7 @@ from stable_baselines3 import PPO, A2C, SAC
 import matplotlib.pyplot as plt
 
 sys.path.append('..')
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ui.utils import (add_directory_if_missing, extract_crossname_from_netfile,
                       write_eval_result, write_predict_result, get_relative_path,
@@ -30,30 +31,46 @@ else:
 from mysumo.envs.sumo_env import SumoEnv, ContinuousSumoEnv
 
 
+def make_sub_dir(name) -> str:
+    file_dir = os.path.dirname(os.path.abspath(__file__))
+    name_dir = os.path.join(file_dir, name)
+    if not os.path.exists(name_dir):
+        os.makedirs(name_dir)
+    if isinstance(name_dir, bytes):
+        name_dir = name_dir.decode('utf-8')  # 解码为字符串
+    return name_dir
+
+
 def parseParams(net_file,  # 网络模型
                 rou_file,  # 交通需求
                 algo_name="DQN",  # 算法名称
-                operation="ALL",  # 操作名称
+                operation="TRAIN",  # 操作名称
                 tensorboard_logs="logs",  # tensorboard_logs folder
                 single_agent=True,  # 单智能体
-                num_seconds=20000,  # 仿真时长
+                num_seconds=10000,  # 仿真时长
                 n_eval_episodes=10,  # 评估回合数
                 n_steps=1024,  # A2C价值网络更新间隔时间步
-                total_timesteps=1000000,  # 训练时间步
+                total_timesteps=100_000,  # 训练时间步
                 gui=False,  # 图形界面
                 render_mode=None,  # 渲染模式
                 ):
     algo_name = algo_name
-    net_path = add_directory_if_missing(net_file, "./net")
-    rou_path = add_directory_if_missing(rou_file, "./net")
+    net_path = net_file
+    rou_path = rou_file
     _cross_name = extract_crossname_from_netfile(net_path)
-    csv_path = add_directory_if_missing(_cross_name + "-" + algo_name, "./out")
+
+    cvs_file = _cross_name + "-" + algo_name
+    csv_path = os.path.join(make_sub_dir("outs"), cvs_file)
+
     model_file = _cross_name + "-model-" + algo_name + ".zip"
-    model_path = add_directory_if_missing(model_file, "./model")
+    model_path = os.path.join(make_sub_dir("models"), model_file)
+
     predict_file = _cross_name + "-predict-" + algo_name + ".json"
-    predict_path = add_directory_if_missing(predict_file, "./predict")
+    predict_path = os.path.join(make_sub_dir("predicts"), predict_file)
+
     eval_file = _cross_name + "-eval-" + algo_name + ".txt"
-    eval_path = add_directory_if_missing(eval_file, "./eval")
+    eval_path = os.path.join(make_sub_dir("evals"), eval_file)
+
     tensorboard_logpath = add_directory_if_missing(tensorboard_logs, "./logs")
     single_agent = single_agent
     operation = operation
@@ -63,6 +80,11 @@ def parseParams(net_file,  # 网络模型
     n_steps = n_steps
     gui = gui
     render_mode = render_mode
+
+    print("model_file: ", model_file)
+    print("predict_file: ", predict_file)
+    print("eval_file: ", eval_file)
+    print("csv_file:", cvs_file)
 
     print("==========AtscUI-parseParams-net_path={}".format(net_path))
     print("==========AtscUI-parseParams-rou_path={}".format(rou_path))
@@ -240,6 +262,7 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
     elif operation == "TRAIN":
         # print("train model=====训练模型，总时间步，进度条")
         output += "train model=====训练模型，总时间步，进度条\n"
+        print("output:", output)
         # model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
         for i in range(0, total_timesteps, 1000):  # 每1000步更新一次进度
             model.learn(total_timesteps=1000, progress_bar=False)
@@ -247,11 +270,15 @@ def run_simulation(network_file, demand_file, algorithm, operation, total_timest
             yield progress, output
         # print("save model=====保存训练模型")
         output += "save model=====保存训练模型\n"
+        print("output:", output)
         model.save(model_path)
         output += "evaluate policy====训练后，评估模型"
+        print("output:", output)
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=n_eval_episodes)
         write_eval_result(mean_reward, std_reward, eval_path)
         output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
+        print("output:", output)
+        yield progress, output
     elif operation == "PREDICT":
         # print("predict====使用模型进行预测")
         output += "predict====使用模型进行预测\n"
@@ -326,14 +353,14 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         with gr.TabItem("模型训练"):
             with gr.Row():
                 with gr.Column(scale=2):
-                    network_file = gr.File(label="路网模型", value="../mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
-                    demand_file = gr.File(label="交通需求", value="../mynets/net/my-intersection-perhour.rou.xml", file_types=[".xml", ".rou.xml"])
+                    network_file = gr.File(label="路网模型", value="mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
+                    demand_file = gr.File(label="交通需求", value="mynets/net/my-intersection-perhour.rou.xml", file_types=[".xml", ".rou.xml"])
                 with gr.Column(scale=1):
                     algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="DQN", label="算法模型")
-                    operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="EVAL", label="运行功能")
+                    operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="TRAIN", label="运行功能")
 
             with gr.Row():
-                total_timesteps = gr.Slider(1000, 1000000, value=1000000, step=1000, label="训练步数")
+                total_timesteps = gr.Slider(1000, 100000, value=100000, step=1000, label="训练步数")
                 num_seconds = gr.Slider(1000, 20000, value=20000, step=1000, label="仿真秒数")
 
             run_button = gr.Button("开始运行", variant="primary")
@@ -379,3 +406,16 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         outputs=[plot_image, plot_output])
 
 demo.launch()
+
+"""
+模型训练，评估，预测，结果分析。
+适用算法：DQN,PPO,A2C,SAC。
+
+运行正常，结果正确。
+
+改进：
+1，为配置参数设计一个结构，分训练参数、预测参数、评估参数、log参数等，为不同的算法设计不同的配置项；
+2，包及路径的规范化设计。
+3，模型的部署与使用。
+
+"""

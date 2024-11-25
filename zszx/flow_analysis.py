@@ -9,9 +9,13 @@ data = pd.read_csv('zszx/data/output_data.txt', sep='\t', header=None, names=['t
 data['timestamp'] = pd.to_datetime(data['timestamp'])
 
 # 提取出日期、小时和分钟（方便按时间段分组）
-# data['date'] = data['timestamp'].dt.date
+data['date'] = data['timestamp'].dt.date
 data['hour'] = data['timestamp'].dt.hour
 data['minute'] = data['timestamp'].dt.minute
+
+# 按方向和日期统计流量
+daily_flow_by_direction = data.groupby(['direction']).size()
+daily_flow_by_direction = (daily_flow_by_direction / 48).astype(int)
 
 # 按方向和小时统计流量
 hourly_flow_by_direction = data.groupby(['direction', 'hour']).size().unstack(fill_value=0)
@@ -31,7 +35,6 @@ plt.legend()
 plt.grid(True)
 plt.savefig('zszx/flow/hourly_flow_by_direction.png')
 plt.show()
-
 
 # 使用简单的趋势线（如线性回归）来观察流量趋势
 from sklearn.linear_model import LinearRegression
@@ -56,7 +59,10 @@ for direction in hourly_flow_by_direction.index:
     plt.ylabel('Traffic Count')
     plt.legend()
     plt.grid(True)
-    plt.show()
+    # plt.show()
+
+# 将按方向和日期统计的流量保存为 CSV 文件
+daily_flow_by_direction.T.to_csv('zszx/flow/daily_flow_by_direction.csv', index=True)
 
 # 将按方向和小时统计的流量保存为 CSV 文件
 hourly_flow_by_direction.T.to_csv('zszx/flow/hourly_flow_by_direction.csv', header=True)
