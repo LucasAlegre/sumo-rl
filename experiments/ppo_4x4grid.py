@@ -20,6 +20,14 @@ import sumo_rl
 
 
 if __name__ == "__main__":
+    # Use:
+    # ray[rllib]==2.7.0
+    # numpy == 1.23.4
+    # Pillow>=9.4.0
+    # ray[rllib]==2.7.0
+    # SuperSuit>=3.9.0
+    # torch>=1.13.1
+    # tensorflow-probability>=0.19.0
     ray.init()
 
     env_name = "4x4grid"
