@@ -89,11 +89,18 @@ class TrainingTab:
         progress = gr.Slider(0, 100, value=0, label="进度", interactive=False)
         output = gr.Textbox(label="输出信息", lines=5)
 
+        def toggle_button():
+            value = not run_button.interactive
+            return gr.update(elem_id=run_button.elem_id, interactive=value)
+
         run_button.click(
             self.run_training,
             inputs=[network_file, demand_file, algorithm, operation, total_timesteps, num_seconds],
             outputs=[progress, output]
         )
+
+        # 点击按钮后禁用按钮
+        run_button.click(toggle_button, inputs=[], outputs=[run_button])
 
     def run_training(self,
                      network_file,

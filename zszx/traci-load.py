@@ -82,7 +82,8 @@ def run_simulation():
 run_simulation()
 
 """
-按时间段按概率生成车流量，车流生成完美符合规律。
+
+在仿真过程中，按时间段按概率生成各个方向的车辆，通过traci加入系统，车流生成完美符合规律。
 
 Time periods:
 Time Period 1: 0:00 to 6:00

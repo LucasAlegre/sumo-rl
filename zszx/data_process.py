@@ -192,7 +192,10 @@ def daily_flow(file_path):
     df_output['日期'] = df_output['日期时间'].dt.date
 
     # 按日和方向统计车流量
-    traffic_flow_daily = df_output.groupby([df_output['日期'], '路口号+车道号']).size().reset_index(name='车流量')
+    traffic_flow_daily = df_output.groupby([df_output['日期'], '路口号+车道号']).size().reset_index(name='日流量')
+    traffic_flow_daily['小时流量'] = (traffic_flow_daily['日流量'] / 24).astype(int)
+    traffic_flow_daily['小时流量*4/3'] = (traffic_flow_daily['日流量'] / 18).astype(int)
+    traffic_flow_daily['小时流量*2'] = (traffic_flow_daily['日流量'] / 12).astype(int)
 
     # 打印统计结果
     print(traffic_flow_daily)
@@ -209,7 +212,7 @@ def daily_flow(file_path):
         direction_data = traffic_flow_daily[traffic_flow_daily['路口号+车道号'] == direction]
 
         # 绘制当前方向的车流量曲线
-        plt.plot(direction_data['日期'], direction_data['车流量'], marker='o', label=direction)
+        plt.plot(direction_data['日期'], direction_data['日流量'], marker='o', label=direction)
 
     # 设置图形的标题和标签
     plt.title('各方向车流量小时序列')  # 设置中文标题
