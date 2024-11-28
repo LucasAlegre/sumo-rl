@@ -3,6 +3,7 @@ from atscui.models.base_agent import BaseAgent
 
 
 class PPOAgent(BaseAgent):
+
     def _create_model(self):
         return PPO(
             env=self.env,

@@ -1,9 +1,9 @@
+from ui.AstcVisualTab import VisualizationTab
+from ui.AtscTrainTab import TrainingTab
 import gradio as gr
-from atscui.ui.components.training_tab import TrainingTab
-from atscui.ui.components.visualization_tab import VisualizationTab
 
 
-class ATSCUI:
+class AtscUICreator:
     def __init__(self):
         self.training_tab = TrainingTab()
         self.visualization_tab = VisualizationTab()
@@ -20,9 +20,3 @@ class ATSCUI:
                     self.visualization_tab.render()
 
         return demo
-
-
-if __name__ == "__main__":
-    ui = ATSCUI()
-    demo = ui.create_ui()
-    demo.launch()

@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Tuple
 
+from atscui.config import TrainingConfig
+
 
 class BaseAgent(ABC):
-    def __init__(self, env, config):
+    def __init__(self, env, config: TrainingConfig):
         self.env = env
         self.config = config
         self.model = self._create_model()
@@ -18,10 +20,9 @@ class BaseAgent(ABC):
         """Train the agent and return training metrics"""
         pass
 
-    @abstractmethod
     def predict(self, observation) -> Tuple[Any, Any]:
         """Make a prediction given an observation"""
-        pass
+        return self.model.predict(observation)
 
     def save(self, path: str):
         """Save the model to the specified path"""

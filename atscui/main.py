@@ -1,9 +1,11 @@
 import os
 import sys
 from pathlib import Path
-from atscui.ui.main import ATSCUI
 
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from atscui import ATSCUI
+
 
 def setup_environment():
     """Setup necessary environment variables and paths"""

@@ -1,8 +1,12 @@
+from typing import Tuple, Any
+
 from stable_baselines3 import DQN
+
 from atscui.models.base_agent import BaseAgent
 
 
 class DQNAgent(BaseAgent):
+
     def _create_model(self):
         return DQN(
             env=self.env,

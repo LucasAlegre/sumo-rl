@@ -1,4 +1,6 @@
-import os
-import sys
+from atscui.ui.components import (
+    TrainingTab,
+    VisualizationTab
+)
 
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from atscui.ui.ui_main import ATSCUI

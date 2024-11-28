@@ -1,4 +1,11 @@
-import os
-import sys
+from atscui.config.base_config import (
+    BaseConfig,
+    TrainingConfig
+)
 
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from atscui.config.algorithm_configs import (
+    DQNConfig,
+    A2CConfig,
+    PPOConfig,
+    SACConfig
+)

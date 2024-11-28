@@ -4,14 +4,11 @@ import re
 
 import gradio as gr
 
-from atscui.utils.utils import extract_crossname_from_evalfile
-from atscui.utils.visualization import Visualizer
+from ui.AtscPlot import Visualizer
+from ui.utils import extract_crossname_from_evalfile
 
 
 class VisualizationTab:
-    def __init__(self):
-        self.visualizer = Visualizer()
-
     def render(self):
         with gr.Row():
             with gr.Column(scale=2):
