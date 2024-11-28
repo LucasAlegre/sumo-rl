@@ -82,29 +82,89 @@ time_periods_flow = {
 
 **按日期分方向平均流量表**
 
-| 日期         | 方向 | 日流量 | 小时流量 | 小时流量*4/3 | 小时流量*2 |
-|------------|----|--------|----------|--------------|------------|
-| 2024-10-20 | ES | 1590   | 66       | 88           | 132        |
-| 2024-10-20 | EW | 4275   | 178      | 237          | 356        |
-| 2024-10-20 | NE | 860    | 35       | 47           | 71         |
-| 2024-10-20 | NS | 5999   | 249      | 333          | 499        |
-| 2024-10-20 | SN | 5723   | 238      | 317          | 476        |
-| 2024-10-20 | SW | 6108   | 254      | 339          | 509        |
-| 2024-10-20 | WE | 9211   | 383      | 511          | 767        |
-| 2024-10-20 | WN | 2389   | 99       | 132          | 199        |
-| 2024-10-21 | ES | 2003   | 83       | 111          | 166        |
-| 2024-10-21 | EW | 4435   | 184      | 246          | 369        |
-| 2024-10-21 | NE | 909    | 37       | 50           | 75         |
-| 2024-10-21 | NS | 6360   | 265      | 353          | 530        |
-| 2024-10-21 | SN | 6265   | 261      | 348          | 522        |
-| 2024-10-21 | SW | 5513   | 229      | 306          | 459        |
-| 2024-10-21 | WE | 9208   | 383      | 511          | 767        |
-| 2024-10-21 | WN | 2686   | 111      | 149          | 223        |
+| 日期         | 方向 | 日流量 | 小时流量 | 小时流量*1.5 | 小时流量*2 |
+|------------|----|--------|----------|----------|------------|
+| 2024-10-20 | NS | 5999   | 249      | 333      | 499        |
+| 2024-10-20 | NE | 860    | 35       | 47       | 71         |
+| 2024-10-20 | EW | 4275   | 178      | 237      | 356        |
+| 2024-10-20 | ES | 1590   | 66       | 88       | 132        |
+| 2024-10-20 | SN | 5723   | 238      | 317      | 476        |
+| 2024-10-20 | SW | 6108   | 254      | 339      | 509        |
+| 2024-10-20 | WE | 9211   | 383      | 511      | 767        |
+| 2024-10-20 | WN | 2389   | 99       | 132      | 199        |
+| 2024-10-21 | NS | 6360   | 265      | 353      | 530        |
+| 2024-10-21 | NE | 909    | 37       | 50       | 75         |
+| 2024-10-21 | EW | 4435   | 184      | 246      | 369        |
+| 2024-10-21 | ES | 2003   | 83       | 111      | 166        |
+| 2024-10-21 | SN | 6265   | 261      | 348      | 522        |
+| 2024-10-21 | SW | 5513   | 229      | 306      | 459        |
+| 2024-10-21 | WE | 9208   | 383      | 511      | 767        |
+| 2024-10-21 | WN | 2686   | 111      | 149      | 223        |
 
 按日各方向平均流量图
 ![traffic_flow_daily.png](flow%2Ftraffic_flow_daily.png)
 
 **根据上述数据（转化为小时平均 /24），编写需求文件zszx-perhour.rou.xml**
+
+```
+    <!-- 大流量方案 -->
+    <!-- 北进口  -->
+    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="499" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="71" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 东进口  -->
+    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="356" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 南进口  -->
+    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="476" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="509" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 西进口  -->
+    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="767" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="199" departSpeed="max" departPos="base" departLane="best"/>
+
+```
+
+```
+    <!-- 中流量方案 -->
+    <!-- 北进口  -->
+    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="333" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="47" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 东进口  -->
+    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="237" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="88" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 南进口  -->
+    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="317" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="339" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 西进口  -->
+    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="511" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
+
+```
+
+```
+    <!-- 小流量方案 -->
+    <!-- 北进口  -->
+    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="249" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="35" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 东进口  -->
+    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="178" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="66" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 南进口  -->
+    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="238" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="254" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 西进口  -->
+    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="383" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="99" departSpeed="max" departPos="base" departLane="best"/>
+
+```
 
 ```
 <routes>
@@ -125,21 +185,6 @@ time_periods_flow = {
     <route id="SN" edges="s_t t_n"/>
     <route id="SE" edges="s_t t_e"/>
 
-    <!-- 北进口  -->
-    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="257" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="36" departSpeed="max" departPos="base" departLane="best"/>
-
-    <!-- 东进口  -->
-    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="181" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="74" departSpeed="max" departPos="base" departLane="best"/>
-
-    <!-- 南进口  -->
-    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="249" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="242" departSpeed="max" departPos="base" departLane="best"/>
-
-    <!-- 西进口  -->
-    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="383" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="105" departSpeed="max" departPos="base" departLane="best"/>
-
+    <!-- 流量方案 -->
 </routes>
 ```

@@ -1,0 +1,36 @@
+<routes>
+    <vType accel="1.0" decel="4.5" id="standard_car" length="5.0" minGap="2.5" maxSpeed="30" sigma="0.5" />
+    <route id="WN" edges="w_t t_n"/>
+    <route id="WE" edges="w_t t_e"/>
+    <route id="WS" edges="w_t t_s"/>
+
+    <route id="NW" edges="n_t t_w"/>
+    <route id="NE" edges="n_t t_e"/>
+    <route id="NS" edges="n_t t_s"/>
+
+    <route id="EW" edges="e_t t_w"/>
+    <route id="EN" edges="e_t t_n"/>
+    <route id="ES" edges="e_t t_s"/>
+
+    <route id="SW" edges="s_t t_w"/>
+    <route id="SN" edges="s_t t_n"/>
+    <route id="SE" edges="s_t t_e"/>
+
+    <!-- 中流量方案 -->
+    <!-- 北进口  -->
+    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="333" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="47" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 东进口  -->
+    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="237" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="88" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 南进口  -->
+    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="317" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="339" departSpeed="max" departPos="base" departLane="best"/>
+
+    <!-- 西进口  -->
+    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="511" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
+
+</routes>
