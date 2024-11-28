@@ -10,7 +10,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from atscui.config import TrainingConfig
 from atscui.environment.env_creator import createEnv
 from atscui.models.agent_creator import createAgent
-from atscui.utils.utils import write_eval_result, write_predict_result, extract_crossname_from_netfile, make_sub_dir
+from atscui.utils.utils import write_eval_result, write_predict_result, extract_crossname_from_netfile, make_sub_dir, write_loop_state
 
 
 def parseParams(net_file,  # 网络模型
@@ -75,8 +75,8 @@ class TrainingTab:
     def render(self):
         with gr.Row():
             with gr.Column(scale=2):
-                network_file = gr.File(label="路网模型", value="mynets/net/my-intersection.net.xml", file_types=[".xml", ".net.xml"])
-                demand_file = gr.File(label="交通需求", value="mynets/net/my-intersection-perhour.rou.xml", file_types=[".xml", ".rou.xml"])
+                network_file = gr.File(label="路网模型", value="zszx/net/zszx.net.xml", file_types=[".xml", ".net.xml"])
+                demand_file = gr.File(label="交通需求", value="zszx/net/zszx-perhour-1.rou.xml", file_types=[".xml", ".rou.xml"])
             with gr.Column(scale=1):
                 algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="DQN", label="算法模型")
                 operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="TRAIN", label="运行功能")
@@ -173,14 +173,17 @@ class TrainingTab:
             env = model.get_env()
             obs = env.reset()
             info_list = []
+            state_list = []
             for i in range(10):
                 action, state = model.predict(obs)
                 obs, reward, dones, info = env.step(action)
                 info_list.append(info[0])
+                state_list.append(f"{obs}, {action}, {reward}\n")
                 env.render()
                 progress = int((i + 1) / 10 * 100)
                 yield progress, output
             write_predict_result(info_list, filename=config.predict_path)
+            write_loop_state(state_list, filename=config.predict_path)
             output += "Prediction completed and saved.\n"
         elif config.operation == "ALL":
             # print("evaluate policy====训练前，评估模型")

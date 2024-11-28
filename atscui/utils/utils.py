@@ -69,7 +69,7 @@ def create_file(dir_and_filename: str):
     filename = os.path.basename(path)
     # 确保文件所在的目录存在
     os.makedirs(directory, exist_ok=True)  # 创建目录及其父目录（如果不存在）
-    with open(path, 'a') as f:
+    with open(filename, 'a') as f:
         return
 
 
@@ -94,3 +94,17 @@ def write_predict_result(data, filename='predict_results.json', print_to_console
     with open(filename, 'w') as f:
         json.dump(data, f, indent=2)
 
+
+def change_file_extension(file_name, new_extension):
+    base_name, _ = os.path.splitext(file_name)
+    new_file_name = base_name + '.' + new_extension
+    return new_file_name
+
+
+def write_loop_state(state_list, filename="predict_loop.txt"):
+    filename = change_file_extension(filename, "txt")
+    create_file(filename)
+    with open(filename, "a") as file:
+        for line in state_list:
+            file.write(line)
+    print(f"Data written to {filename}")
