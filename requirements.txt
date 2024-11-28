@@ -1,0 +1,12 @@
+torch
+torchaudio
+torchvision
+sumolib
+traci
+gradio
+matplotlib
+stable-baselines3
+pettingzoo
+psutil
+tensorboard
+
