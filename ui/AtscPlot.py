@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 class Visualizer:
-
     @staticmethod
     def plot_training_process(csv_path: str, save_path: str = None):
         """Plot training metrics from CSV file"""

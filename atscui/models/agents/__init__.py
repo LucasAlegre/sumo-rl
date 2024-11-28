@@ -1,4 +1,4 @@
-import os
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from atscui.models.agents.a2c_agent import A2CAgent
+from atscui.models.agents.ppo_agent import PPOAgent
+from atscui.models.agents.dqn_agent import DQNAgent
+from atscui.models.agents.sac_agent import SACAgent
