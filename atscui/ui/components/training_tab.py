@@ -23,7 +23,7 @@ def parseParams(net_file,  # 网络模型
                 n_eval_episodes=10,  # 评估回合数
                 n_steps=1024,  # A2C价值网络更新间隔时间步
                 total_timesteps=100_000,  # 训练时间步
-                gui=False,  # 图形界面
+                gui=True,  # 图形界面
                 render_mode=None,  # 渲染模式
                 ):
     _cross_name = extract_crossname_from_netfile(net_file)
@@ -84,23 +84,17 @@ class TrainingTab:
         with gr.Row():
             total_timesteps = gr.Slider(1000, 100000, value=100000, step=1000, label="训练步数")
             num_seconds = gr.Slider(1000, 20000, value=20000, step=1000, label="仿真秒数")
+        gui_checkbox = gr.Checkbox(label="GUI")
 
         run_button = gr.Button("开始运行", variant="primary")
-        progress = gr.Slider(0, 100, value=0, label="进度", interactive=False)
-        output = gr.Textbox(label="输出信息", lines=5)
-
-        def toggle_button():
-            value = not run_button.interactive
-            return gr.update(elem_id=run_button.elem_id, interactive=value)
+        progress = gr.Slider(0, 100000, value=0, label="进度", interactive=False)
+        output_msg = gr.Textbox(label="输出信息", lines=5)
 
         run_button.click(
             self.run_training,
-            inputs=[network_file, demand_file, algorithm, operation, total_timesteps, num_seconds],
-            outputs=[progress, output]
+            inputs=[network_file, demand_file, algorithm, operation, total_timesteps, num_seconds, gui_checkbox],
+            outputs=[progress, output_msg]
         )
-
-        # 点击按钮后禁用按钮
-        run_button.click(toggle_button, inputs=[], outputs=[run_button])
 
     def run_training(self,
                      network_file,
@@ -108,7 +102,8 @@ class TrainingTab:
                      algorithm,
                      operation,
                      total_timesteps,
-                     num_seconds) -> Generator[Tuple[int, str], None, None]:
+                     num_seconds,
+                     gui_checkbox) -> Generator[Tuple[int, str], None, None]:
 
         if not network_file or not demand_file:
             yield 0, "请上传路网模型和交通需求文件"
@@ -119,14 +114,17 @@ class TrainingTab:
         network_path = shlex.quote(network_file.name)
         demand_path = shlex.quote(demand_file.name)
 
+        use_gui = True if gui_checkbox else False
+
         training_config = parseParams(network_path, demand_path,
                                       algorithm, operation,
                                       tensorboard_logs="logs",
                                       total_timesteps=total_timesteps,
-                                      num_seconds=num_seconds)
+                                      num_seconds=num_seconds,
+                                      gui=use_gui)
 
-        for progress, output in self.run_simulation(training_config):
-            yield progress, output
+        for progress, output_msg in self.run_simulation(training_config):
+            yield progress, output_msg
 
     def run_simulation(self, config):
 
@@ -150,7 +148,6 @@ class TrainingTab:
         elif config.operation == "TRAIN":
             # print("train model=====训练模型，总时间步，进度条")
             output += "train model=====训练模型，总时间步，进度条\n"
-            print("output:", output)
             # model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
             for i in range(0, config.total_timesteps, 1000):  # 每1000步更新一次进度
                 model.learn(total_timesteps=1000, progress_bar=False)
@@ -158,14 +155,11 @@ class TrainingTab:
                 yield progress, output
             # print("save model=====保存训练模型")
             output += "save model=====保存训练模型\n"
-            print("output:", output)
             model.save(config.model_path)
             output += "evaluate policy====训练后，评估模型"
-            print("output:", output)
             mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=config.n_eval_episodes)
             write_eval_result(mean_reward, std_reward, config.eval_path)
             output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
-            print("output:", output)
             yield progress, output
         elif config.operation == "PREDICT":
             # print("predict====使用模型进行预测")

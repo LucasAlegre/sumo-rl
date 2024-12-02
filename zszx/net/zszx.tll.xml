@@ -1,4 +1,4 @@
-<tlLogic id="tl_1" programID="0" offset="0" type="static">
+<tlLogic id="tl_1" programID="0" offset="0" type="actuated">
     <phase duration="20" state="GGGGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
     <phase duration="3"  state="yyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
     <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrrrrr"/>
