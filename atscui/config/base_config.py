@@ -19,8 +19,8 @@ class BaseConfig:
 
 @dataclass
 class TrainingConfig(BaseConfig):
-    total_timesteps: int = 1_000_000  # 训练时间步
-    num_seconds: int = 20_000  # 仿真时长
+    total_timesteps: int = 1_000_000  # 总训练时间步
+    num_seconds: int = 20_000  # 每回合episode仿真步(时长)
     n_steps: int = 1024  # A2C价值网络更新间隔时间步
     n_eval_episodes: int = 10  # 评估回合数
     tensorboard_logs: str = "logs"

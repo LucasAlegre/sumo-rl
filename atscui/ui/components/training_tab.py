@@ -19,10 +19,10 @@ def parseParams(net_file,  # 网络模型
                 operation="TRAIN",  # 操作名称
                 tensorboard_logs="logs",  # tensorboard_logs folder
                 single_agent=True,  # 单智能体
-                num_seconds=10000,  # 仿真时长
+                num_seconds=10000,  # 每回合episode仿真步(时长)
                 n_eval_episodes=10,  # 评估回合数
                 n_steps=1024,  # A2C价值网络更新间隔时间步
-                total_timesteps=100_000,  # 训练时间步
+                total_timesteps=86_400,  # 总训练时间步（1天)
                 gui=True,  # 图形界面
                 render_mode=None,  # 渲染模式
                 ):
@@ -82,12 +82,12 @@ class TrainingTab:
                 operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="TRAIN", label="运行功能")
 
         with gr.Row():
-            total_timesteps = gr.Slider(1000, 100000, value=100000, step=1000, label="训练步数")
-            num_seconds = gr.Slider(1000, 20000, value=20000, step=1000, label="仿真秒数")
+            total_timesteps = gr.Slider(1000, 86400, value=86400, step=1000, label="训练步数")
+            num_seconds = gr.Slider(1000, 10000, value=10000, step=1000, label="仿真秒数")
         gui_checkbox = gr.Checkbox(label="GUI", value=True)
 
         run_button = gr.Button("开始运行", variant="primary")
-        progress = gr.Slider(0, 100000, value=0, label="进度", interactive=False)
+        progress = gr.Slider(0, 10000, value=0, label="进度", interactive=False)
         output_msg = gr.Textbox(label="输出信息", lines=5)
 
         run_button.click(
@@ -149,10 +149,10 @@ class TrainingTab:
             # print("train model=====训练模型，总时间步，进度条")
             output += "train model=====训练模型，总时间步，进度条\n"
             # model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
-            for i in range(0, config.total_timesteps, 1000):  # 每1000步更新一次进度
-                model.learn(total_timesteps=1000, progress_bar=False)
-                progress = int((i + 1000) / config.total_timesteps * 100)
-                yield progress, output
+            # for i in range(0, config.total_timesteps, 1000):  # 每1000步更新一次进度
+            model.learn(total_timesteps=config.total_timesteps, progress_bar=True)
+                # progress = int((i + 1000) / config.total_timesteps * 100)
+                # yield progress, output
             # print("save model=====保存训练模型")
             output += "save model=====保存训练模型\n"
             model.save(config.model_path)
@@ -168,7 +168,7 @@ class TrainingTab:
             obs = env.reset()
             info_list = []
             state_list = []
-            for i in range(10):
+            for i in range(100):
                 action, state = model.predict(obs)
                 obs, reward, dones, info = env.step(action)
                 info_list.append(info[0])
@@ -203,7 +203,7 @@ class TrainingTab:
             env = model.get_env()
             obs = env.reset()
             info_list = []
-            for i in range(10):
+            for i in range(100):
                 action, state = model.predict(obs)
                 obs, reward, dones, info = env.step(action)
                 info_list.append(info[0])
