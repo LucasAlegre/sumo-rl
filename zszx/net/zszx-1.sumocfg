@@ -1,0 +1,13 @@
+<configuration>
+    <input>
+        <net-file value="zszx.net-1.xml"/>
+        <route-files value="zszx-perhour-1.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="86400"/>
+    </time>
+    <viewsettings>
+        <scheme name="real world"/>
+    </viewsettings>
+</configuration>

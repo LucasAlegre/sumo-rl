@@ -26,7 +26,7 @@ class TrainingConfig(BaseConfig):
     tensorboard_logs: str = "logs"
     learning_rate = 1e-3
     gamma = 0.9
-    verbose: bool = False
+    verbose: int = 0
     learning_starts: int = 0
     train_freq: int = 1
     target_update_interval: int = 1000

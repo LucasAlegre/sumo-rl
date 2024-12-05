@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-11-19 09:49:41 by Eclipse SUMO netconvert Version 1.20.0
+<!-- generated on 2024-12-04 22:12:57 by Eclipse SUMO netconvert Version 1.20.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -207,14 +207,14 @@
     </edge>
 
     <tlLogic id="tl_1" type="static" programID="0" offset="0">
-        <phase duration="20" state="GGGGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+        <phase duration="40" state="GGGGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
         <phase duration="3"  state="yyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
         <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrrrrr"/>
         <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrrrrrr"/>
-        <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGrrrrrrrrrrrr"/>
-        <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyrrrrrrrrrrrr"/>
+        <phase duration="50" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGrrrrrrrrrrrr"/>
+        <phase duration="5"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyrrrrrrrrrrrr"/>
         <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGG"/>
-        <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyy"/>
+        <phase duration="5"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyy"/>
     </tlLogic>
 
     <junction id="e" type="priority" x="600.00" y="200.00" incLanes="t_e_0 t_e_1 t_e_2 t_e_3" intLanes=":e_0_0" shape="600.00,200.00 600.00,187.20 600.00,200.00">

@@ -75,7 +75,7 @@ class TrainingTab:
     def render(self):
         with gr.Row():
             with gr.Column(scale=2):
-                network_file = gr.File(label="路网模型", value="zszx/net/zszx.net.xml", file_types=[".xml", ".net.xml"])
+                network_file = gr.File(label="路网模型", value="zszx/net/zszx-1.net.xml", file_types=[".xml", ".net.xml"])
                 demand_file = gr.File(label="交通需求", value="zszx/net/zszx-perhour-1.rou.xml", file_types=[".xml", ".rou.xml"])
             with gr.Column(scale=1):
                 algorithm = gr.Dropdown(["DQN", "PPO", "A2C", "SAC"], value="DQN", label="算法模型")
@@ -84,7 +84,7 @@ class TrainingTab:
         with gr.Row():
             total_timesteps = gr.Slider(1000, 100000, value=100000, step=1000, label="训练步数")
             num_seconds = gr.Slider(1000, 20000, value=20000, step=1000, label="仿真秒数")
-        gui_checkbox = gr.Checkbox(label="GUI")
+        gui_checkbox = gr.Checkbox(label="GUI", value=True)
 
         run_button = gr.Button("开始运行", variant="primary")
         progress = gr.Slider(0, 100000, value=0, label="进度", interactive=False)

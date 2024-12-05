@@ -14,5 +14,5 @@ class SACAgent(BaseAgent):
             gamma=self.config.gamma,
             train_freq=self.config.train_freq,
             tensorboard_log=self.config.tensorboard_logs,
-            verbose=1
+            verbose=self.config.verbose,
         )

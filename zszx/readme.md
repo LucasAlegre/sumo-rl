@@ -4,11 +4,28 @@
 - 根据路口的几何形状设计路口网络zszx.net.xml:
   - 编写zszx.nod.xml
   - 编写zszx.edg.xml
-  - 编写zszx.con.xml
+  - 编写zszx.con.xml: 连接入口车道与出口车道，分配好连接方式，能解决拥堵及锁死问题，不要采用全连接，sumo不能智能分配流量。
   - 编写zszx.tll.xml
   - 使用netconvert生成zszx.net.xml
+
+
+  ```
+  netconvert --node-files=zszx.nod.xml \
+           --edge-files=zszx.edg.xml \
+           --connection-files=zszx.con.xml \
+           --tllogic-files=zszx.tll.xml \
+           --output-file=zszx.net.xml \
+           --ignore-errors
+  
+  netconvert --node-files=zszx.nod.xml \
+           --edge-files=zszx.edg.xml \
+           --connection-files=zszx.con-1.xml \
+           --tllogic-files=zszx.tll-1.xml \
+           --output-file=zszx.net-1.xml \
+           --ignore-errors
+  ```
 - 对历史流量数据进行预处理，使其满足SUMO仿真系统的数据规范(data/output_data.txt):data_process.py
-- 统计分析历史数据，得到按时间（小时）、按方向的流量数据（下表）以及曲线图(下图):flow_analysus.py
+- 统计分析历史数据，得到按时间（小时）、按方向的流量数据（下表）以及曲线图(下图):flow_analysis.py
 - 使用kmeans聚类方法，对一天24小时的流量划分时段:flow-kmeans.py
 - 按照不同时段、不同方向的流量数据编写分时段的交通需求
 - 由于SUMO的流量配置只能是静态数据，不能在仿真过程中切换，所以方向流量配置只能取一个时段的，如zszx-perhour.rou.xml
@@ -109,60 +126,60 @@ time_periods_flow = {
 ```
     <!-- 大流量方案 -->
     <!-- 北进口  -->
-    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="499" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="71" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ns" route="NS" begin="0" end="86400" vehsPerHour="499" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="86400" vehsPerHour="71" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 东进口  -->
-    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="356" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew" route="EW" begin="0" end="86400" vehsPerHour="356" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="86400" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 南进口  -->
-    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="476" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="509" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn" route="SN" begin="0" end="86400" vehsPerHour="476" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="86400" vehsPerHour="509" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 西进口  -->
-    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="767" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="199" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="WE" begin="0" end="86400" vehsPerHour="767" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="86400" vehsPerHour="199" departSpeed="max" departPos="base" departLane="best"/>
 
 ```
 
 ```
     <!-- 中流量方案 -->
     <!-- 北进口  -->
-    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="333" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="47" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ns" route="NS" begin="0" end="86400" vehsPerHour="333" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="86400" vehsPerHour="47" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 东进口  -->
-    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="237" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="88" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew" route="EW" begin="0" end="86400" vehsPerHour="237" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="86400" vehsPerHour="88" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 南进口  -->
-    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="317" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="339" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn" route="SN" begin="0" end="86400" vehsPerHour="317" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="86400" vehsPerHour="339" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 西进口  -->
-    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="511" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="WE" begin="0" end="86400" vehsPerHour="511" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="86400" vehsPerHour="132" departSpeed="max" departPos="base" departLane="best"/>
 
 ```
 
 ```
     <!-- 小流量方案 -->
     <!-- 北进口  -->
-    <flow id="flow_ns" route="NS" begin="0" end="100000" vehsPerHour="249" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_ne" route="NE" begin="0" end="100000" vehsPerHour="35" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ns" route="NS" begin="0" end="86400" vehsPerHour="249" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ne" route="NE" begin="0" end="86400" vehsPerHour="35" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 东进口  -->
-    <flow id="flow_ew" route="EW" begin="0" end="100000" vehsPerHour="178" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_es" route="ES" begin="0" end="100000" vehsPerHour="66" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_ew" route="EW" begin="0" end="86400" vehsPerHour="178" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_es" route="ES" begin="0" end="86400" vehsPerHour="66" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 南进口  -->
-    <flow id="flow_sn" route="SN" begin="0" end="100000" vehsPerHour="238" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_sw" route="SW" begin="0" end="100000" vehsPerHour="254" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sn" route="SN" begin="0" end="86400" vehsPerHour="238" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_sw" route="SW" begin="0" end="86400" vehsPerHour="254" departSpeed="max" departPos="base" departLane="best"/>
 
     <!-- 西进口  -->
-    <flow id="flow_we" route="WE" begin="0" end="100000" vehsPerHour="383" departSpeed="max" departPos="base" departLane="best"/>
-    <flow id="flow_wn" route="WN" begin="0" end="100000" vehsPerHour="99" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_we" route="WE" begin="0" end="86400" vehsPerHour="383" departSpeed="max" departPos="base" departLane="best"/>
+    <flow id="flow_wn" route="WN" begin="0" end="86400" vehsPerHour="99" departSpeed="max" departPos="base" departLane="best"/>
 
 ```
 

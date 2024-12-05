@@ -18,7 +18,7 @@ class DQNAgent(BaseAgent):
             exploration_initial_eps=self.config.exploration_initial_eps,
             exploration_final_eps=self.config.exploration_final_eps,
             tensorboard_log=self.config.tensorboard_logs,
-            verbose=1,
+            verbose=self.config.verbose,
         )
 
     def train(self):

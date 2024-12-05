@@ -1,12 +1,12 @@
-<tlLogic id="tl_1" programID="0" offset="0" type="actuated">
-    <phase duration="20" state="GGGGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
+<tlLogic id="tl_1" programID="0" offset="0" type="static">
+    <phase duration="40" state="GGGGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
     <phase duration="3"  state="yyyyyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr"/>
     <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrrrrr"/>
     <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrrrrrr"/>
-    <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGrrrrrrrrrrrr"/>
-    <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyrrrrrrrrrrrr"/>
+    <phase duration="50" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGGrrrrrrrrrrrr"/>
+    <phase duration="5"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyyrrrrrrrrrrrr"/>
     <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGGGGG"/>
-    <phase duration="3"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyy"/>
+    <phase duration="5"  state="rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyyyyy"/>
 </tlLogic>
 
         <!--特别注意：一个车道lane可能有N个信号灯位，分别连接出口的N个车道lane！分别表示：右-直-左-调头-->

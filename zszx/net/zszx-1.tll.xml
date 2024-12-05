@@ -1,0 +1,25 @@
+<tlLogic id="tl_1" programID="0" offset="0" type="static">
+    <phase duration="40" state="GGGGGGGGGGrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrr"/>
+    <phase duration="3"  state="yyyyyyyyyyrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrr"/>
+    <phase duration="20" state="rrrrrrrrrrGGGGrrrrrrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrrrrr"/>
+    <phase duration="3"  state="rrrrrrrrrryyyyrrrrrrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrrrrr"/>
+    <phase duration="50" state="rrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrr"/>
+    <phase duration="5"  state="rrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrr"/>
+    <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGG"/>
+    <phase duration="5"  state="rrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyy"/>
+</tlLogic>
+
+        <!--特别注意：一个车道lane可能有N个信号灯位，分别连接出口的N个车道lane！分别表示：右-直-左-调头-->
+        <!--北(直3左2) 东(直3左1) 南(直3左2) 西(直3左2)  19个车道，55个逻辑灯位-->
+<!--(10)    (4)    (6)    (7)       (9)    (4)     (7)     (8)
+1234567890 1234  123456 1234567  123456789 1234  1234567 12345678
+
+GGGGGGGGGG rrrr  rrrrrr rrrrrrr  GGGGGGGGG rrrr  rrrrrrr rrrrrrrr
+yyyyyyyyyy rrrr  rrrrrr rrrrrrr  yyyyyyyyy rrrr  rrrrrrr rrrrrrrr
+rrrrrrrrrr GGGG  rrrrrr rrrrrrr  rrrrrrrrr GGGG  rrrrrrr rrrrrrrr
+rrrrrrrrrr yyyy  rrrrrr rrrrrrr  rrrrrrrrr yyyy  rrrrrrr rrrrrrrr
+rrrrrrrrrr rrrr  GGGGGG rrrrrrr  rrrrrrrrr rrrr  GGGGGGG rrrrrrrr
+rrrrrrrrrr rrrr  yyyyyy rrrrrrr  rrrrrrrrr rrrr  yyyyyyy rrrrrrrr
+rrrrrrrrrr rrrr  rrrrrr GGGGGGG  rrrrrrrrr rrrr  rrrrrrr GGGGGGGG
+rrrrrrrrrr rrrr  rrrrrr yyyyyyy  rrrrrrrrr rrrr  rrrrrrr yyyyyyyy
+-->

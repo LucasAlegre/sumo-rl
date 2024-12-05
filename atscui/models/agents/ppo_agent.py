@@ -14,7 +14,7 @@ class PPOAgent(BaseAgent):
             n_epochs=self.config.n_epochs,
             gamma=self.config.gamma,
             tensorboard_log=self.config.tensorboard_logs,
-            verbose=1
+            verbose=self.config.verbose,
         )
 
     def train(self):
