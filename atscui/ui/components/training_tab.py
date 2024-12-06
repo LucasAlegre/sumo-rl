@@ -22,7 +22,7 @@ def parseParams(net_file,  # 网络模型
                 num_seconds=10000,  # 每回合episode仿真步(时长)
                 n_eval_episodes=10,  # 评估回合数
                 n_steps=1024,  # A2C价值网络更新间隔时间步
-                total_timesteps=86_400,  # 总训练时间步（1天)
+                total_timesteps=864_000,  # 总训练时间步（1天)
                 gui=True,  # 图形界面
                 render_mode=None,  # 渲染模式
                 ):
@@ -82,7 +82,7 @@ class TrainingTab:
                 operation = gr.Dropdown(["EVAL", "TRAIN", "PREDICT", "ALL"], value="TRAIN", label="运行功能")
 
         with gr.Row():
-            total_timesteps = gr.Slider(1000, 86400, value=86400, step=1000, label="训练步数")
+            total_timesteps = gr.Slider(1000, 864_000, value=864_000, step=1000, label="训练步数")
             num_seconds = gr.Slider(1000, 10000, value=10000, step=1000, label="仿真秒数")
         gui_checkbox = gr.Checkbox(label="GUI", value=True)
 
