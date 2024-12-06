@@ -219,14 +219,11 @@ class TrafficSignal:
         # print("##########TrafficSignal._diff_waiting_time_reward##########:%s", reward)
         return reward
 
-    """
-    phase_id = [0, 0, 1, 0]
-    min_green = [0]
-    density = [0.7, 0.4, 0.5]
-    queue = [3, 1, 2]
-    observation = np.array([0, 0, 1, 0, 0, 0.7, 0.4, 0.5, 3, 1, 2], dtype=np.float32)
-    """
-
+    # phase_id = [0, 0, 1, 0]
+    # min_green = [0]
+    # density = [0.7, 0.4, 0.5]
+    # queue = [3, 1, 2]
+    # observation = np.array([0, 0, 1, 0, 0, 0.7, 0.4, 0.5, 3, 1, 2], dtype=np.float32)
     def _observation_fn_default(self):
         phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding，[0,0,1,0]
         min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
@@ -286,10 +283,7 @@ class TrafficSignal:
         ]
         return [min(1, density) for density in lanes_density]
 
-    """
-    lanes_density = [1, 0.75, 0.5] 
-    """
-
+    #  lanes_density = [1, 0.75, 0.5]
     def get_lanes_density(self) -> List[float]:
         """Returns the density [0,1] of the vehicles in the incoming lanes of the intersection.
 
@@ -302,10 +296,7 @@ class TrafficSignal:
         ]
         return [min(1, density) for density in lanes_density]
 
-    """
-    lanes_queue = [0.7, 0.5, 0.35]
-    """
-
+    # lanes_queue = [0.7, 0.5, 0.35]
     def get_lanes_queue(self) -> List[float]:
         """Returns the queue [0,1] of the vehicles in the incoming lanes of the intersection.
 

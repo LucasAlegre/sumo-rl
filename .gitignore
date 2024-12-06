@@ -220,3 +220,4 @@ ui/tensorboard/
 /outs/
 /predicts/
 /evals/
+/zszx-1-eval-DQN.txt

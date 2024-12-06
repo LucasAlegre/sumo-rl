@@ -48,33 +48,21 @@ parallel_env = parallel_wrapper_fn(env)
 
 """
 1. `env` 函数:
-
 这个函数的作用是创建和配置一个 PettingZoo 环境。具体步骤如下：
-
 a) 首先，使用传入的参数创建一个 `SumoEnvPZ` 实例。
-
 b) 然后，将环境包装在 `AssertOutOfBoundsWrapper` 中。这个包装器可能用于检查动作和观察是否在预定义的范围内，如果超出范围则抛出异常。
-
 c) 接着，再用 `OrderEnforcingWrapper` 包装环境。这个包装器可能用于强制执行某些操作顺序，例如确保在调用 `step()` 之前调用了 `reset()`。
-
 d) 最后，返回包装后的环境。
 
 2. `parallel_env` 函数:
-
 这行代码创建了一个并行版本的环境。具体解释如下：
-
 a) `parallel_wrapper_fn` 可能是 PettingZoo 库提供的一个函数，用于将普通的环境转换为并行环境。
-
 b) 它接受 `env` 函数作为参数，这意味着它会使用 `env` 函数来创建基础环境。
-
 c) 返回的 `parallel_env` 是一个新的函数，当调用时，它会创建一个并行版本的环境。
-
 并行环境通常允许多个智能体同时采取行动，这在多智能体强化学习任务中很有用。它可以提高训练效率，特别是在模拟大规模系统（如交通网络）时。
-
 总结：
 - `env` 函数创建一个单一的、经过包装的 SUMO 环境。
 - `parallel_env` 函数创建这个环境的并行版本，可能用于多智能体学习或更高效的训练。
-
 这种设计提供了灵活性，允许用户根据需要选择使用普通环境或并行环境。对于交通模拟这样的复杂系统，并行环境可能特别有用，因为它可以模拟多个交通参与者同时做出决策的情况。
 """
 
@@ -1123,34 +1111,22 @@ def continuous_to_discrete_actions(actions):
 
 """
 这个程序实现了一个基于SUMO(Simulation of Urban MObility)的交通信号控制环境。它提供了两个主要的环境类:
-
 1. `SumoEnv`: 一个基本的离散动作空间环境
 2. `ContinuousSumoEnv`: 一个连续动作空间的环境
 
 主要功能:
-
 1. 模拟城市交通环境,包括道路网络、车辆和交通信号灯。
-
 2. 提供强化学习接口,允许智能体控制交通信号灯。
-
 3. 支持单智能体和多智能体设置。
-
 4. 提供观察空间,包括交通状态信息。
-
 5. 计算奖励,评估交通控制的效果。
-
 6. 支持自定义奖励函数和观察函数。
-
 7. 提供系统级和每个智能体的性能指标。
-
 8. 支持保存模拟结果到CSV文件。
-
 9. 支持GUI渲染和RGB数组渲染。
 
 使用方法:
-
 1. 初始化环境:
-
 ```python
 env = SumoEnv(net_file="path/to/net.xml", 
               route_file="path/to/route.xml",
@@ -1158,7 +1134,6 @@ env = SumoEnv(net_file="path/to/net.xml",
 ```
 
 2. 运行模拟:
-
 ```python
 obs = env.reset()
 done = False
@@ -1169,26 +1144,19 @@ while not done:
 ```
 
 3. 对于连续动作空间:
-
 ```python
 env = ContinuousSumoEnv(net_file="path/to/net.xml", 
                         route_file="path/to/route.xml")
 ```
-
 这个环境可以与各种强化学习算法一起使用,如DQN、PPO等,来优化交通信号控制策略。它提供了一个灵活的框架,可以根据具体需求进行定制和扩展。
-
 =======================================================
 
 奖励函数 reward_fn 的定义
-
 在traffic_signal.py中，定义了奖励函数 reward_fn ，
-
     reward_fns = {
         "diff-waiting-time": _diff_waiting_time_reward,
         "average-speed": _average_speed_reward,
         "queue": _queue_reward,
         "pressure": _pressure_reward,
     }
-
-
 """
