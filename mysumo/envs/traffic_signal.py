@@ -119,10 +119,16 @@ class TrafficSignal:
         self.yellow_dict = {}
         for phase in phases:
             state = phase.state
+            duration = phase.duration
             if "y" not in state and (state.count("r") + state.count("s") != len(state)):
-                self.green_phases.append(self.sumo.trafficlight.Phase(60, state))
+                self.green_phases.append(self.sumo.trafficlight.Phase(duration, state))  # 原来硬编码60
+            else:
+                self.yellow_time = duration if duration > self.yellow_time else self.yellow_time
         self.num_green_phases = len(self.green_phases)
         self.all_phases = self.green_phases.copy()
+        print("before all_phases:\n")
+        for i, p in enumerate(self.all_phases):
+            print(f"{i}: \t{p.duration},\t{p.state}")
         for i, p1 in enumerate(self.green_phases):
             for j, p2 in enumerate(self.green_phases):
                 if i == j:
@@ -135,6 +141,11 @@ class TrafficSignal:
                         yellow_state += p1.state[s]
                 self.yellow_dict[(i, j)] = len(self.all_phases)
                 self.all_phases.append(self.sumo.trafficlight.Phase(self.yellow_time, yellow_state))
+
+        print("after all_phases:\n")
+        for i, p in enumerate(self.all_phases):
+            print(f"{i}: \t{p.duration},\t{p.state}")
+        print("yellow_dict: \n", self.yellow_dict)
 
         programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
         logic = programs[0]
@@ -215,6 +226,7 @@ class TrafficSignal:
     queue = [3, 1, 2]
     observation = np.array([0, 0, 1, 0, 0, 0.7, 0.4, 0.5, 3, 1, 2], dtype=np.float32)
     """
+
     def _observation_fn_default(self):
         phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding，[0,0,1,0]
         min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
@@ -277,6 +289,7 @@ class TrafficSignal:
     """
     lanes_density = [1, 0.75, 0.5] 
     """
+
     def get_lanes_density(self) -> List[float]:
         """Returns the density [0,1] of the vehicles in the incoming lanes of the intersection.
 
@@ -292,6 +305,7 @@ class TrafficSignal:
     """
     lanes_queue = [0.7, 0.5, 0.35]
     """
+
     def get_lanes_queue(self) -> List[float]:
         """Returns the queue [0,1] of the vehicles in the incoming lanes of the intersection.
 
@@ -431,16 +445,19 @@ class ContinuousTrafficSignal:
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
         # print("=====phases:", phases)
         if self.env.fixed_ts:
-            self.num_green_phases = len(
-                phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
+            self.num_green_phases = len(phases) // 2  # Number of green phases == number of phases (green+yellow) divided by 2
             return
 
         self.green_phases = []
         self.yellow_dict = {}
         for phase in phases:
             state = phase.state
+            duration = phase.duration
             if "y" not in state and (state.count("r") + state.count("s") != len(state)):
-                self.green_phases.append(self.sumo.trafficlight.Phase(60, state))
+                self.green_phases.append(self.sumo.trafficlight.Phase(duration, state))  # 原来硬编码 60
+            else:
+                self.yellow_time = duration if duration > self.yellow_time else self.yellow_time
+
         self.num_green_phases = len(self.green_phases)
         # print("=====num_green_phases:", self.num_green_phases)
         self.all_phases = self.green_phases.copy()

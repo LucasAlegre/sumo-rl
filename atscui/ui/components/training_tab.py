@@ -146,20 +146,26 @@ class TrainingTab:
             output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
             progress = 100
         elif config.operation == "TRAIN":
-            # print("train model=====训练模型，总时间步，进度条")
             output += "train model=====训练模型，总时间步，进度条\n"
+            print(output)
+            yield 1, output
             # model.learn(total_timesteps=total_timesteps, progress_bar=True)  # 训练总时间步，100000
             # for i in range(0, config.total_timesteps, 1000):  # 每1000步更新一次进度
             model.learn(total_timesteps=config.total_timesteps, progress_bar=True)
-                # progress = int((i + 1000) / config.total_timesteps * 100)
-                # yield progress, output
+            # progress = int((i + 1000) / config.total_timesteps * 100)
+            # yield progress, output
             # print("save model=====保存训练模型")
             output += "save model=====保存训练模型\n"
+            print(output)
+            yield 2, output
             model.save(config.model_path)
             output += "evaluate policy====训练后，评估模型"
+            print(output)
+            yield 3, output
             mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=config.n_eval_episodes)
             write_eval_result(mean_reward, std_reward, config.eval_path)
             output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
+            print(output)
             yield progress, output
         elif config.operation == "PREDICT":
             # print("predict====使用模型进行预测")
@@ -179,27 +185,26 @@ class TrainingTab:
             write_predict_result(info_list, filename=config.predict_path)
             write_loop_state(state_list, filename=config.predict_path)
             output += "Prediction completed and saved.\n"
+            yield progress, output
         elif config.operation == "ALL":
-            # print("evaluate policy====训练前，评估模型")
-            output += "evaluate policy====训练前，评估模型\n"
+            print("evaluate policy====训练前，评估模型")
+            yield 0, output
             mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=config.n_eval_episodes)
             write_eval_result(mean_reward, std_reward, config.eval_path)
             output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
-            # print("train model=====训练模型，总时间步，进度条")
-            output += "train model=====训练模型，总时间步，进度条\n"
-            model.learn(total_timesteps=config.total_timesteps, progress_bar=True)  # 训练总时间步，100000
-            # print("save model=====保存训练模型")
-            output += "save model=====保存训练模型\n"
+            print("train model=====训练模型，总时间步，进度条")
+            yield 1, output
+            model.learn(total_timesteps=config.total_timesteps, progress_bar=True)  # 训练总时间步
+            print("save model=====保存训练模型")
             model.save(config.model_path)
             # 评测模型
             model.load(config.model_path)
-            # print("evaluate policy====训练后，评估模型")
-            output += "evaluate policy====训练后，评估模型\n"
+            print("evaluate policy====训练后，评估模型")
+            yield 2, output
             mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=config.n_eval_episodes)
             write_eval_result(mean_reward, std_reward, config.eval_path)
             output += f"Mean reward: {mean_reward}, Std reward: {std_reward}\n"
-            # print("predict====使用模型进行预测")
-            output += "predict====使用模型进行预测\n"
+            print("predict====使用模型进行预测")
             env = model.get_env()
             obs = env.reset()
             info_list = []
@@ -212,7 +217,8 @@ class TrainingTab:
                 yield progress, f"进度: {progress}%\n正在执行{config.operation}操作..."
             write_predict_result(info_list, filename=config.predict_path)
             output += "Prediction completed and saved.\n"
-
+            print("predict====模型预测结束")
+            yield 100, output
         env.close()
         del model
 

@@ -8,6 +8,52 @@
   - 编写zszx.tll.xml
   - 使用netconvert生成zszx.net.xml
 
+```
+all_phases:
+0: 	40.0,	GGGGGGGGGGrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrr
+1: 	20.0,	rrrrrrrrrrGGGGrrrrrrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrrrrr
+2: 	50.0,	rrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrr
+3: 	20.0,	rrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGG
+4: 	3,	    yyyyyyyyyyrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrr
+5: 	3,	    yyyyyyyyyyrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrr
+6: 	3,	    yyyyyyyyyyrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrr
+7: 	3,	    rrrrrrrrrryyyyrrrrrrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrrrrr
+8: 	3,	    rrrrrrrrrryyyyrrrrrrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrrrrr
+9: 	3,	    rrrrrrrrrryyyyrrrrrrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrrrrr
+10: 3,	    rrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrr
+11: 3,	    rrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrr
+12: 3,	    rrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrr
+13: 3,	    rrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyy
+14: 3,	    rrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyy
+15: 3,	    rrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyy 
+
+origin phases:
+0: 	40.0,	GGGGGGGGGGrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrr
+1: 	3,	    yyyyyyyyyyrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrr
+2: 	20.0,	rrrrrrrrrrGGGGrrrrrrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrrrrr
+3: 	3,	    rrrrrrrrrryyyyrrrrrrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrrrrr
+4: 	50.0,	rrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrr
+5:  3,	    rrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrr
+6: 	20.0,	rrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGG
+7:  3,	    rrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyy
+
+yellow_dict:
+ {
+ (0, 1): 4, 
+ (0, 2): 5, 
+ (0, 3): 6, 
+ (1, 0): 7, 
+ (1, 2): 8, 
+ (1, 3): 9, 
+ (2, 0): 10, 
+ (2, 1): 11, 
+ (2, 3): 12, 
+ (3, 0): 13, 
+ (3, 1): 14, 
+ (3, 2): 15
+ }
+ 
+```
 
   ```
   netconvert --node-files=zszx.nod.xml \
