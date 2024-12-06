@@ -221,3 +221,5 @@ ui/tensorboard/
 /predicts/
 /evals/
 /zszx-1-eval-DQN.txt
+/zszx-1-predict-DQN.json
+/zszx-1-predict-DQN.txt

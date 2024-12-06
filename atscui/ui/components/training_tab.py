@@ -64,7 +64,6 @@ class TrainingTab:
         self.network_file = None
         self.demand_file = None
         self.progress = None
-        # self.render()
 
     def render(self):
         with gr.Row():
@@ -77,11 +76,11 @@ class TrainingTab:
 
         with gr.Row():
             total_timesteps = gr.Slider(1000, 100_000_000, value=100_000_000, step=1000, label="训练步数")
-            num_seconds = gr.Slider(1000, 10000, value=10000, step=1000, label="仿真秒数")
+            num_seconds = gr.Slider(1000, 20_000, value=20_000, step=1000, label="仿真秒数")
         gui_checkbox = gr.Checkbox(label="GUI", value=True)
 
         run_button = gr.Button("开始运行", variant="primary")
-        progress = gr.Slider(0, 10000, value=0, label="进度", interactive=False)
+        progress = gr.Slider(minimum=0, maximum=total_timesteps.value, value=0, label="进度", interactive=False)
         output_msg = gr.Textbox(label="输出信息", lines=5)
 
         run_button.click(
