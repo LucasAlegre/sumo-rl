@@ -6,13 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "sumo-rl"
 description="RL environments and learning code for traffic signal control in SUMO."
 readme = "README.md"
-requires-python = ">= 3.7"
+requires-python = ">= 3.8"
 authors = [{ name = "Lucas Alegre", email = "lucasnale@gmail.com" }]
 license = { text = "MIT License" }
 keywords = ["Reinforcement Learning", "Traffic Signal Control", "SUMO", "RL", "PettingZoo", "gymnasium"]
 dependencies = [
-    'gymnasium>=0.26',
-    'pettingzoo>=1.22.2',
+    'gymnasium>=0.28',
+    'pettingzoo>=1.24.3',
     'numpy',
     'pandas',
     'pillow',
