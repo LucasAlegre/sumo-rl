@@ -34,7 +34,7 @@ if model_obj.exists():
     model.load(model_obj) 
 
 obs = ... # 来自探测器的状态变量
-action, _ = model.predict(obs)  # 将状态变量转换为动作变量
+action, _ = model.predict(obs)  # 通过状态变量预测动作变量
 
 # 将动作action（改变灯态的指令串）发送给信号机
 
