@@ -16,3 +16,9 @@ class SACAgent(BaseAgent):
             tensorboard_log=self.config.tensorboard_logs,
             verbose=self.config.verbose,
         )
+
+    def train(self):
+        return self.model.learn(
+            total_timesteps=self.config.total_timesteps,
+            progress_bar=True
+        )

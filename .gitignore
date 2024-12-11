@@ -223,3 +223,9 @@ ui/tensorboard/
 /zszx-1-eval-DQN.txt
 /zszx-1-predict-DQN.json
 /zszx-1-predict-DQN.txt
+/models_DQN/
+/models_SAC/
+/zszx-1-eval-PPO.txt
+/zszx-1-predict-PPO.json
+/zszx-1-predict-PPO.txt
+/debug_logs/
