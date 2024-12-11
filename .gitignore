@@ -216,10 +216,8 @@ ui/tensorboard/
 /evals/
 /models/
 /monitor/
-/outputs/
 /outs/
 /predicts/
-/evals/
 /zszx-1-eval-DQN.txt
 /zszx-1-predict-DQN.json
 /zszx-1-predict-DQN.txt
