@@ -1,25 +1,25 @@
 <tlLogic id="tl_1" programID="0" offset="0" type="static">
-    <phase duration="40" state="GGGGGGGGGGrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrr"/>
-    <phase duration="3"  state="yyyyyyyyyyrrrrrrrrrrrrrrrrryyyyyyyyyrrrrrrrrrrrrrrrrrrr"/>
-    <phase duration="20" state="rrrrrrrrrrGGGGrrrrrrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrrrrr"/>
-    <phase duration="3"  state="rrrrrrrrrryyyyrrrrrrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrrrrr"/>
-    <phase duration="50" state="rrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrr"/>
-    <phase duration="5"  state="rrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrr"/>
-    <phase duration="20" state="rrrrrrrrrrrrrrrrrrrrGGGGGGGrrrrrrrrrrrrrrrrrrrrGGGGGGGG"/>
-    <phase duration="5"  state="rrrrrrrrrrrrrrrrrrrryyyyyyyrrrrrrrrrrrrrrrrrrrryyyyyyyy"/>
+    <phase duration="40" state="GGGGGGGrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrr"/>
+    <phase duration="3"  state="yyyyyyyrrrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrr"/>
+    <phase duration="20" state="rrrrrrrGGGGrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrr"/>
+    <phase duration="3"  state="rrrrrrryyyyrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrr"/>
+    <phase duration="50" state="rrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrGGGGGGrrrrrr"/>
+    <phase duration="5"  state="rrrrrrrrrrryyyyyyrrrrrrrrrrrrrrryyyyyyrrrrrr"/>
+    <phase duration="20" state="rrrrrrrrrrrrrrrrrGGGGGrrrrrrrrrrrrrrrrGGGGGG"/>
+    <phase duration="5"  state="rrrrrrrrrrrrrrrrryyyyyrrrrrrrrrrrrrrrryyyyyy"/>
 </tlLogic>
 
-        <!--特别注意：一个车道lane可能有N个信号灯位，分别连接出口的N个车道lane！分别表示：右-直-左-调头-->
-        <!--北(直3左2) 东(直3左1) 南(直3左2) 西(直3左2)  19个车道，55个逻辑灯位-->
-<!--(10)    (4)    (6)    (7)       (9)    (4)     (7)     (8)
-1234567890 1234  123456 1234567  123456789 1234  1234567 12345678
+<!--特别注意：一个车道lane可能有N个信号灯位，分别连接出口的N个车道lane！分别表示：右-直-左-调头-->
+<!--北(直3左2) 东(直3左1)    南(直3左2)     西(直3左2)  19个车道，44个逻辑灯位-->
+<!--(7)  (4)   (6)    (5)    (6)   (4)   (6)    (6)
+1234567 1234  123456 12345  123456 1234  123456 123456
 
-GGGGGGGGGG rrrr  rrrrrr rrrrrrr  GGGGGGGGG rrrr  rrrrrrr rrrrrrrr
-yyyyyyyyyy rrrr  rrrrrr rrrrrrr  yyyyyyyyy rrrr  rrrrrrr rrrrrrrr
-rrrrrrrrrr GGGG  rrrrrr rrrrrrr  rrrrrrrrr GGGG  rrrrrrr rrrrrrrr
-rrrrrrrrrr yyyy  rrrrrr rrrrrrr  rrrrrrrrr yyyy  rrrrrrr rrrrrrrr
-rrrrrrrrrr rrrr  GGGGGG rrrrrrr  rrrrrrrrr rrrr  GGGGGGG rrrrrrrr
-rrrrrrrrrr rrrr  yyyyyy rrrrrrr  rrrrrrrrr rrrr  yyyyyyy rrrrrrrr
-rrrrrrrrrr rrrr  rrrrrr GGGGGGG  rrrrrrrrr rrrr  rrrrrrr GGGGGGGG
-rrrrrrrrrr rrrr  rrrrrr yyyyyyy  rrrrrrrrr rrrr  rrrrrrr yyyyyyyy
+GGGGGGG rrrr  rrrrrr rrrrr  GGGGGG rrrr  rrrrrr rrrrrr
+yyyyyyy rrrr  rrrrrr rrrrr  yyyyyy rrrr  rrrrrr rrrrrr
+rrrrrrr GGGG  rrrrrr rrrrr  rrrrrr GGGG  rrrrrr rrrrrr
+rrrrrrr yyyy  rrrrrr rrrrr  rrrrrr yyyy  rrrrrr rrrrrr
+rrrrrrr rrrr  GGGGGG rrrrr  rrrrrr rrrr  GGGGGG rrrrrr
+rrrrrrr rrrr  yyyyyy rrrrr  rrrrrr rrrr  yyyyyy rrrrrr
+rrrrrrr rrrr  rrrrrr GGGGG  rrrrrr rrrr  rrrrrr GGGGGG
+rrrrrrr rrrr  rrrrrr yyyyy  rrrrrr rrrr  rrrrrr yyyyyy
 -->
