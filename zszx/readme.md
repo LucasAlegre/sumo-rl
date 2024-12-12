@@ -8,6 +8,8 @@
   - 编写zszx.tll.xml
   - 使用netconvert生成zszx.net.xml
 
+![zszx-net.jpg](zszx-net.jpg)
+
 ```
 all_phases:
 0: 	40.0,	GGGGGGGGGGrrrrrrrrrrrrrrrrrGGGGGGGGGrrrrrrrrrrrrrrrrrrr
@@ -65,9 +67,16 @@ yellow_dict:
   
   netconvert --node-files=zszx.nod.xml \
            --edge-files=zszx.edg.xml \
-           --connection-files=zszx.con-1.xml \
-           --tllogic-files=zszx.tll-1.xml \
-           --output-file=zszx.net-1.xml \
+           --connection-files=zszx-1.con.xml \
+           --tllogic-files=zszx-1.tll.xml \
+           --output-file=zszx-1.net.xml \
+           --ignore-errors
+           
+  netconvert --node-files=zszx.nod.xml \
+           --edge-files=zszx.edg.xml \
+           --connection-files=zszx-2.con.xml \
+           --tllogic-files=zszx-2.tll.xml \
+           --output-file=zszx-2.net.xml \
            --ignore-errors
   ```
 - 对历史流量数据进行预处理，使其满足SUMO仿真系统的数据规范(data/output_data.txt):data_process.py

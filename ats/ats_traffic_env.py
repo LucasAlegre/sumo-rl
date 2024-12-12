@@ -4,12 +4,16 @@ import numpy as np
 import time
 from typing import Dict, List, Union, Callable
 
-from aits.RealWorldDataCollector import RealWorldDataCollector
-from aits.RealWorldTrafficSignal import RealWorldTrafficSignal
-from aits.SignalController import SignalController
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ats.ats_data_collector import AtsDataCollector
+from ats.ats_signal_controller import AtsSignalController
+from ats.ats_traffic_signal import AtsTrafficSignal
 
 
-class RealWorldEnv(gym.Env):
+class AtsTrafficEnv(gym.Env):
     def __init__(
             self,
             intersection_ids: List[str],
@@ -21,7 +25,7 @@ class RealWorldEnv(gym.Env):
             reward_fn: Union[str, Callable, Dict[str, Union[str, Callable]]],
             action_space_type: str = 'auto'
     ):
-        super(RealWorldEnv, self).__init__()
+        super(AtsTrafficEnv, self).__init__()
 
         self.intersection_ids = intersection_ids
         self.num_seconds = num_seconds
@@ -32,15 +36,15 @@ class RealWorldEnv(gym.Env):
         self.reward_fn = reward_fn
 
         self.data_collectors = {
-            ts: RealWorldDataCollector(ts) for ts in self.intersection_ids
+            ts: AtsDataCollector(ts) for ts in self.intersection_ids
         }
 
         self.signal_controllers = {
-            ts: SignalController(ts) for ts in self.intersection_ids
+            ts: AtsSignalController(ts) for ts in self.intersection_ids
         }
 
         self.traffic_signals = {
-            ts: RealWorldTrafficSignal(
+            ts: AtsTrafficSignal(
                 self,
                 ts,
                 self.delta_time,

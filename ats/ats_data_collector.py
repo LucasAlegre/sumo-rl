@@ -2,8 +2,12 @@ import time
 from typing import Dict, List, Any
 import random  # 仅用于模拟数据，实际使用时应删除
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-class RealWorldDataCollector:
+
+class AtsDataCollector:
     def __init__(self, intersection_id: str):
         self.intersection_id = intersection_id
         self.lanes = self._initialize_lanes()

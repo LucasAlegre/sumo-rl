@@ -7,22 +7,24 @@
         "max_green": 30,
         "num_seconds": 3600,
         "reward_fn": "queue",
-        "action_space_type": "discrete"
+        "action_space_type": "continuous"
     },
     "algo_params": {
-        "learning_rate": 0.0001,
+        "learning_rate": 0.0003,
         "buffer_size": 100000,
         "learning_starts": 1000,
-        "batch_size": 64,
-        "gamma": 0.99,
+        "batch_size": 256,
         "tau": 0.005,
-        "train_freq": 4,
+        "gamma": 0.99,
+        "train_freq": 1,
         "gradient_steps": 1,
-        "target_update_interval": 1000,
-        "exploration_fraction": 0.1,
-        "exploration_final_eps": 0.02
+        "ent_coef": "auto",
+        "target_entropy": "auto",
+        "use_sde": false,
+        "sde_sample_freq": -1,
+        "use_sde_at_warmup": false
     },
-    "algorithm": "DQN",
+    "algorithm": "SAC",
     "total_timesteps": 500000,
-    "model_path": "ats/models/final_DQN_model.zip"
+    "model_path": "ats/models/final_SAC_model.zip"
 }

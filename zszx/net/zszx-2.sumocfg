@@ -1,6 +1,6 @@
 <configuration>
     <input>
-        <net-file value="zszx-1.net.xml"/>
+        <net-file value="zszx-2.net.xml"/>
         <route-files value="zszx-perhour-3.rou.xml"/>
     </input>
     <time>

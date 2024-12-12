@@ -1,8 +1,52 @@
 import time
 from typing import List, Dict
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-class SignalController:
+class Phase:
+    def __init__(self, duration, state, minDur, maxDur):
+        self.duration = duration  # 相位持续时间
+        self.state = state  # 对应的交通信号状态
+        self.minDur = minDur
+        self.maxDur = maxDur
+
+    def __repr__(self):
+        return f"Phase(duration={self.duration}, state='{self.state}')"
+
+
+def load_phases_from_file(file_path):
+    """
+    从XML文件加载交通信号相位信息，并返回一个Phase对象的列表。
+    :param file_path: XML文件的路径
+    :return: List[Phase] 对象的列表
+    """
+    import xml.etree.ElementTree as ET
+
+    tree = ET.parse(file_path)
+    root = tree.getroot()
+
+    phases = []
+
+    # 查找所有tlLogic节点中的phase元素
+    for tl_logic in root.findall('tlLogic'):
+        for phase_element in tl_logic.findall('phase'):
+            # 提取duration,state,minDur,maxDur属性
+            duration = int(phase_element.get('duration'))
+            state = phase_element.get('state')
+            minDur = int(phase_element.get('minDur'))
+            maxDur = int(phase_element.get('maxDur'))
+
+            # 创建Phase对象并添加到列表
+            phase = Phase(duration, state, minDur, maxDur)
+            phases.append(phase)
+
+    return phases
+
+
+class AtsSignalController:
     def __init__(self, ts_id: str):
         self.id = ts_id
         self.current_phase = 0
@@ -21,6 +65,11 @@ class SignalController:
             "rrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGG",
             "rrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyy"
         ]
+
+    def _load_phases(self) -> List[Phase]:
+        """Load phases from file and return"""
+        file_path = "/Users/xnpeng/sumoptis/sumo-rl/zszx/net/zszx.tll.xml"
+        return load_phases_from_file(file_path)
 
     def set_phase(self, phase_index: int):
         if 0 <= phase_index < len(self.phases):

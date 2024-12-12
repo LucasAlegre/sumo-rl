@@ -2,12 +2,15 @@ from typing import List, Callable, Union
 import time
 import numpy as np
 from gymnasium import spaces
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from aits.RealWorldDataCollector import RealWorldDataCollector
-from aits.SignalController import SignalController
+from ats.ats_data_collector import AtsDataCollector
+from ats.ats_signal_controller import AtsSignalController
 
 
-class RealWorldTrafficSignal:
+class AtsTrafficSignal:
     def __init__(
             self,
             env,
@@ -18,7 +21,7 @@ class RealWorldTrafficSignal:
             max_green: int,
             begin_time: int,
             reward_fn: Union[str, Callable],
-            data_collector: RealWorldDataCollector
+            data_collector: AtsDataCollector
     ):
         self.id = ts_id
         self.env = env
@@ -30,7 +33,7 @@ class RealWorldTrafficSignal:
         self.reward_fn = reward_fn
         self.data_collector = data_collector
 
-        self.signal_controller = SignalController(ts_id)
+        self.signal_controller = AtsSignalController(ts_id)
 
         self.last_measure = 0.0
         self.last_reward = None
