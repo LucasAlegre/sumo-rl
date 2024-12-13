@@ -7,11 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class Phase:
-    def __init__(self, duration, state, minDur, maxDur):
+    def __init__(self, duration, state):
         self.duration = duration  # 相位持续时间
         self.state = state  # 对应的交通信号状态
-        self.minDur = minDur
-        self.maxDur = maxDur
 
     def __repr__(self):
         return f"Phase(duration={self.duration}, state='{self.state}')"
@@ -25,6 +23,7 @@ def load_phases_from_file(file_path):
     """
     import xml.etree.ElementTree as ET
 
+    file_path = "/Users/xnpeng/sumoptis/sumo-rl/zszx/net/zszx-2.net.xml"
     tree = ET.parse(file_path)
     root = tree.getroot()
 
@@ -33,14 +32,12 @@ def load_phases_from_file(file_path):
     # 查找所有tlLogic节点中的phase元素
     for tl_logic in root.findall('tlLogic'):
         for phase_element in tl_logic.findall('phase'):
-            # 提取duration,state,minDur,maxDur属性
+            # 提取duration,state
             duration = int(phase_element.get('duration'))
             state = phase_element.get('state')
-            minDur = int(phase_element.get('minDur'))
-            maxDur = int(phase_element.get('maxDur'))
 
             # 创建Phase对象并添加到列表
-            phase = Phase(duration, state, minDur, maxDur)
+            phase = Phase(duration, state)
             phases.append(phase)
 
     return phases
@@ -55,21 +52,17 @@ class AtsSignalController:
 
     def _initialize_phases(self) -> List[str]:
         # 在实际应用中，这里应该从配置文件或数据库中读取相位信息
+        # return load_phases_from_file("")
         return [
-            "GGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrr",
-            "yyyyyyyyggggggggrrrrrrrrrrrrrrrryyyyyyyyggggggggrrrrrrrrrrrrrrrr",
-            "rrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrr",
-            "rrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrr",
-            "rrrrrrrrrrrrrrrrGGGGGGGGggggggggrrrrrrrrrrrrrrrrGGGGGGGGgggggggg",
-            "rrrrrrrrrrrrrrrryyyyyyyyggggggggrrrrrrrrrrrrrrrryyyyyyyygggggggg",
-            "rrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGGrrrrrrrrrrrrrrrrrrrrrrrrGGGGGGGG",
-            "rrrrrrrrrrrrrrrrrrrrrrrryyyyyyyyrrrrrrrrrrrrrrrrrrrrrrrryyyyyyyy"
+            "GGGGGGGrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrr",
+            "yyyyyyyrrrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrr",
+            "rrrrrrrGGGGrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrr",
+            "rrrrrrryyyyrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrr",
+            "rrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrGGGGGGrrrrrr",
+            "rrrrrrrrrrryyyyyyrrrrrrrrrrrrrrryyyyyyrrrrrr",
+            "rrrrrrrrrrrrrrrrrGGGGGrrrrrrrrrrrrrrrrGGGGGG",
+            "rrrrrrrrrrrrrrrrryyyyyrrrrrrrrrrrrrrrryyyyyy"
         ]
-
-    def _load_phases(self) -> List[Phase]:
-        """Load phases from file and return"""
-        file_path = "/Users/xnpeng/sumoptis/sumo-rl/zszx/net/zszx.tll.xml"
-        return load_phases_from_file(file_path)
 
     def set_phase(self, phase_index: int):
         if 0 <= phase_index < len(self.phases):
@@ -116,3 +109,9 @@ class AtsSignalController:
 
     def close(self):
         print(f"Closing")
+
+
+if __name__ == "__main__":
+    phs = load_phases_from_file("")
+    for p in phs:
+        print(p.state)

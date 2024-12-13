@@ -119,11 +119,8 @@ class TrafficSignal:
         self.yellow_dict = {}
         for phase in phases:
             state = phase.state
-            duration = phase.duration
             if "y" not in state and (state.count("r") + state.count("s") != len(state)):
-                self.green_phases.append(self.sumo.trafficlight.Phase(duration, state))  # 原来硬编码60
-            else:
-                self.yellow_time = duration if duration > self.yellow_time else self.yellow_time
+                self.green_phases.append(self.sumo.trafficlight.Phase(self.max_green, state))  # 原来硬编码60,到底是采用60还是人工调整？
         self.num_green_phases = len(self.green_phases)
         self.all_phases = self.green_phases.copy()
         print("before all_phases:\n")
@@ -443,16 +440,11 @@ class ContinuousTrafficSignal:
         self.yellow_dict = {}
         for phase in phases:
             state = phase.state
-            duration = phase.duration
             if "y" not in state and (state.count("r") + state.count("s") != len(state)):
-                self.green_phases.append(self.sumo.trafficlight.Phase(duration, state))  # 原来硬编码 60
-            else:
-                self.yellow_time = duration if duration > self.yellow_time else self.yellow_time
+                self.green_phases.append(self.sumo.trafficlight.Phase(self.max_green, state))  # 原来硬编码 60
 
         self.num_green_phases = len(self.green_phases)
-        # print("=====num_green_phases:", self.num_green_phases)
         self.all_phases = self.green_phases.copy()
-        # print("=====all_phases:", self.all_phases)
 
         for i, p1 in enumerate(self.green_phases):
             for j, p2 in enumerate(self.green_phases):
@@ -466,7 +458,6 @@ class ContinuousTrafficSignal:
                         yellow_state += p1.state[s]
                 self.yellow_dict[(i, j)] = len(self.all_phases)
                 self.all_phases.append(self.sumo.trafficlight.Phase(self.yellow_time, yellow_state))
-        # print("=====all_phases after:", self.all_phases)
 
         programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
         logic = programs[0]

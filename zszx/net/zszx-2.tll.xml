@@ -1,25 +1,25 @@
 <tlLogic id="tl_1" programID="0" offset="0" type="static">
-    <phase duration="40" state="GGGGGGGrrrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrr"/>
-    <phase duration="3"  state="yyyyyyyrrrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrrrr"/>
-    <phase duration="20" state="rrrrrrrGGGGrrrrrrrrrrrrrrrrrGGGGrrrrrrrrrrrr"/>
-    <phase duration="3"  state="rrrrrrryyyyrrrrrrrrrrrrrrrrryyyyrrrrrrrrrrrr"/>
-    <phase duration="50" state="rrrrrrrrrrrGGGGGGrrrrrrrrrrrrrrrGGGGGGrrrrrr"/>
-    <phase duration="5"  state="rrrrrrrrrrryyyyyyrrrrrrrrrrrrrrryyyyyyrrrrrr"/>
-    <phase duration="20" state="rrrrrrrrrrrrrrrrrGGGGGrrrrrrrrrrrrrrrrGGGGGG"/>
-    <phase duration="5"  state="rrrrrrrrrrrrrrrrryyyyyrrrrrrrrrrrrrrrryyyyyy"/>
+    <phase duration="40" state="GGGGGGrrrrrrrrrrrrrGGGGGGrrrrrrrrrrrrrr"/>
+    <phase duration="3"  state="yyyyyyrrrrrrrrrrrrryyyyyyrrrrrrrrrrrrrr"/>
+    <phase duration="20" state="rrrrrrGGGGrrrrrrrrrrrrrrrGGGGrrrrrrrrrr"/>
+    <phase duration="3"  state="rrrrrryyyyrrrrrrrrrrrrrrryyyyrrrrrrrrrr"/>
+    <phase duration="50" state="rrrrrrrrrrGGGGGGrrrrrrrrrrrrrGGGGGGrrrr"/>
+    <phase duration="5"  state="rrrrrrrrrryyyyyyrrrrrrrrrrrrryyyyyyrrrr"/>
+    <phase duration="20" state="rrrrrrrrrrrrrrrrGGGrrrrrrrrrrrrrrrrGGGG"/>
+    <phase duration="5"  state="rrrrrrrrrrrrrrrryyyrrrrrrrrrrrrrrrryyyy"/>
 </tlLogic>
 
 <!--特别注意：一个车道lane可能有N个信号灯位，分别连接出口的N个车道lane！分别表示：右-直-左-调头-->
-<!--北(直3左2) 东(直3左1)    南(直3左2)     西(直3左2)  19个车道，44个逻辑灯位-->
-<!--(7)  (4)   (6)    (5)    (6)   (4)   (6)    (6)
-1234567 1234  123456 12345  123456 1234  123456 123456
+<!--北(直3左2) 东(直3左1)    南(直3左2)     西(直3左2)  19个车道，39个逻辑灯位-->
+<!--(6) (4)    (6)  (3)    (6)   (4)   (6)   (4)
+123456 1234  123456 123  123456 1234  123456 1234
 
-GGGGGGG rrrr  rrrrrr rrrrr  GGGGGG rrrr  rrrrrr rrrrrr
-yyyyyyy rrrr  rrrrrr rrrrr  yyyyyy rrrr  rrrrrr rrrrrr
-rrrrrrr GGGG  rrrrrr rrrrr  rrrrrr GGGG  rrrrrr rrrrrr
-rrrrrrr yyyy  rrrrrr rrrrr  rrrrrr yyyy  rrrrrr rrrrrr
-rrrrrrr rrrr  GGGGGG rrrrr  rrrrrr rrrr  GGGGGG rrrrrr
-rrrrrrr rrrr  yyyyyy rrrrr  rrrrrr rrrr  yyyyyy rrrrrr
-rrrrrrr rrrr  rrrrrr GGGGG  rrrrrr rrrr  rrrrrr GGGGGG
-rrrrrrr rrrr  rrrrrr yyyyy  rrrrrr rrrr  rrrrrr yyyyyy
+GGGGGG rrrr  rrrrrr rrr  GGGGGG rrrr  rrrrrr rrrr
+yyyyyy rrrr  rrrrrr rrr  yyyyyy rrrr  rrrrrr rrrr
+rrrrrr GGGG  rrrrrr rrr  rrrrrr GGGG  rrrrrr rrrr
+rrrrrr yyyy  rrrrrr rrr  rrrrrr yyyy  rrrrrr rrrr
+rrrrrr rrrr  GGGGGG rrr  rrrrrr rrrr  GGGGGG rrrr
+rrrrrr rrrr  yyyyyy rrr  rrrrrr rrrr  yyyyyy rrrr
+rrrrrr rrrr  rrrrrr GGG  rrrrrr rrrr  rrrrrr GGGG
+rrrrrr rrrr  rrrrrr yyy  rrrrrr rrrr  rrrrrr yyyy
 -->

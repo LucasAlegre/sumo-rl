@@ -227,3 +227,4 @@ ui/tensorboard/
 /zszx-1-predict-PPO.json
 /zszx-1-predict-PPO.txt
 /debug_logs/
+/zszx-1-dqn-log.tar.gz

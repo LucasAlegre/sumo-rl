@@ -4,7 +4,7 @@
 - 根据路口的几何形状设计路口网络zszx.net.xml:
   - 编写zszx.nod.xml
   - 编写zszx.edg.xml
-  - 编写zszx.con.xml: 连接入口车道与出口车道，分配好连接方式，能解决拥堵及锁死问题，不要采用全连接，sumo不能智能分配流量。
+  - 编写zszx.con.xml: 连接入口车道与出口车道，分配好连接方式，能解决拥堵及锁死问题，不要采用全连接，加再keepClear=True, sumo不能智能分配流量。
   - 编写zszx.tll.xml
   - 使用netconvert生成zszx.net.xml
 
