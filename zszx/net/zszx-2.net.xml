@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-12-13 14:13:21 by Eclipse SUMO netconvert Version 1.20.0
+<!-- generated on 2024-12-13 14:59:49 by Eclipse SUMO netconvert Version 1.20.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -179,87 +179,87 @@
         <request index="3"  response="000000000000000000000000000000000000000" foes="111111111111110000001111111110000000000" cont="0"/>
         <request index="4"  response="000000000000000000000000000000000000000" foes="111111111111110000001111111110000000000" cont="0"/>
         <request index="5"  response="000000000000000000000000000000000000000" foes="111111111111110000001111111110000000000" cont="0"/>
-        <request index="6"  response="000000000000011111110000000000000000000" foes="111111111100011111111111111110000000000" cont="0"/>
-        <request index="7"  response="000000000000001111110000000000000000000" foes="111111111100001111111111111110000000000" cont="0"/>
-        <request index="8"  response="000000000000001111110000000000000000000" foes="111111111100001111111111111110000000000" cont="0"/>
-        <request index="9"  response="000000000000001111110000000000000000000" foes="111111111100001111111111111110000000000" cont="0"/>
-        <request index="10" response="000000000011111111110000000001111111111" foes="111100000011111111110000000001111111111" cont="0"/>
-        <request index="11" response="000000000011111111110000101001111111111" foes="111100000011111111110000101001111111111" cont="0"/>
-        <request index="12" response="000000000011111111110000100001111111111" foes="111100000011111111110000100101111111111" cont="0"/>
-        <request index="13" response="000000000011111111110001000001111111111" foes="111100000011111111110001000001111111111" cont="0"/>
-        <request index="14" response="000000000011111111110000000001111111111" foes="111100000011111111110000001101111111111" cont="0"/>
-        <request index="15" response="000000000011111111110000000001111111111" foes="111100000011111111110000010001111111111" cont="0"/>
-        <request index="16" response="000011111111111111110000000001111111111" foes="000011111111111111110000000001111111111" cont="0"/>
-        <request index="17" response="000011111111111111110000000001111111111" foes="000011111111111111110000000001111111111" cont="0"/>
-        <request index="18" response="000011111111111111110000000001111111111" foes="000011111111111111110000000001111111111" cont="0"/>
+        <request index="6"  response="000000000000000000000000000000000000000" foes="111111111100011111111111111110000000000" cont="0"/>
+        <request index="7"  response="000000000000000000000000000000000000000" foes="111111111100001111111111111110000000000" cont="0"/>
+        <request index="8"  response="000000000000000000000000000000000000000" foes="111111111100001111111111111110000000000" cont="0"/>
+        <request index="9"  response="000000000000000000000000000000000000000" foes="111111111100001111111111111110000000000" cont="0"/>
+        <request index="10" response="000000000000000000000000000000000000000" foes="111100000011111111110000000001111111111" cont="0"/>
+        <request index="11" response="000000000000000000000000000000000000000" foes="111100000011111111110000101001111111111" cont="0"/>
+        <request index="12" response="000000000000000000000000000000000000000" foes="111100000011111111110000100101111111111" cont="0"/>
+        <request index="13" response="000000000000000000000000000000000000000" foes="111100000011111111110001000001111111111" cont="0"/>
+        <request index="14" response="000000000000000000000000000000000000000" foes="111100000011111111110000001101111111111" cont="0"/>
+        <request index="15" response="000000000000000000000000000000000000000" foes="111100000011111111110000010001111111111" cont="0"/>
+        <request index="16" response="000000000000000000000000000000000000000" foes="000011111111111111110000000001111111111" cont="0"/>
+        <request index="17" response="000000000000000000000000000000000000000" foes="000011111111111111110000000001111111111" cont="0"/>
+        <request index="18" response="000000000000000000000000000000000000000" foes="000011111111111111110000000001111111111" cont="0"/>
         <request index="19" response="000000000000000000000000000000000000000" foes="111111111100000000001111111111111000000" cont="0"/>
         <request index="20" response="000000000000000000000000000000000000000" foes="111111111100000000001111111111111000000" cont="0"/>
         <request index="21" response="000000000000000000000000000000000000000" foes="111111111100000000001111111111111000000" cont="0"/>
         <request index="22" response="000000000000000000000000000000000000000" foes="111111111100000000001111111111111000000" cont="0"/>
         <request index="23" response="000000000000000000000000000000000000000" foes="111111111100000000001111111111111000000" cont="0"/>
         <request index="24" response="000000000000000000000000000000000000000" foes="111111111100000000001111111111111000000" cont="0"/>
-        <request index="25" response="000000000000000000000000000000000111111" foes="111111111100000000001111111110001111111" cont="0"/>
-        <request index="26" response="000000000001000000000000000000000111111" foes="111111111101000000001111111110000111111" cont="0"/>
-        <request index="27" response="000000000000000000000000000000000111111" foes="111111111100100000001111111110000111111" cont="0"/>
-        <request index="28" response="000000000000000000000000000000000111111" foes="111111111100000000001111111110000111111" cont="0"/>
-        <request index="29" response="000000000011111111110000000001111111111" foes="000000000011111111111110000001111111111" cont="0"/>
-        <request index="30" response="000000010011111111110000000001111111111" foes="000000010011111111111110000001111111111" cont="0"/>
-        <request index="31" response="000000000011111111110000000001111111111" foes="000000001011111111111110000001111111111" cont="0"/>
-        <request index="32" response="000001000011111111110000000001111111111" foes="000001000011111111111110000001111111111" cont="0"/>
-        <request index="33" response="000000000011111111110000000001111111111" foes="000000100011111111111110000001111111111" cont="0"/>
-        <request index="34" response="000000000011111111110000000001111111111" foes="000000000011111111111110000001111111111" cont="0"/>
-        <request index="35" response="000000000011111111110001111111111111111" foes="000000000011111111110001111111111111111" cont="0"/>
-        <request index="36" response="000000000011111111110001111111111111111" foes="000000000011111111110001111111111111111" cont="0"/>
-        <request index="37" response="000000000011111111110001111111111111111" foes="000000000011111111110001111111111111111" cont="0"/>
-        <request index="38" response="000000000011111111110001111111111111111" foes="000000000011111111110001111111111111111" cont="0"/>
+        <request index="25" response="000000000000000000000000000000000000000" foes="111111111100000000001111111110001111111" cont="0"/>
+        <request index="26" response="000000000000000000000000000000000000000" foes="111111111101000000001111111110000111111" cont="0"/>
+        <request index="27" response="000000000000000000000000000000000000000" foes="111111111100100000001111111110000111111" cont="0"/>
+        <request index="28" response="000000000000000000000000000000000000000" foes="111111111100000000001111111110000111111" cont="0"/>
+        <request index="29" response="000000000000000000000000000000000000000" foes="000000000011111111111110000001111111111" cont="0"/>
+        <request index="30" response="000000000000000000000000000000000000000" foes="000000010011111111111110000001111111111" cont="0"/>
+        <request index="31" response="000000000000000000000000000000000000000" foes="000000001011111111111110000001111111111" cont="0"/>
+        <request index="32" response="000000000000000000000000000000000000000" foes="000001000011111111111110000001111111111" cont="0"/>
+        <request index="33" response="000000000000000000000000000000000000000" foes="000000100011111111111110000001111111111" cont="0"/>
+        <request index="34" response="000000000000000000000000000000000000000" foes="000000000011111111111110000001111111111" cont="0"/>
+        <request index="35" response="000000000000000000000000000000000000000" foes="000000000011111111110001111111111111111" cont="0"/>
+        <request index="36" response="000000000000000000000000000000000000000" foes="000000000011111111110001111111111111111" cont="0"/>
+        <request index="37" response="000000000000000000000000000000000000000" foes="000000000011111111110001111111111111111" cont="0"/>
+        <request index="38" response="000000000000000000000000000000000000000" foes="000000000011111111110001111111111111111" cont="0"/>
     </junction>
     <junction id="w" type="priority" x="0.00" y="200.00" incLanes="t_w_0 t_w_1 t_w_2" intLanes=":w_0_0" shape="0.00,200.00 0.00,209.60 0.00,200.00">
         <request index="0" response="0" foes="0" cont="0"/>
     </junction>
 
-    <connection from="e_t" to="t_w" fromLane="0" toLane="0" via=":t_10_0" tl="tl_1" linkIndex="10" dir="s" state="o"/>
-    <connection from="e_t" to="t_w" fromLane="0" toLane="1" via=":t_10_1" tl="tl_1" linkIndex="11" dir="s" state="o"/>
-    <connection from="e_t" to="t_w" fromLane="1" toLane="1" via=":t_10_2" tl="tl_1" linkIndex="12" dir="s" state="o"/>
-    <connection from="e_t" to="t_w" fromLane="1" toLane="2" via=":t_10_3" tl="tl_1" linkIndex="13" dir="s" state="o"/>
-    <connection from="e_t" to="t_w" fromLane="2" toLane="1" via=":t_10_4" tl="tl_1" linkIndex="14" dir="s" state="o"/>
-    <connection from="e_t" to="t_w" fromLane="2" toLane="2" via=":t_10_5" tl="tl_1" linkIndex="15" dir="s" state="o"/>
-    <connection from="e_t" to="t_s" fromLane="3" toLane="2" via=":t_16_0" tl="tl_1" linkIndex="16" dir="l" state="o"/>
-    <connection from="e_t" to="t_s" fromLane="3" toLane="3" via=":t_16_1" tl="tl_1" linkIndex="17" dir="l" state="o"/>
-    <connection from="e_t" to="t_s" fromLane="3" toLane="4" via=":t_16_2" tl="tl_1" linkIndex="18" dir="l" state="o"/>
-    <connection from="n_t" to="t_s" fromLane="1" toLane="1" via=":t_0_0" tl="tl_1" linkIndex="0" dir="s" state="O"/>
-    <connection from="n_t" to="t_s" fromLane="1" toLane="2" via=":t_0_1" tl="tl_1" linkIndex="1" dir="s" state="O"/>
-    <connection from="n_t" to="t_s" fromLane="2" toLane="3" via=":t_0_2" tl="tl_1" linkIndex="2" dir="s" state="O"/>
-    <connection from="n_t" to="t_s" fromLane="2" toLane="4" via=":t_0_3" tl="tl_1" linkIndex="3" dir="s" state="O"/>
-    <connection from="n_t" to="t_s" fromLane="3" toLane="5" via=":t_0_4" tl="tl_1" linkIndex="4" dir="s" state="O"/>
-    <connection from="n_t" to="t_s" fromLane="3" toLane="6" via=":t_0_5" tl="tl_1" linkIndex="5" dir="s" state="O"/>
-    <connection from="n_t" to="t_e" fromLane="4" toLane="0" via=":t_6_0" tl="tl_1" linkIndex="6" dir="l" state="o"/>
-    <connection from="n_t" to="t_e" fromLane="4" toLane="1" via=":t_6_1" tl="tl_1" linkIndex="7" dir="l" state="o"/>
-    <connection from="n_t" to="t_e" fromLane="5" toLane="2" via=":t_6_2" tl="tl_1" linkIndex="8" dir="l" state="o"/>
-    <connection from="n_t" to="t_e" fromLane="5" toLane="3" via=":t_6_3" tl="tl_1" linkIndex="9" dir="l" state="o"/>
-    <connection from="s_t" to="t_n" fromLane="1" toLane="0" via=":t_19_0" tl="tl_1" linkIndex="19" dir="s" state="O"/>
-    <connection from="s_t" to="t_n" fromLane="1" toLane="1" via=":t_19_1" tl="tl_1" linkIndex="20" dir="s" state="O"/>
-    <connection from="s_t" to="t_n" fromLane="2" toLane="2" via=":t_19_2" tl="tl_1" linkIndex="21" dir="s" state="O"/>
-    <connection from="s_t" to="t_n" fromLane="2" toLane="3" via=":t_19_3" tl="tl_1" linkIndex="22" dir="s" state="O"/>
-    <connection from="s_t" to="t_n" fromLane="3" toLane="4" via=":t_19_4" tl="tl_1" linkIndex="23" dir="s" state="O"/>
-    <connection from="s_t" to="t_n" fromLane="3" toLane="5" via=":t_19_5" tl="tl_1" linkIndex="24" dir="s" state="O"/>
-    <connection from="s_t" to="t_w" fromLane="4" toLane="0" via=":t_25_0" tl="tl_1" linkIndex="25" dir="l" state="o"/>
-    <connection from="s_t" to="t_w" fromLane="4" toLane="1" via=":t_25_1" tl="tl_1" linkIndex="26" dir="l" state="o"/>
-    <connection from="s_t" to="t_w" fromLane="5" toLane="1" via=":t_25_2" tl="tl_1" linkIndex="27" dir="l" state="o"/>
-    <connection from="s_t" to="t_w" fromLane="5" toLane="2" via=":t_25_3" tl="tl_1" linkIndex="28" dir="l" state="o"/>
+    <connection from="e_t" to="t_w" fromLane="0" toLane="0" pass="1" via=":t_10_0" tl="tl_1" linkIndex="10" dir="s" state="O"/>
+    <connection from="e_t" to="t_w" fromLane="0" toLane="1" pass="1" via=":t_10_1" tl="tl_1" linkIndex="11" dir="s" state="O"/>
+    <connection from="e_t" to="t_w" fromLane="1" toLane="1" pass="1" via=":t_10_2" tl="tl_1" linkIndex="12" dir="s" state="O"/>
+    <connection from="e_t" to="t_w" fromLane="1" toLane="2" pass="1" via=":t_10_3" tl="tl_1" linkIndex="13" dir="s" state="O"/>
+    <connection from="e_t" to="t_w" fromLane="2" toLane="1" pass="1" via=":t_10_4" tl="tl_1" linkIndex="14" dir="s" state="O"/>
+    <connection from="e_t" to="t_w" fromLane="2" toLane="2" pass="1" via=":t_10_5" tl="tl_1" linkIndex="15" dir="s" state="O"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="2" pass="1" via=":t_16_0" tl="tl_1" linkIndex="16" dir="l" state="O"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="3" pass="1" via=":t_16_1" tl="tl_1" linkIndex="17" dir="l" state="O"/>
+    <connection from="e_t" to="t_s" fromLane="3" toLane="4" pass="1" via=":t_16_2" tl="tl_1" linkIndex="18" dir="l" state="O"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="1" pass="1" via=":t_0_0" tl="tl_1" linkIndex="0" dir="s" state="O"/>
+    <connection from="n_t" to="t_s" fromLane="1" toLane="2" pass="1" via=":t_0_1" tl="tl_1" linkIndex="1" dir="s" state="O"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="3" pass="1" via=":t_0_2" tl="tl_1" linkIndex="2" dir="s" state="O"/>
+    <connection from="n_t" to="t_s" fromLane="2" toLane="4" pass="1" via=":t_0_3" tl="tl_1" linkIndex="3" dir="s" state="O"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="5" pass="1" via=":t_0_4" tl="tl_1" linkIndex="4" dir="s" state="O"/>
+    <connection from="n_t" to="t_s" fromLane="3" toLane="6" pass="1" via=":t_0_5" tl="tl_1" linkIndex="5" dir="s" state="O"/>
+    <connection from="n_t" to="t_e" fromLane="4" toLane="0" pass="1" via=":t_6_0" tl="tl_1" linkIndex="6" dir="l" state="O"/>
+    <connection from="n_t" to="t_e" fromLane="4" toLane="1" pass="1" via=":t_6_1" tl="tl_1" linkIndex="7" dir="l" state="O"/>
+    <connection from="n_t" to="t_e" fromLane="5" toLane="2" pass="1" via=":t_6_2" tl="tl_1" linkIndex="8" dir="l" state="O"/>
+    <connection from="n_t" to="t_e" fromLane="5" toLane="3" pass="1" via=":t_6_3" tl="tl_1" linkIndex="9" dir="l" state="O"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="0" pass="1" via=":t_19_0" tl="tl_1" linkIndex="19" dir="s" state="O"/>
+    <connection from="s_t" to="t_n" fromLane="1" toLane="1" pass="1" via=":t_19_1" tl="tl_1" linkIndex="20" dir="s" state="O"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="2" pass="1" via=":t_19_2" tl="tl_1" linkIndex="21" dir="s" state="O"/>
+    <connection from="s_t" to="t_n" fromLane="2" toLane="3" pass="1" via=":t_19_3" tl="tl_1" linkIndex="22" dir="s" state="O"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="4" pass="1" via=":t_19_4" tl="tl_1" linkIndex="23" dir="s" state="O"/>
+    <connection from="s_t" to="t_n" fromLane="3" toLane="5" pass="1" via=":t_19_5" tl="tl_1" linkIndex="24" dir="s" state="O"/>
+    <connection from="s_t" to="t_w" fromLane="4" toLane="0" pass="1" via=":t_25_0" tl="tl_1" linkIndex="25" dir="l" state="O"/>
+    <connection from="s_t" to="t_w" fromLane="4" toLane="1" pass="1" via=":t_25_1" tl="tl_1" linkIndex="26" dir="l" state="O"/>
+    <connection from="s_t" to="t_w" fromLane="5" toLane="1" pass="1" via=":t_25_2" tl="tl_1" linkIndex="27" dir="l" state="O"/>
+    <connection from="s_t" to="t_w" fromLane="5" toLane="2" pass="1" via=":t_25_3" tl="tl_1" linkIndex="28" dir="l" state="O"/>
     <connection from="t_e" to="e_t" fromLane="3" toLane="3" via=":e_0_0" dir="t" state="M"/>
     <connection from="t_n" to="n_t" fromLane="5" toLane="5" via=":n_0_0" dir="t" state="M"/>
     <connection from="t_s" to="s_t" fromLane="6" toLane="5" via=":s_0_0" dir="t" state="M"/>
     <connection from="t_w" to="w_t" fromLane="2" toLane="5" via=":w_0_0" dir="t" state="M"/>
-    <connection from="w_t" to="t_e" fromLane="1" toLane="0" via=":t_29_0" tl="tl_1" linkIndex="29" dir="s" state="o"/>
-    <connection from="w_t" to="t_e" fromLane="1" toLane="1" via=":t_29_1" tl="tl_1" linkIndex="30" dir="s" state="o"/>
-    <connection from="w_t" to="t_e" fromLane="2" toLane="1" via=":t_29_2" tl="tl_1" linkIndex="31" dir="s" state="o"/>
-    <connection from="w_t" to="t_e" fromLane="2" toLane="2" via=":t_29_3" tl="tl_1" linkIndex="32" dir="s" state="o"/>
-    <connection from="w_t" to="t_e" fromLane="3" toLane="2" via=":t_29_4" tl="tl_1" linkIndex="33" dir="s" state="o"/>
-    <connection from="w_t" to="t_e" fromLane="3" toLane="3" via=":t_29_5" tl="tl_1" linkIndex="34" dir="s" state="o"/>
-    <connection from="w_t" to="t_n" fromLane="4" toLane="1" via=":t_35_0" tl="tl_1" linkIndex="35" dir="l" state="o"/>
-    <connection from="w_t" to="t_n" fromLane="4" toLane="2" via=":t_35_1" tl="tl_1" linkIndex="36" dir="l" state="o"/>
-    <connection from="w_t" to="t_n" fromLane="5" toLane="3" via=":t_35_2" tl="tl_1" linkIndex="37" dir="l" state="o"/>
-    <connection from="w_t" to="t_n" fromLane="5" toLane="4" via=":t_35_3" tl="tl_1" linkIndex="38" dir="l" state="o"/>
+    <connection from="w_t" to="t_e" fromLane="1" toLane="0" pass="1" via=":t_29_0" tl="tl_1" linkIndex="29" dir="s" state="O"/>
+    <connection from="w_t" to="t_e" fromLane="1" toLane="1" pass="1" via=":t_29_1" tl="tl_1" linkIndex="30" dir="s" state="O"/>
+    <connection from="w_t" to="t_e" fromLane="2" toLane="1" pass="1" via=":t_29_2" tl="tl_1" linkIndex="31" dir="s" state="O"/>
+    <connection from="w_t" to="t_e" fromLane="2" toLane="2" pass="1" via=":t_29_3" tl="tl_1" linkIndex="32" dir="s" state="O"/>
+    <connection from="w_t" to="t_e" fromLane="3" toLane="2" pass="1" via=":t_29_4" tl="tl_1" linkIndex="33" dir="s" state="O"/>
+    <connection from="w_t" to="t_e" fromLane="3" toLane="3" pass="1" via=":t_29_5" tl="tl_1" linkIndex="34" dir="s" state="O"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="1" pass="1" via=":t_35_0" tl="tl_1" linkIndex="35" dir="l" state="O"/>
+    <connection from="w_t" to="t_n" fromLane="4" toLane="2" pass="1" via=":t_35_1" tl="tl_1" linkIndex="36" dir="l" state="O"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="3" pass="1" via=":t_35_2" tl="tl_1" linkIndex="37" dir="l" state="O"/>
+    <connection from="w_t" to="t_n" fromLane="5" toLane="4" pass="1" via=":t_35_3" tl="tl_1" linkIndex="38" dir="l" state="O"/>
 
     <connection from=":e_0" to="e_t" fromLane="0" toLane="3" dir="t" state="M"/>
     <connection from=":n_0" to="n_t" fromLane="0" toLane="5" dir="t" state="M"/>
