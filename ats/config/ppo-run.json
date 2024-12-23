@@ -1,8 +1,8 @@
 {
     "env_params": {
         "intersection_ids": ["intersection_1", "intersection_2"],
-        "delta_time": 5,
-        "yellow_time": 2,
+        "delta_time": 3,
+        "yellow_time": 3,
         "min_green": 5,
         "max_green": 30,
         "num_seconds": 3600,

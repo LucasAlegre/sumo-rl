@@ -7,14 +7,28 @@ aits系统设计了系统架构，还包含有训练管理，特别是研究了r
 系统的逻辑架构与aits完全相同，仍然是智能体与环境（信号机、检测器），但在实现细节
 上解除了与SUMO的关联，增加了与真实环境的通信，即接收检测器的输入，输出信息给信号机。
 
-![ats-model.jpg](ats-model.jpg)
+![ats-arch.png](ats-arch.png)
 
 ## 主程序 ats_system.py (TrafficControlSystem)
 
-智能体根据配置加载算法模块，从环境中获得状态，根据状态输出动作给环境，环境执行一步动作，
+主程序根据配置加载智能体（算法模型），智能体从环境中获得状态，根据状态输出动作给环境，环境执行一步动作，
 再把执行结果传回到智能体，周而复始，循环运行这个过程。
 
 主程序逻辑如下图所示。
 
 ![ats_workflow.drawio.png](ats_workflow.drawio.png)
 
+## 环境 ats_traffic_env.py (AtsTrafficEnv)
+
+- init: observation_space, action_space
+- reset: time & observation
+- step: action -> observation,reward,info
+
+### 控制逻辑 AtsTrafficSignal
+
+- init: observation_space, action_space, phases, 
+- 
+
+### 检测器 AtsDataCollector
+
+### 控制器 AtsSignalController

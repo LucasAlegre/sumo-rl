@@ -86,7 +86,7 @@ class TrafficControlSystem:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run Traffic Control System Training')
+    parser = argparse.ArgumentParser(description='Run Traffic Control System')
     parser.add_argument('operation', choices=['run', 'debug'], help='Execution parameter')
     parser.add_argument('algorythm', choices=['DQN', 'PPO', 'A2C', 'SAC'], help='Algorithm to use')
     args = parser.parse_args()
