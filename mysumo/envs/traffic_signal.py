@@ -123,9 +123,9 @@ class TrafficSignal:
                 self.green_phases.append(self.sumo.trafficlight.Phase(self.max_green, state))  # 原来硬编码60,到底是采用60还是人工调整？
         self.num_green_phases = len(self.green_phases)
         self.all_phases = self.green_phases.copy()
-        print("before all_phases:\n")
-        for i, p in enumerate(self.all_phases):
-            print(f"{i}: \t{p.duration},\t{p.state}")
+        # print("before all_phases:\n")
+        # for i, p in enumerate(self.all_phases):
+        #     print(f"{i}: \t{p.duration},\t{p.state}")
         for i, p1 in enumerate(self.green_phases):
             for j, p2 in enumerate(self.green_phases):
                 if i == j:
@@ -139,10 +139,10 @@ class TrafficSignal:
                 self.yellow_dict[(i, j)] = len(self.all_phases)
                 self.all_phases.append(self.sumo.trafficlight.Phase(self.yellow_time, yellow_state))
 
-        print("after all_phases:\n")
-        for i, p in enumerate(self.all_phases):
-            print(f"{i}: \t{p.duration},\t{p.state}")
-        print("yellow_dict: \n", self.yellow_dict)
+        # print("after all_phases:\n")
+        # for i, p in enumerate(self.all_phases):
+        #     print(f"{i}: \t{p.duration},\t{p.state}")
+        # print("yellow_dict: \n", self.yellow_dict)
 
         programs = self.sumo.trafficlight.getAllProgramLogics(self.id)
         logic = programs[0]

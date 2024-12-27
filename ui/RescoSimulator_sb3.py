@@ -13,6 +13,8 @@ else:
     sys.exit("Please declare the environment variable 'SUMO_HOME'")
 
 sys.path.append('..')
+# 将项目根目录添加到 Python 路径
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import mysumo.envs  # 确保自定义环境被注册
 
 from mysumo import arterial4x4
@@ -66,3 +68,6 @@ if __name__ == "__main__":
         'predict': predict
     })
     
+"""
+程序有错，不再解决。
+"""

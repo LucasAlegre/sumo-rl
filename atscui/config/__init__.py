@@ -1,6 +1,7 @@
 from atscui.config.base_config import (
     BaseConfig,
-    TrainingConfig
+    TrainingConfig,
+    RunningConfig
 )
 
 from atscui.config.algorithm_configs import (

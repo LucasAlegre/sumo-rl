@@ -1,5 +1,7 @@
 # 交通信号智能体训练图形界面
 
+本模块是原ui模块的重构。将原模块拆分为3个子模块：界面子模块，配置子模块，算法子模块。
+
 ## 模块化设计
 
 - （1）界面组件子模块
@@ -24,18 +26,31 @@
 
 ## 加载模型进行预测
 
+run_model.py是一个简易的命令行程序，指定net.xml,rou.xml,model_path,algo_name,
+加载训练后的模型，根据状态选择动作，让环境执行该动作。
+
+测试结果符合预期，即相同的状态observation，会产生相同的动作action。
+
 ```
+python atscui/run_model.py 
+```
+
+```
+config = parse_config()
 env = createEnv(config)
-model = createAgent(env, config).model
-
+model = createAlgorithm(env, config.algo_name)
 model_obj = Path(config.model_path)
+
 if model_obj.exists():
-    print("load model=====加载训练模型==在原来基础上训练")
-    model.load(model_obj) 
+    print("==========load model==========")
+    model.load(model_obj)
 
-obs = ... # 来自探测器的状态变量
-action, _ = model.predict(obs)  # 通过状态变量预测动作变量
-
-# 将动作action（改变灯态的指令串）发送给信号机
-
+obs = env.reset()
+for _ in range(10):
+    action, _ = model.predict(obs)  # 通过状态变量预测动作变量
+    # 将动作action（改变灯态的指令串）发送给信号机
+    print(obs)
+    for _ in range(3):
+        obs, reward, done, info = env.step(action)  # 来自探测器的状态变量
+        print(action)
 ```

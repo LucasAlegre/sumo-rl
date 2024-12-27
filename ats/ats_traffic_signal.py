@@ -69,6 +69,7 @@ class AtsTrafficSignal:
         if current_phase == new_phase or time_since_last_change < self.yellow_time + self.min_green:
             self.signal_controller.set_phase(current_phase)
         else:
+            # 如果改变相位，先使用黄灯相位，再使用新的相位。
             yellow_phase = self.all_phases.index(self.all_phases[current_phase].replace('G', 'y'))
             self.signal_controller.set_phase(yellow_phase)
             time.sleep(self.yellow_time)

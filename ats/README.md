@@ -18,17 +18,87 @@ aits系统设计了系统架构，还包含有训练管理，特别是研究了r
 
 ![ats_workflow.drawio.png](ats_workflow.drawio.png)
 
-## 环境 ats_traffic_env.py (AtsTrafficEnv)
+## 交通环境 ats_traffic_env.py (AtsTrafficEnv)
 
-- init: observation_space, action_space
-- reset: time & observation
-- step: action -> observation,reward,info
+- init: 
+  - intersection_id
+  - yellow_time
+  - min_green
+  - max_green
+  - reward_fn
+  - data_collectors
+  - signal_controllers
+  - traffic_signals
+  - observation_space, 
+  - action_space
+- reset: 
+  - traffic_signal.signal_controller.set_phase(0)
+  - traffic_signal.data_collector.update()
+  - observation=traffic_signal.compute_observation()
+  - time & observation
+- step(action):
+  - traffic_signal.set_next_phase(action)
+  - traffic_signal.update()
+  - data_collector.update()
+  - observation=traffic_signal.compute_observation()
+  - reward=traffic_signal.compute_reward()
+  - info=_compute_info()
 
-### 控制逻辑 AtsTrafficSignal
+### 交通信号 AtsTrafficSignal
 
-- init: observation_space, action_space, phases, 
+- init: 
+  - ts_id, yellow_time, min_green, max_green, 
+  - reward_fn,
+  - data_collector
+  - signal_controller
+  - phases
+  - lanes, out_lanes, lanes_length
+  - observation_space, action_space 
+- set_next_phase(new_phase):
+  - signal_controller.set_phase(new_phase)
+- compute_observation:array(phase_id + min_green + density + queue)
+  - phase_id
+  - min_green
+  - density
+  - queue
+- compute_reward:
+  - reward_fn
+  - queued
+  - waiting_time
+- time_to_act
+
+### 状态检测器 AtsDataCollector
+
+- init:
+  - intersection_id
+  - lanes
+  - last_update_time
+- update
+  - _update_sensors
+    - _update_vehicle_count
+    - _update_vehicle_speed
+  - update last_updage_time
+- get_lane_vehicle_count
+- get_lane_mean_speed
+- get_lanes_density
+- get_lanes_queue
+- get_total_queued
+- get_average_speed
+- get_lane_queue
+
+### 信号控制器 AtsSignalController
+
+- init:
+  - id
+  - current_phase
+  - last_change_time
+  - phases=initial_phases:load from config file
+- set_phase: send signal to hardware
+- get_current_phase
+- get_time_since_last_change
+- get_phase_duration
+- get_controlled_lanes
+- get_controlled_links
+- set_program
+- set_phase_duration
 - 
-
-### 检测器 AtsDataCollector
-
-### 控制器 AtsSignalController

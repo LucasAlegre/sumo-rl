@@ -36,3 +36,10 @@ class TrainingConfig(BaseConfig):
     n_epochs: int = 100
     buffer_size: int = 10_000
     tau: float = 0.001
+
+@dataclass
+class RunningConfig(BaseConfig):
+    operation = "PREDICT"
+    gui: bool = False
+    render_mode = None
+    num_seconds = 100

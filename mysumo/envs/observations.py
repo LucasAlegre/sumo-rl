@@ -56,7 +56,7 @@ class DefaultObservationFunction(ObservationFunction):
         )
 
 """
-这段代码定义了交通信号灯的观察函数。详细分析这个程序：
+这段代码定义了交通信号的观察函数。详细分析这个程序：
 
 1. `ObservationFunction` 类：
    - 这是一个抽象基类，为所有观察函数定义了基本结构。
