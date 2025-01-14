@@ -286,6 +286,9 @@ class SumoEnvironment(gym.Env):
             }
 
         self.vehicles = dict()
+        self.num_arrived_vehicles = 0
+        self.num_departed_vehicles = 0
+        self.num_teleported_vehicles = 0
 
         if self.single_agent:
             return self._compute_observations()[self.ts_ids[0]], self._compute_info()
@@ -412,14 +415,22 @@ class SumoEnvironment(gym.Env):
 
     def _sumo_step(self):
         self.sumo.simulationStep()
+        self.num_arrived_vehicles += self.sumo.simulation.getArrivedNumber()
+        self.num_departed_vehicles += self.sumo.simulation.getDepartedNumber()
+        self.num_teleported_vehicles += self.sumo.simulation.getEndingTeleportNumber()
 
     def _get_system_info(self):
         vehicles = self.sumo.vehicle.getIDList()
         speeds = [self.sumo.vehicle.getSpeed(vehicle) for vehicle in vehicles]
         waiting_times = [self.sumo.vehicle.getWaitingTime(vehicle) for vehicle in vehicles]
+        num_backlogged_vehicles = len(self.sumo.simulation.getPendingVehicles())
         return {
-            # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
-            "system_total_stopped": sum(int(speed < 0.1) for speed in speeds),
+            "system_total_running": len(vehicles),
+            "system_total_backlogged": num_backlogged_vehicles,
+            "system_total_stopped": sum(int(speed < 0.1) for speed in speeds),  # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
+            "system_total_arrived": self.num_arrived_vehicles,
+            "system_total_departed": self.num_departed_vehicles,
+            "system_total_teleported": self.num_teleported_vehicles,
             "system_total_waiting_time": sum(waiting_times),
             "system_mean_waiting_time": 0.0 if len(vehicles) == 0 else np.mean(waiting_times),
             "system_mean_speed": 0.0 if len(vehicles) == 0 else np.mean(speeds),
