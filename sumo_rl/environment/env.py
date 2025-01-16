@@ -1,4 +1,5 @@
 """SUMO Environment for Traffic Signal Control."""
+
 import os
 import sys
 from pathlib import Path
@@ -427,7 +428,9 @@ class SumoEnvironment(gym.Env):
         return {
             "system_total_running": len(vehicles),
             "system_total_backlogged": num_backlogged_vehicles,
-            "system_total_stopped": sum(int(speed < 0.1) for speed in speeds),  # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
+            "system_total_stopped": sum(
+                int(speed < 0.1) for speed in speeds
+            ),  # In SUMO, a vehicle is considered halting if its speed is below 0.1 m/s
             "system_total_arrived": self.num_arrived_vehicles,
             "system_total_departed": self.num_departed_vehicles,
             "system_total_teleported": self.num_teleported_vehicles,

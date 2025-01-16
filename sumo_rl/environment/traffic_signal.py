@@ -1,4 +1,5 @@
 """This module contains the TrafficSignal class, which represents a traffic signal in the simulation."""
+
 import os
 import sys
 from typing import Callable, List, Union

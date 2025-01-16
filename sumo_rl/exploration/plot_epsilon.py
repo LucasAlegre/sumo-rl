@@ -1,4 +1,5 @@
 """Plot epsilon decay."""
+
 import argparse
 
 import matplotlib.pyplot as plt

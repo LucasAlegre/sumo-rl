@@ -1,4 +1,5 @@
 """Observation functions for traffic signals."""
+
 from abc import abstractmethod
 
 import numpy as np

@@ -50,7 +50,6 @@ nets = [
 # Linters and Test tools #######################################################
 
 [tool.black]
-safe = true
 line-length = 127
 target-version = ['py38', 'py39', 'py310', 'py311']
 include = '\.pyi?$'
