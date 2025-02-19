@@ -3,7 +3,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Callable, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 
 if "SUMO_HOME" in os.environ:
@@ -63,7 +63,8 @@ class SumoEnvironment(gym.Env):
         max_green (int): Max green time in a phase. Default: 60 seconds. Warning: This parameter is currently ignored!
         enforce_max_green (bool): If true, it enforces the max green time and selects the next green phase when the max green time is reached. Default: False
         single_agent (bool): If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (returns dict of observations, rewards, dones, infos).
-        reward_fn (str/function/dict): String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys.
+        reward_fn (str/function/dict/List): String with the name of the reward function used by the agents, a reward function, dictionary with reward functions assigned to individual traffic lights by their keys, or a List of reward functions.
+        reward_weights (List[float]/np.ndarray): Weights for linearly combining the reward functions, in case reward_fn is a list. If it is None, the reward returned will be a np.ndarray. Default: None
         observation_class (ObservationFunction): Inherited class which has both the observation function and observation space.
         add_system_info (bool): If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary.
         add_per_agent_info (bool): If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary.
@@ -98,7 +99,8 @@ class SumoEnvironment(gym.Env):
         max_green: int = 50,
         enforce_max_green: bool = False,
         single_agent: bool = False,
-        reward_fn: Union[str, Callable, dict] = "diff-waiting-time",
+        reward_fn: Union[str, Callable, dict, List] = "diff-waiting-time",
+        reward_weights: Optional[List[float]] = None,
         observation_class: ObservationFunction = DefaultObservationFunction,
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
@@ -137,6 +139,7 @@ class SumoEnvironment(gym.Env):
         self.yellow_time = yellow_time
         self.single_agent = single_agent
         self.reward_fn = reward_fn
+        self.reward_weights = reward_weights
         self.sumo_seed = sumo_seed
         self.fixed_ts = fixed_ts
         self.sumo_warnings = sumo_warnings
@@ -184,6 +187,7 @@ class SumoEnvironment(gym.Env):
                 self.enforce_max_green,
                 self.begin_time,
                 self.reward_fn[ts],
+                self.reward_weights,
                 conn,
             )
             for ts in self.ts_ids
@@ -371,6 +375,22 @@ class SumoEnvironment(gym.Env):
         Only used in case of single-agent environment.
         """
         return self.traffic_signals[self.ts_ids[0]].action_space
+
+    @property
+    def reward_space(self):
+        """Return the reward space of a traffic signal.
+
+        Only used in case of single-agent environment.
+        """
+        return self.traffic_signals[self.ts_ids[0]].reward_space
+
+    @property
+    def reward_dim(self):
+        """Return the reward dimension of a traffic signal.
+
+        Only used in case of single-agent environment.
+        """
+        return self.traffic_signals[self.ts_ids[0]].reward_dim
 
     def observation_spaces(self, ts_id: str):
         """Return the observation space of a traffic signal."""

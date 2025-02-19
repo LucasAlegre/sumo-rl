@@ -55,7 +55,8 @@ class TrafficSignal:
         max_green: int,
         enforce_max_green: bool,
         begin_time: int,
-        reward_fn: Union[str, Callable],
+        reward_fn: Union[str, Callable, List],
+        reward_weights: List[float],
         sumo,
     ):
         """Initializes a TrafficSignal object.
@@ -70,6 +71,7 @@ class TrafficSignal:
             enforce_max_green (bool): If True, the traffic signal will always change phase after max green seconds.
             begin_time (int): The time in seconds when the traffic signal starts operating.
             reward_fn (Union[str, Callable]): The reward function. Can be a string with the name of the reward function or a callable function.
+            reward_weights (List[float]): The weights of the reward function.
             sumo (Sumo): The Sumo instance.
         """
         self.id = ts_id
@@ -86,13 +88,20 @@ class TrafficSignal:
         self.last_measure = 0.0
         self.last_reward = None
         self.reward_fn = reward_fn
+        self.reward_weights = reward_weights
         self.sumo = sumo
 
-        if type(self.reward_fn) is str:
-            if self.reward_fn in TrafficSignal.reward_fns.keys():
-                self.reward_fn = TrafficSignal.reward_fns[self.reward_fn]
-            else:
-                raise NotImplementedError(f"Reward function {self.reward_fn} not implemented")
+        if type(self.reward_fn) is list:
+            self.reward_dim = len(self.reward_fn)
+            self.reward_list = [self._get_reward_fn_from_string(reward_fn) for reward_fn in self.reward_fn]
+        else:
+            self.reward_dim = 1
+            self.reward_list = [self._get_reward_fn_from_string(self.reward_fn)]
+
+        if self.reward_weights is not None:
+            self.reward_dim = 1  # Since it will be scalarized
+
+        self.reward_space = spaces.Box(low=-np.inf, high=np.inf, shape=(self.reward_dim,), dtype=np.float32)
 
         self.observation_fn = self.env.observation_class(self)
 
@@ -107,6 +116,14 @@ class TrafficSignal:
 
         self.observation_space = self.observation_fn.observation_space()
         self.action_space = spaces.Discrete(self.num_green_phases)
+
+    def _get_reward_fn_from_string(self, reward_fn):
+        if type(reward_fn) is str:
+            if reward_fn in TrafficSignal.reward_fns.keys():
+                return TrafficSignal.reward_fns[reward_fn]
+            else:
+                raise NotImplementedError(f"Reward function {reward_fn} not implemented")
+        return reward_fn
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
@@ -189,9 +206,15 @@ class TrafficSignal:
         """Computes the observation of the traffic signal."""
         return self.observation_fn()
 
-    def compute_reward(self):
-        """Computes the reward of the traffic signal."""
-        self.last_reward = self.reward_fn(self)
+    def compute_reward(self) -> Union[float, np.ndarray]:
+        """Computes the reward of the traffic signal. If it is a list of rewards, it returns a numpy array."""
+        if self.reward_dim == 1:
+            self.last_reward = self.reward_list[0](self)
+        else:
+            self.last_reward = np.array([reward_fn(self) for reward_fn in self.reward_list], dtype=np.float32)
+            if self.reward_weights is not None:
+                self.last_reward = np.dot(self.last_reward, self.reward_weights)  # Linear combination of rewards
+
         return self.last_reward
 
     def _pressure_reward(self):
