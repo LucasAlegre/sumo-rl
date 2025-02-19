@@ -85,7 +85,7 @@ class TrafficSignal:
         self.is_yellow = False
         self.time_since_last_phase_change = 0
         self.next_action_time = begin_time
-        self.last_measure = 0.0
+        self.last_ts_waiting_time = 0.0
         self.last_reward = None
         self.reward_fn = reward_fn
         self.reward_weights = reward_weights
@@ -228,8 +228,8 @@ class TrafficSignal:
 
     def _diff_waiting_time_reward(self):
         ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
-        reward = self.last_measure - ts_wait
-        self.last_measure = ts_wait
+        reward = self.last_ts_waiting_time - ts_wait
+        self.last_ts_waiting_time = ts_wait
         return reward
 
     def _observation_fn_default(self):
