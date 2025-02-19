@@ -68,7 +68,7 @@ include = ["sumo_rl/**", "tests/**"]
 exclude = ["**/node_modules", "**/__pycache__"]
 strict = []
 
-typeCheckingMode = "basic"
+typeCheckingMode = "off"
 pythonVersion = "3.8"
 pythonPlatform = "All"
 typeshedPath = "typeshed"

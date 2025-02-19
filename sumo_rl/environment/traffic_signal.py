@@ -53,6 +53,7 @@ class TrafficSignal:
         yellow_time: int,
         min_green: int,
         max_green: int,
+        enforce_max_green: bool,
         begin_time: int,
         reward_fn: Union[str, Callable],
         sumo,
@@ -66,6 +67,7 @@ class TrafficSignal:
             yellow_time (int): The time in seconds of the yellow phase.
             min_green (int): The minimum time in seconds of the green phase.
             max_green (int): The maximum time in seconds of the green phase.
+            enforce_max_green (bool): If True, the traffic signal will always change phase after max green seconds.
             begin_time (int): The time in seconds when the traffic signal starts operating.
             reward_fn (Union[str, Callable]): The reward function. Can be a string with the name of the reward function or a callable function.
             sumo (Sumo): The Sumo instance.
@@ -76,6 +78,7 @@ class TrafficSignal:
         self.yellow_time = yellow_time
         self.min_green = min_green
         self.max_green = max_green
+        self.enforce_max_green = enforce_max_green
         self.green_phase = 0
         self.is_yellow = False
         self.time_since_last_phase_change = 0
@@ -163,6 +166,11 @@ class TrafficSignal:
             new_phase (int): Number between [0 ... num_green_phases]
         """
         new_phase = int(new_phase)
+
+        # Ensure max green time is enforced if needed
+        if self.enforce_max_green and new_phase == self.green_phase and self.time_since_last_phase_change >= self.max_green:
+            new_phase = (self.green_phase + 1) % self.num_green_phases  # Next phase is activated
+
         if self.green_phase == new_phase or self.time_since_last_phase_change < self.yellow_time + self.min_green:
             # self.sumo.trafficlight.setPhase(self.id, self.green_phase)
             self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[self.green_phase].state)

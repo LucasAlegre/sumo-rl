@@ -61,6 +61,7 @@ class SumoEnvironment(gym.Env):
         yellow_time (int): Duration of the yellow phase. Default: 2 seconds
         min_green (int): Minimum green time in a phase. Default: 5 seconds
         max_green (int): Max green time in a phase. Default: 60 seconds. Warning: This parameter is currently ignored!
+        enforce_max_green (bool): If true, it enforces the max green time and selects the next green phase when the max green time is reached. Default: False
         single_agent (bool): If true, it behaves like a regular gym.Env. Else, it behaves like a MultiagentEnv (returns dict of observations, rewards, dones, infos).
         reward_fn (str/function/dict): String with the name of the reward function used by the agents, a reward function, or dictionary with reward functions assigned to individual traffic lights by their keys.
         observation_class (ObservationFunction): Inherited class which has both the observation function and observation space.
@@ -95,6 +96,7 @@ class SumoEnvironment(gym.Env):
         yellow_time: int = 2,
         min_green: int = 5,
         max_green: int = 50,
+        enforce_max_green: bool = False,
         single_agent: bool = False,
         reward_fn: Union[str, Callable, dict] = "diff-waiting-time",
         observation_class: ObservationFunction = DefaultObservationFunction,
@@ -121,6 +123,7 @@ class SumoEnvironment(gym.Env):
             self._sumo_binary = sumolib.checkBinary("sumo")
 
         assert delta_time > yellow_time, "Time between actions must be at least greater than yellow time."
+        assert max_green > min_green, "Max green time must be greater than min green time."
 
         self.begin_time = begin_time
         self.sim_max_time = begin_time + num_seconds
@@ -130,6 +133,7 @@ class SumoEnvironment(gym.Env):
         self.time_to_teleport = time_to_teleport
         self.min_green = min_green
         self.max_green = max_green
+        self.enforce_max_green = enforce_max_green
         self.yellow_time = yellow_time
         self.single_agent = single_agent
         self.reward_fn = reward_fn
@@ -153,36 +157,7 @@ class SumoEnvironment(gym.Env):
         self.ts_ids = list(conn.trafficlight.getIDList())
         self.observation_class = observation_class
 
-        if isinstance(self.reward_fn, dict):
-            self.traffic_signals = {
-                ts: TrafficSignal(
-                    self,
-                    ts,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    self.reward_fn[ts],
-                    conn,
-                )
-                for ts in self.reward_fn.keys()
-            }
-        else:
-            self.traffic_signals = {
-                ts: TrafficSignal(
-                    self,
-                    ts,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    self.reward_fn,
-                    conn,
-                )
-                for ts in self.ts_ids
-            }
+        self._build_traffic_signals(conn)
 
         conn.close()
 
@@ -193,6 +168,26 @@ class SumoEnvironment(gym.Env):
         self.out_csv_name = out_csv_name
         self.observations = {ts: None for ts in self.ts_ids}
         self.rewards = {ts: None for ts in self.ts_ids}
+
+    def _build_traffic_signals(self, conn):
+        if not isinstance(self.reward_fn, dict):
+            self.reward_fn = {ts: self.reward_fn for ts in self.ts_ids}
+
+        self.traffic_signals = {
+            ts: TrafficSignal(
+                self,
+                ts,
+                self.delta_time,
+                self.yellow_time,
+                self.min_green,
+                self.max_green,
+                self.enforce_max_green,
+                self.begin_time,
+                self.reward_fn[ts],
+                conn,
+            )
+            for ts in self.ts_ids
+        }
 
     def _start_simulation(self):
         sumo_cmd = [
@@ -255,36 +250,7 @@ class SumoEnvironment(gym.Env):
             self.sumo_seed = seed
         self._start_simulation()
 
-        if isinstance(self.reward_fn, dict):
-            self.traffic_signals = {
-                ts: TrafficSignal(
-                    self,
-                    ts,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    self.reward_fn[ts],
-                    self.sumo,
-                )
-                for ts in self.reward_fn.keys()
-            }
-        else:
-            self.traffic_signals = {
-                ts: TrafficSignal(
-                    self,
-                    ts,
-                    self.delta_time,
-                    self.yellow_time,
-                    self.min_green,
-                    self.max_green,
-                    self.begin_time,
-                    self.reward_fn,
-                    self.sumo,
-                )
-                for ts in self.ts_ids
-            }
+        self._build_traffic_signals(self.sumo)
 
         self.vehicles = dict()
         self.num_arrived_vehicles = 0
