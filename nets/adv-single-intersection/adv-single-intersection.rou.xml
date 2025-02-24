@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2021-12-06 22:20:55 by Eclipse SUMO netedit Version 1.11.0
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <route edges="n_t t_s" color="yellow" id="route_ns"/>
+    <route edges="w_t t_e" color="yellow" id="route_we"/>
+    <flow id="flow_es" begin="0.00" from="-t_e" to="t_s" end="100000.00" probability="0.40"/>
+    <flow id="flow_ne" begin="0.00" from="n_t" to="t_e" end="100000.00" probability="0.50"/>
+    <flow id="flow_ns" begin="0.00" departLane="best" departPos="base" departSpeed="max" route="route_ns" end="100000.00" probability="0.20"/>
+    <flow id="flow_sn" begin="0.00" from="-t_s" to="-n_t" end="100000.00" probability="0.20"/>
+    <flow id="flow_sw" begin="0.00" from="-t_s" to="-w_t" end="100000.00" probability="0.50"/>
+    <flow id="flow_we" begin="0.00" departLane="best" departPos="base" departSpeed="max" route="route_we" end="100000.00" probability="0.30"/>
+    <flow id="flow_wn" begin="0.00" from="w_t" to="-n_t" end="100000.00" probability="0.40"/>
+</routes>
