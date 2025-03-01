@@ -183,6 +183,12 @@ class TrafficSignal:
             new_phase (int): Number between [0 ... num_green_phases]
         """
         new_phase = int(new_phase)
+        if new_phase < 0 or new_phase >= self.num_green_phases:
+          print("num_green_phases", self.num_green_phases)
+          print(self.green_phases)
+          print(self.yellow_dict)
+          print(self.all_phases)
+          raise ValueError(new_phase, "Failed assertion: new_phase >= 0 and new_phase < self.num_green_phases")
 
         # Ensure max green time is enforced if needed
         if self.enforce_max_green and new_phase == self.green_phase and self.time_since_last_phase_change >= self.max_green:
@@ -194,6 +200,12 @@ class TrafficSignal:
             self.next_action_time = self.env.sim_step + self.delta_time
         else:
             # self.sumo.trafficlight.setPhase(self.id, self.yellow_dict[(self.green_phase, new_phase)])  # turns yellow
+            if (self.green_phase, new_phase) not in self.yellow_dict:
+              print("num_green_phases", self.num_green_phases)
+              print(self.green_phases)
+              print(self.yellow_dict)
+              print(self.all_phases)
+              raise ValueError(new_phase, "Failed assertion: (self.green_phase, new_phase) in self.yellow_dict")
             self.sumo.trafficlight.setRedYellowGreenState(
                 self.id, self.all_phases[self.yellow_dict[(self.green_phase, new_phase)]].state
             )
