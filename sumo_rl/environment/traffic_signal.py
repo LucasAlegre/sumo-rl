@@ -54,8 +54,6 @@ class TrafficSignal:
         max_green: int,
         enforce_max_green: bool,
         begin_time: int,
-        # reward_fn: Union[str, Callable, List],
-        reward_weights: List[float],
         sumo,
     ):
         """Initializes a TrafficSignal object.
@@ -85,22 +83,7 @@ class TrafficSignal:
         self.time_since_last_phase_change = 0
         self.next_action_time = begin_time
         self.last_ts_waiting_time = 0.0
-        self.last_reward = None
-        # self.reward_fn = reward_fn
-        self.reward_weights = reward_weights
         self.sumo = sumo
-
-        # if type(self.reward_fn) is list:
-        #     self.reward_dim = len(self.reward_fn)
-        #     self.reward_list = [self._get_reward_fn_from_string(reward_fn) for reward_fn in self.reward_fn]
-        # else:
-        #     self.reward_dim = 1
-        #     self.reward_list = [self._get_reward_fn_from_string(self.reward_fn)]
-
-        # if self.reward_weights is not None:
-        #     self.reward_dim = 1  # Since it will be scalarized
-
-        # self.reward_space = spaces.Box(low=-np.inf, high=np.inf, shape=(self.reward_dim,), dtype=np.float32)
 
         self._build_phases()
 
@@ -111,14 +94,6 @@ class TrafficSignal:
         self.out_lanes = list(set(self.out_lanes))
         self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
         self.action_space = spaces.Discrete(self.num_green_phases)
-
-    def _get_reward_fn_from_string(self, reward_fn):
-        if type(reward_fn) is str:
-            if reward_fn in TrafficSignal.reward_fns.keys():
-                return TrafficSignal.reward_fns[reward_fn]
-            else:
-                raise NotImplementedError(f"Reward function {reward_fn} not implemented")
-        return reward_fn
 
     def _build_phases(self):
         phases = self.sumo.trafficlight.getAllProgramLogics(self.id)[0].phases
@@ -154,6 +129,14 @@ class TrafficSignal:
         logic.phases = self.all_phases
         self.sumo.trafficlight.setProgramLogic(self.id, logic)
         self.sumo.trafficlight.setRedYellowGreenState(self.id, self.all_phases[0].state)
+
+    def reset(self, begin_time: int):
+      """Resets the Traffic Signal as simulation was never started"""
+      self.green_phase = 0
+      self.is_yellow = False
+      self.time_since_last_phase_change = 0
+      self.next_action_time = begin_time
+      self.last_ts_waiting_time = 0.0
 
     @property
     def time_to_act(self):
@@ -208,17 +191,6 @@ class TrafficSignal:
             self.next_action_time = self.env.sim_step + self.delta_time
             self.is_yellow = True
             self.time_since_last_phase_change = 0
-
-    # def compute_reward(self) -> Union[float, np.ndarray]:
-    #     """Computes the reward of the traffic signal. If it is a list of rewards, it returns a numpy array."""
-    #     if self.reward_dim == 1:
-    #         self.last_reward = self.reward_list[0](self)
-    #     else:
-    #         self.last_reward = np.array([reward_fn(self) for reward_fn in self.reward_list], dtype=np.float32)
-    #         if self.reward_weights is not None:
-    #             self.last_reward = np.dot(self.last_reward, self.reward_weights)  # Linear combination of rewards
-
-    #     return self.last_reward
 
     def get_accumulated_waiting_time_per_lane(self) -> List[float]:
         """Returns the accumulated waiting time per lane.

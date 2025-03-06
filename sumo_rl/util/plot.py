@@ -22,6 +22,7 @@ def plot_single_metrics(metrics: dict[int, dict[int, pandas.DataFrame]], label: 
       matplotlib.pyplot.title('Metrics for run %s / episode %s' % (run, episode))
       matplotlib.pyplot.legend()
       matplotlib.pyplot.savefig(scenario.plots_file(label, run, episode))
+      matplotlib.pyplot.close()
 
 def plot_summary_metrics(metrics: dict[int, dict[int, pandas.DataFrame]], label: str, retrieve_data: typing.Callable):
   for run in metrics:
@@ -35,6 +36,7 @@ def plot_summary_metrics(metrics: dict[int, dict[int, pandas.DataFrame]], label:
     matplotlib.pyplot.title('Metrics for run %s' % (run))
     matplotlib.pyplot.legend()
     matplotlib.pyplot.savefig(scenario.plots_file(label, run, None))
+    matplotlib.pyplot.close()
 
 if __name__ == "__main__":
   cli = argparse.ArgumentParser(sys.argv[0])
@@ -42,6 +44,11 @@ if __name__ == "__main__":
   cli_args = cli.parse_args(sys.argv[1:])
   scenario = scenario.Scenario(cli_args.scenario)
   metrics = load_metrics(scenario)
+  plot_single_metrics(metrics, 'system_total_running', lambda df: list(df['system_total_running']))
+  plot_single_metrics(metrics, 'system_total_stopped', lambda df: list(df['system_total_stopped']))
+  plot_single_metrics(metrics, 'system_total_waiting_time', lambda df: list(df['system_total_waiting_time']))
+  plot_single_metrics(metrics, 'system_mean_waiting_time', lambda df: list(df['system_mean_waiting_time']))
+  plot_single_metrics(metrics, 'vehicles_number', lambda df: list(df['system_total_waiting_time'] / df['system_mean_waiting_time']))
   plot_summary_metrics(metrics, 'system_total_running', lambda df: list(df['system_total_running']))
   plot_summary_metrics(metrics, 'system_total_stopped', lambda df: list(df['system_total_stopped']))
   plot_summary_metrics(metrics, 'system_total_waiting_time', lambda df: list(df['system_total_waiting_time']))

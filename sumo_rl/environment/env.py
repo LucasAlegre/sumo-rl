@@ -101,7 +101,6 @@ class SumoEnvironment(gym.Env):
         max_green: int = 50,
         enforce_max_green: bool = False,
         single_agent: bool = False,
-        reward_weights: Optional[List[float]] = None,
         observation_fn: ObservationFunction = DefaultObservationFunction(),
         reward_fn: ObservationFunction = DiffWaitingTimeRewardFunction(),
         add_system_info: bool = True,
@@ -140,7 +139,6 @@ class SumoEnvironment(gym.Env):
         self.enforce_max_green = enforce_max_green
         self.yellow_time = yellow_time
         self.single_agent = single_agent
-        self.reward_weights = reward_weights
         self.sumo_seed = sumo_seed
         self.fixed_ts = fixed_ts
         self.sumo_warnings = sumo_warnings
@@ -189,8 +187,6 @@ class SumoEnvironment(gym.Env):
                 self.max_green,
                 self.enforce_max_green,
                 self.begin_time,
-                # self.reward_fn[ts],
-                self.reward_weights,
                 conn,
             )
             for ts in self.ts_ids
@@ -257,6 +253,8 @@ class SumoEnvironment(gym.Env):
         self._start_simulation()
 
         # self._build_traffic_signals(self.sumo)
+        for ts_id in self.traffic_signals:
+          self.traffic_signals[ts_id].reset(self.begin_time)
 
         self.vehicles = dict()
         self.num_arrived_vehicles = 0

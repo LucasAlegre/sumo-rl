@@ -36,7 +36,7 @@ if __name__ == "__main__":
     for episode in range(scenario.config.training.episodes):
       conn = env.reset()
       for agent in agents:
-        agent.hard_reset(conn)
+        agent.reset(conn)
       
       while not env.done():
         actions = {}
