@@ -61,6 +61,8 @@ class QLAgent(Agent):
     next_states = self.compute_states()
     self.previous_states = next_states
     self.current_states = next_states
+    self.previous_actions = {}
+    self.current_actions = {}
 
   def hard_reset(self, conn):
     self.q_table = {}

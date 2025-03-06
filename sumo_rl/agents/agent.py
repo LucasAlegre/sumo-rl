@@ -43,11 +43,11 @@ class Agent(abc.ABC):
       pass
 
     @abc.abstractmethod
-    def learn(self, rewards: dict[str, float]) -> None:
+    def learn(self) -> None:
       """Learn from errors
       
       It should have cached its previous action and states and use them to understand what it has done.
-      Expectes a list of rewards for its controlled entities.
+      Uses controlled entities to obtain rewards
       """
       pass
 

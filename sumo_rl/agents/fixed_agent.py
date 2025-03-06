@@ -17,15 +17,20 @@ class FixedAgent(Agent):
     super().__init__(id)
     self.controlled_entities = controlled_entities
     self.action_space = action_space
-    self.previous_actions = {}
-    self.current_actions = {}
+    self.previous_actions = {ID: 0 for ID in self.controlled_entities}
+    self.current_actions = self.previous_actions
     self.steps_from_last_action = 0
     self.cycle_time_steps = 6
 
   def reset(self, conn):
     for ID in self.controlled_entities:
       self.controlled_entities[ID].sumo = conn
+    self.previous_actions = {ID: 0 for ID in self.controlled_entities}
+    self.current_actions = self.previous_actions
     self.steps_from_last_action = 0
+
+  def hard_reset(self, conn) -> None:
+    self.reset(conn)
 
   def observe(self):
     """Nothing is observed"""
