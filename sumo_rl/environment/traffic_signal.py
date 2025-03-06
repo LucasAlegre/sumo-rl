@@ -54,7 +54,7 @@ class TrafficSignal:
         max_green: int,
         enforce_max_green: bool,
         begin_time: int,
-        reward_fn: Union[str, Callable, List],
+        # reward_fn: Union[str, Callable, List],
         reward_weights: List[float],
         sumo,
     ):
@@ -86,21 +86,21 @@ class TrafficSignal:
         self.next_action_time = begin_time
         self.last_ts_waiting_time = 0.0
         self.last_reward = None
-        self.reward_fn = reward_fn
+        # self.reward_fn = reward_fn
         self.reward_weights = reward_weights
         self.sumo = sumo
 
-        if type(self.reward_fn) is list:
-            self.reward_dim = len(self.reward_fn)
-            self.reward_list = [self._get_reward_fn_from_string(reward_fn) for reward_fn in self.reward_fn]
-        else:
-            self.reward_dim = 1
-            self.reward_list = [self._get_reward_fn_from_string(self.reward_fn)]
+        # if type(self.reward_fn) is list:
+        #     self.reward_dim = len(self.reward_fn)
+        #     self.reward_list = [self._get_reward_fn_from_string(reward_fn) for reward_fn in self.reward_fn]
+        # else:
+        #     self.reward_dim = 1
+        #     self.reward_list = [self._get_reward_fn_from_string(self.reward_fn)]
 
-        if self.reward_weights is not None:
-            self.reward_dim = 1  # Since it will be scalarized
+        # if self.reward_weights is not None:
+        #     self.reward_dim = 1  # Since it will be scalarized
 
-        self.reward_space = spaces.Box(low=-np.inf, high=np.inf, shape=(self.reward_dim,), dtype=np.float32)
+        # self.reward_space = spaces.Box(low=-np.inf, high=np.inf, shape=(self.reward_dim,), dtype=np.float32)
 
         self._build_phases()
 
@@ -209,31 +209,16 @@ class TrafficSignal:
             self.is_yellow = True
             self.time_since_last_phase_change = 0
 
-    def compute_reward(self) -> Union[float, np.ndarray]:
-        """Computes the reward of the traffic signal. If it is a list of rewards, it returns a numpy array."""
-        if self.reward_dim == 1:
-            self.last_reward = self.reward_list[0](self)
-        else:
-            self.last_reward = np.array([reward_fn(self) for reward_fn in self.reward_list], dtype=np.float32)
-            if self.reward_weights is not None:
-                self.last_reward = np.dot(self.last_reward, self.reward_weights)  # Linear combination of rewards
+    # def compute_reward(self) -> Union[float, np.ndarray]:
+    #     """Computes the reward of the traffic signal. If it is a list of rewards, it returns a numpy array."""
+    #     if self.reward_dim == 1:
+    #         self.last_reward = self.reward_list[0](self)
+    #     else:
+    #         self.last_reward = np.array([reward_fn(self) for reward_fn in self.reward_list], dtype=np.float32)
+    #         if self.reward_weights is not None:
+    #             self.last_reward = np.dot(self.last_reward, self.reward_weights)  # Linear combination of rewards
 
-        return self.last_reward
-
-    def _pressure_reward(self):
-        return self.get_pressure()
-
-    def _average_speed_reward(self):
-        return self.get_average_speed()
-
-    def _queue_reward(self):
-        return -self.get_total_queued()
-
-    def _diff_waiting_time_reward(self):
-        ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
-        reward = self.last_ts_waiting_time - ts_wait
-        self.last_ts_waiting_time = ts_wait
-        return reward
+    #     return self.last_reward
 
     def get_accumulated_waiting_time_per_lane(self) -> List[float]:
         """Returns the accumulated waiting time per lane.
@@ -319,22 +304,3 @@ class TrafficSignal:
         for lane in self.lanes:
             veh_list += self.sumo.lane.getLastStepVehicleIDs(lane)
         return veh_list
-
-    @classmethod
-    def register_reward_fn(cls, fn: Callable):
-        """Registers a reward function.
-
-        Args:
-            fn (Callable): The reward function to register.
-        """
-        if fn.__name__ in cls.reward_fns.keys():
-            raise KeyError(f"Reward function {fn.__name__} already exists")
-
-        cls.reward_fns[fn.__name__] = fn
-
-    reward_fns = {
-        "diff-waiting-time": _diff_waiting_time_reward,
-        "average-speed": _average_speed_reward,
-        "queue": _queue_reward,
-        "pressure": _pressure_reward,
-    }

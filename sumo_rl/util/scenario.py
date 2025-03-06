@@ -66,7 +66,10 @@ class Scenario:
 
   def agents_dir(self, run: int|None, episode: int|None) -> str:
     if episode is None:
+      if run is None:
+        return self.ensure_dir("./outputs/%s/agents/final" % (self.name))
       return self.ensure_dir("./outputs/%s/agents/%s/final" % (self.name, run))
+    assert run is not None
     return self.ensure_dir("./outputs/%s/agents/%s/%s" % (self.name, run, episode))
 
   def agents_file(self, run: int|None, episode: int|None, agent: int) -> str:
@@ -92,7 +95,7 @@ class Scenario:
   def route_file(self) -> str:
     return "./scenarios/%s/routes.rou.xml" % self.name
 
-  def new_sumo_environment(self, fixed_ts: bool = False) -> SumoEnvironment:
+  def new_sumo_environment(self) -> SumoEnvironment:
     return SumoEnvironment(
       net_file=self.network_file(),
       route_file=self.route_file(),
@@ -101,33 +104,5 @@ class Scenario:
       min_green=self.config.sumo.min_green,
       delta_time=self.config.sumo.delta_time,
       sumo_seed=self.config.sumo.sumo_seed,
-      fixed_ts=fixed_ts,
+      fixed_ts=False,
     )
-
-  def new_agent(self, env: SumoEnvironment, agent_id: int, initial_state) -> QLAgent:
-    return QLAgent(
-      starting_state=env.encode(initial_state, agent_id),
-      state_space=env.observation_spaces(agent_id),
-      action_space=env.action_spaces(agent_id),
-      alpha=self.config.agent.alpha,
-      gamma=self.config.agent.gamma,
-      exploration_strategy=EpsilonGreedy(
-        initial_epsilon=self.config.agent.initial_epsilon,
-        min_epsilon=self.config.agent.min_epsilon,
-        decay=self.config.agent.decay),
-    )
-
-  def load_agent(self, env: SumoEnvironment, run: int, agent_id: int, initial_state) -> QLAgent:
-    agent = self.new_agent(env, agent_id, initial_state)
-    path = self.agents_file(run, None, agent_id)
-    with open(path, mode="rb") as file:
-      agent.q_table = pickle.load(file)
-    return agent
-
-  def load_or_new_agent(self, env: SumoEnvironment, run: int, agent_id: int, initial_state) -> QLAgent:
-    agent = self.new_agent(env, agent_id, initial_state)
-    path = self.agents_file(run, None, agent_id)
-    if os.path.exists(path):
-      with open(path, mode="rb") as file:
-        agent.q_table = pickle.load(file)
-    return agent

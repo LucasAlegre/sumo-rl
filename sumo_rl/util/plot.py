@@ -1,11 +1,11 @@
 import typing
 import pandas
 import matplotlib.pyplot
-import sumo_rl.util.utils as utils
+import sumo_rl.util.scenario as scenario
 import argparse
 import sys
 
-def load_metrics(scenario: utils.Scenario) -> dict[int, dict[int, pandas.DataFrame]]:
+def load_metrics(scenario: scenario.Scenario) -> dict[int, dict[int, pandas.DataFrame]]:
   metrics = {}
   for run in range(scenario.config.training.runs):
     metrics[run] = {}
@@ -38,9 +38,9 @@ def plot_summary_metrics(metrics: dict[int, dict[int, pandas.DataFrame]], label:
 
 if __name__ == "__main__":
   cli = argparse.ArgumentParser(sys.argv[0])
-  utils.Scenario.add_scenario_selection(cli)
+  scenario.Scenario.add_scenario_selection(cli)
   cli_args = cli.parse_args(sys.argv[1:])
-  scenario = utils.Scenario(cli_args.scenario)
+  scenario = scenario.Scenario(cli_args.scenario)
   metrics = load_metrics(scenario)
   plot_summary_metrics(metrics, 'system_total_running', lambda df: list(df['system_total_running']))
   plot_summary_metrics(metrics, 'system_total_stopped', lambda df: list(df['system_total_stopped']))
