@@ -113,3 +113,8 @@ settings.json
 *.csv
 /logs
 /wandb
+
+.forgotten
+outputs
+__pycache__
+env

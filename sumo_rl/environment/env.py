@@ -101,7 +101,7 @@ class SumoEnvironment(gym.Env):
         single_agent: bool = False,
         reward_fn: Union[str, Callable, dict, List] = "diff-waiting-time",
         reward_weights: Optional[List[float]] = None,
-        observation_class: ObservationFunction = DefaultObservationFunction,
+        observation_class: Callable[[],ObservationFunction] = DefaultObservationFunction,
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str, int] = "random",
@@ -159,6 +159,7 @@ class SumoEnvironment(gym.Env):
 
         self.ts_ids = list(conn.trafficlight.getIDList())
         self.observation_class = observation_class
+        self.observation_fn = self.observation_class()
 
         self._build_traffic_signals(conn)
 
@@ -339,7 +340,7 @@ class SumoEnvironment(gym.Env):
     def _compute_observations(self):
         self.observations.update(
             {
-                ts: self.traffic_signals[ts].compute_observation()
+                ts: self.observation_fn(self.traffic_signals[ts])
                 for ts in self.ts_ids
                 if self.traffic_signals[ts].time_to_act or self.fixed_ts
             }
@@ -366,7 +367,7 @@ class SumoEnvironment(gym.Env):
 
         Only used in case of single-agent environment.
         """
-        return self.traffic_signals[self.ts_ids[0]].observation_space
+        return self.observation_fn.observation_space(self.traffic_signals[self.ts_ids[0]])
 
     @property
     def action_space(self):

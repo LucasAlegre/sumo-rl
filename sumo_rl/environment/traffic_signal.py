@@ -4,7 +4,6 @@ import os
 import sys
 from typing import Callable, List, Union
 
-
 if "SUMO_HOME" in os.environ:
     tools = os.path.join(os.environ["SUMO_HOME"], "tools")
     sys.path.append(tools)
@@ -103,8 +102,6 @@ class TrafficSignal:
 
         self.reward_space = spaces.Box(low=-np.inf, high=np.inf, shape=(self.reward_dim,), dtype=np.float32)
 
-        self.observation_fn = self.env.observation_class(self)
-
         self._build_phases()
 
         self.lanes = list(
@@ -113,8 +110,6 @@ class TrafficSignal:
         self.out_lanes = [link[0][1] for link in self.sumo.trafficlight.getControlledLinks(self.id) if link]
         self.out_lanes = list(set(self.out_lanes))
         self.lanes_length = {lane: self.sumo.lane.getLength(lane) for lane in self.lanes + self.out_lanes}
-
-        self.observation_space = self.observation_fn.observation_space()
         self.action_space = spaces.Discrete(self.num_green_phases)
 
     def _get_reward_fn_from_string(self, reward_fn):
@@ -214,10 +209,6 @@ class TrafficSignal:
             self.is_yellow = True
             self.time_since_last_phase_change = 0
 
-    def compute_observation(self):
-        """Computes the observation of the traffic signal."""
-        return self.observation_fn()
-
     def compute_reward(self) -> Union[float, np.ndarray]:
         """Computes the reward of the traffic signal. If it is a list of rewards, it returns a numpy array."""
         if self.reward_dim == 1:
@@ -243,14 +234,6 @@ class TrafficSignal:
         reward = self.last_ts_waiting_time - ts_wait
         self.last_ts_waiting_time = ts_wait
         return reward
-
-    def _observation_fn_default(self):
-        phase_id = [1 if self.green_phase == i else 0 for i in range(self.num_green_phases)]  # one-hot encoding
-        min_green = [0 if self.time_since_last_phase_change < self.min_green + self.yellow_time else 1]
-        density = self.get_lanes_density()
-        queue = self.get_lanes_queue()
-        observation = np.array(phase_id + min_green + density + queue, dtype=np.float32)
-        return observation
 
     def get_accumulated_waiting_time_per_lane(self) -> List[float]:
         """Returns the accumulated waiting time per lane.
