@@ -39,7 +39,7 @@ class FixedAgent(Agent):
   def act(self) -> dict[str, int]:
     """Choose action cyclicly"""
     self.steps_from_last_action += 1
-    if self.steps_from_last_action < self.cycle_time_steps:
+    if self.steps_from_last_action >= self.cycle_time_steps:
       actions = {}
       for ID in self.controlled_entities:
         actions[ID] = (self.previous_actions[ID] + 1) % self.action_space.n

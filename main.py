@@ -69,6 +69,8 @@ if __name__ == "__main__":
   cli_args = cli.parse_args(sys.argv[1:])
   scenario = sumo_rl.util.scenario.Scenario(cli_args.scenario)
 
+  assert ((not scenario.config.sumo.use_gui) or (os.environ.get("LIBSUMO_AS_TRACI") != '1'))
+
   observation_fn = observation_fn_by_option(cli_args)
   reward_fn = reward_fn_by_option(cli_args)
   env = scenario.new_sumo_environment(observation_fn, reward_fn)
@@ -81,6 +83,7 @@ if __name__ == "__main__":
     env.sumo_seed = scenario.config.sumo.sumo_seed
     for run in range(scenario.config.training.runs):
       for episode in range(scenario.config.training.episodes):
+        print("Training :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
         conn = env.reset()
         for agent in agents:
           agent.reset(conn)
@@ -92,7 +95,7 @@ if __name__ == "__main__":
           for agent in agents:
             actions.update(agent.act())
           env.step(action=actions)
-          env.compute_info()
+          env.compute_info() # This is also a bottleneck
           for agent in agents:
             if agent.can_learn():
               agent.learn()
@@ -107,6 +110,7 @@ if __name__ == "__main__":
             agent.serialize(path)
 
         env.sumo_seed += 1
+        print("Training :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
       # Serialize Agents
       for agent in agents:
         if agent.can_be_serialized():
@@ -121,6 +125,7 @@ if __name__ == "__main__":
     # Evaluation
     for run in range(scenario.config.evaluation.runs):
       for episode in range(scenario.config.evaluation.episodes):
+        print("Evaluation :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
         conn = env.reset()
         for agent in agents:
           agent.reset(conn)
@@ -139,4 +144,5 @@ if __name__ == "__main__":
         pandas.DataFrame(env.metrics).to_csv(path, index=False)
 
         env.sumo_seed += 1
+        print("Evaluation :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
   env.close()

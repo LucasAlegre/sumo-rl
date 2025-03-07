@@ -16,13 +16,22 @@ class Datastore:
   def __init__(self, scenario: sumo_rl.util.scenario.Scenario, mode: Datastore.Mode) -> None:
     self.scenario = scenario
     self.mode = mode
+    self.runs, self.episodes = self._load_runs_and_episodes()
     self.metrics: dict[int, dict[int, pandas.DataFrame]] = self._load_metrics()
+
+  def _load_runs_and_episodes(self):
+    if self.mode == Datastore.Mode.EVALUATION:
+      return self.scenario.config.evaluation.runs, self.scenario.config.evaluation.episodes
+    elif self.mode == Datastore.Mode.TRAINING:
+      return self.scenario.config.training.runs, self.scenario.config.training.episodes
+    else:
+      raise ValueError(self.mode)
 
   def _load_metrics(self) -> dict[int, dict[int, pandas.DataFrame]]:
     metrics = {}
-    for run in range(scenario.config.training.runs):
+    for run in range(self.runs):
       metrics[run] = {}
-      for episode in range(scenario.config.training.episodes):
+      for episode in range(self.episodes):
         metrics[run][episode] = pandas.read_csv(self.metrics_file(run, episode))
     return metrics
 
@@ -42,6 +51,9 @@ class Datastore:
     else:
       raise ValueError(self.mode)
 
+  def __repr__(self) -> str:
+    return "Datastore(%s)" % (self.mode,)
+
 class Smoother:
   @staticmethod
   def Symmetric(data: list, K: int) -> list:
@@ -57,7 +69,7 @@ class Smoother:
       hbound = i + half_K
       if hbound > N:
         hbound = N
-      value = sum(data[lbound:hbound])
+      value = sum(data[lbound:hbound])/len(data[lbound:hbound])
       output.append(value)
     return output
   
@@ -72,7 +84,7 @@ class Smoother:
       hbound = i + K
       if hbound > N:
         break
-      value = sum(data[lbound:hbound])
+      value = sum(data[lbound:hbound])/len(data[lbound:hbound])
       output.append(value)
     return output
 
@@ -128,9 +140,13 @@ class Plot:
       Plotter.Single(self.datastore, self.label, self.retrieve_data)
     if self.summary:
       Plotter.Summary(self.datastore, self.label, self.retrieve_data)
+    print(self)
 
   def copy(self):
     return Plot(self.datastore, self.label, self.retrieve_data, self.single, self.summary)
+
+  def __repr__(self) -> str:
+    return "Plot(%s, %s)" % (self.datastore, self.label)
 
 class Preprocessor:
   @staticmethod
@@ -163,7 +179,7 @@ class Preprocessor:
       with_asym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, False)
       output.append(with_asym_smoothing)
       with_sym_smoothing = plot.copy()
-      with_sym_smoothing.label = with_sym_smoothing.label + '-AS'
+      with_sym_smoothing.label = with_sym_smoothing.label + '-SS'
       with_sym_smoothing.retrieve_data = Smoother.Apply(with_asym_smoothing.retrieve_data, True)
       output.append(with_sym_smoothing)
     return output
