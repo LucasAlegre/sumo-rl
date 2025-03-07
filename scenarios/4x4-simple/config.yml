@@ -13,3 +13,6 @@ agent:
 training:
   runs: 1
   episodes: 5
+evaluation:
+  runs: 1
+  episodes: 5

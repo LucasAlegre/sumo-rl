@@ -21,11 +21,6 @@ class AgentFactory(abc.ABC):
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[Agent]:
     """Abstract function to create agents for given assignments"""
     pass
-  
-  @abc.abstractmethod
-  def agent_per_ts(self) -> list[Agent]:
-    """Abstract function to create agents, one per traffic signal"""
-    pass
 
   @abc.abstractmethod
   def agent(self, agent_id: str, controlled_entities: dict[str, TrafficSignal], *pargs, **kargs) -> Agent:

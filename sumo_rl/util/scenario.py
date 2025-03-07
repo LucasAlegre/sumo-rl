@@ -84,24 +84,32 @@ class Scenario:
     return "./%s/%s.pickle" % (self.agents_dir(run, episode), agent)
 
   def training_metrics_dir(self, run: int) -> str:
-    return self.ensure_dir("./outputs/%s/metrics/%s" % (self.name, run))
+    return self.ensure_dir("./outputs/%s/metrics/training/%s" % (self.name, run))
 
   def training_metrics_file(self, run: int, episode: int) -> str:
     return "./%s/%s.csv" % (self.training_metrics_dir(run), episode)
 
   def evaluation_metrics_dir(self, run: int) -> str:
-    return self.ensure_dir("./outputs/%s/metrics/%s" % (self.name, run))
+    return self.ensure_dir("./outputs/%s/metrics/evaluation/%s" % (self.name, run))
 
   def evaluation_metrics_file(self, run: int, episode: int) -> str:
     return "./%s/%s.csv" % (self.evaluation_metrics_dir(run), episode)
 
-  def plots_dir(self, label: str, run: int) -> str:
-    return self.ensure_dir("./outputs/%s/plots/%s/%s" % (self.name, label, run))
+  def training_plots_dir(self, label: str, run: int) -> str:
+    return self.ensure_dir("./outputs/%s/plots/training/%s/%s" % (self.name, label, run))
 
-  def plots_file(self, label: str, run: int, episode: int|None) -> str:
+  def training_plots_file(self, label: str, run: int, episode: int|None) -> str:
     if episode is None:
-      return "./%s/summary.png" % (self.plots_dir(label, run))
-    return "./%s/%s.png" % (self.plots_dir(label, run), episode)
+      return "./%s/summary.png" % (self.training_plots_dir(label, run))
+    return "./%s/%s.png" % (self.training_plots_dir(label, run), episode)
+
+  def evaluation_plots_dir(self, label: str, run: int) -> str:
+    return self.ensure_dir("./outputs/%s/plots/evaluation/%s/%s" % (self.name, label, run))
+
+  def evaluation_plots_file(self, label: str, run: int, episode: int|None) -> str:
+    if episode is None:
+      return "./%s/summary.png" % (self.evaluation_plots_dir(label, run))
+    return "./%s/%s.png" % (self.evaluation_plots_dir(label, run), episode)
 
   def network_file(self) -> str:
     return "./scenarios/%s/network.net.xml" % self.name
