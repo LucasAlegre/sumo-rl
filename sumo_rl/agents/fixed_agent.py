@@ -51,6 +51,7 @@ class FixedAgent(Agent):
 
   def learn(self):
     """Nothing is learned"""
+    raise TypeError("FixedAgent doesn't support learning")
 
   def serialize(self, output_filepath: str) -> None:
     """Serialize Agent "memory" into an output file"""

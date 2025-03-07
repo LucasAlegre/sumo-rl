@@ -23,14 +23,6 @@ class AgentFactory(abc.ABC):
     pass
   
   @abc.abstractmethod
-  def agent_per_ts_shape(self) -> list[Agent]:
-    """Abstract function to create agents with traffic signals divided by shape
-
-    If this functionality isn't supported, then the Subclass should define this function to raise a TypeError
-    """
-    pass
-  
-  @abc.abstractmethod
   def agent_per_ts(self) -> list[Agent]:
     """Abstract function to create agents, one per traffic signal"""
     pass
@@ -51,16 +43,6 @@ class FixedAgentFactory(AgentFactory):
       controlled_entities = {traffic_signal_id: traffic_signals[traffic_signal_id] for traffic_signal_id in traffic_signal_ids}
       agents.append(self.agent(agent_id, controlled_entities))
     return agents
-  
-  def agent_per_ts_shape(self) -> list[QLAgent]:
-    raise TypeError("FixedAgentFactory doesn't support agent_per_ts_shape")
-  
-  def agent_per_ts(self) -> list[QLAgent]:
-    assignments = {}
-    traffic_signals = self.env.traffic_signals
-    for traffic_signal_id in traffic_signals.keys():
-      assignments[traffic_signal_id] = [traffic_signal_id]
-    return self.agent_by_assignments(assignments)
 
   def agent(self, agent_id: str, controlled_entities: dict[str, TrafficSignal]) -> QLAgent:
     assert len(controlled_entities) > 0
@@ -79,11 +61,6 @@ class QLAgentFactory(AgentFactory):
     self.initial_epsilon: float = initial_epsilon
     self.min_epsilon: float = min_epsilon
     self.decay: float = decay
-
-  def hash_traffic_signal_by_shape(self, observation_fn: ObservationFunction, traffic_signal: TrafficSignal) -> str:
-    state_space_hash  = observation_fn.hash(traffic_signal)
-    action_space_hash = str(traffic_signal.num_green_phases)
-    return "SS%s-%sSS" % (state_space_hash, action_space_hash)
   
   def agent_by_assignments(self, assignments: dict[str, list[str]]) -> list[QLAgent]:
     agents = []
@@ -92,24 +69,6 @@ class QLAgentFactory(AgentFactory):
       controlled_entities = {traffic_signal_id: traffic_signals[traffic_signal_id] for traffic_signal_id in traffic_signal_ids}
       agents.append(self.agent(agent_id, self.env.observation_fn, self.env.reward_fn, controlled_entities))
     return agents
-  
-  def agent_per_ts_shape(self) -> list[QLAgent]:
-    assignments = {}
-    traffic_signals = self.env.traffic_signals
-    for traffic_signal_id, traffic_signal in traffic_signals.items():
-      hash = self.hash_traffic_signal_by_shape(self.env.observation_fn, traffic_signal)
-      if hash not in assignments:
-        assignments[hash] = []
-      assignments[hash].append(traffic_signal_id)
-    assignments = {"-".join(ids):ids for ids in assignments.values()}
-    return self.agent_by_assignments(assignments)
-  
-  def agent_per_ts(self) -> list[QLAgent]:
-    assignments = {}
-    traffic_signals = self.env.traffic_signals
-    for traffic_signal_id in traffic_signals.keys():
-      assignments[traffic_signal_id] = [traffic_signal_id]
-    return self.agent_by_assignments(assignments)
 
   def agent(self, agent_id: str,
                   observation_fn: ObservationFunction,

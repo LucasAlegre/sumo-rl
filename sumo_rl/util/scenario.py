@@ -4,6 +4,8 @@ import yaml
 
 from sumo_rl import SumoEnvironment
 from sumo_rl.agents import QLAgent
+from sumo_rl.environment.observations import ObservationFunction
+from sumo_rl.environment.rewards import RewardFunction
 from sumo_rl.exploration import EpsilonGreedy
 
 class SumoConfig:
@@ -27,11 +29,17 @@ class TrainingConfig:
     self.runs: int = data['runs']
     self.episodes: int = data['episodes']
 
+class EvaluationConfig:
+  def __init__(self, data: dict):
+    self.runs: int = data['runs']
+    self.episodes: int = data['episodes']
+
 class Config:
   def __init__(self, data: dict):
     self.sumo: SumoConfig = SumoConfig(data['sumo'])
     self.agent: AgentConfig = AgentConfig(data['agent'])
     self.training: TrainingConfig = TrainingConfig(data['training'])
+    self.evaluation: EvaluationConfig = EvaluationConfig(data['evaluation'])
   
   @staticmethod
   def from_file(filepath: str):
@@ -75,11 +83,17 @@ class Scenario:
   def agents_file(self, run: int|None, episode: int|None, agent: int) -> str:
     return "./%s/%s.pickle" % (self.agents_dir(run, episode), agent)
 
-  def metrics_dir(self, run: int) -> str:
+  def training_metrics_dir(self, run: int) -> str:
     return self.ensure_dir("./outputs/%s/metrics/%s" % (self.name, run))
 
-  def metrics_file(self, run: int, episode: int) -> str:
-    return "./%s/%s.csv" % (self.metrics_dir(run), episode)
+  def training_metrics_file(self, run: int, episode: int) -> str:
+    return "./%s/%s.csv" % (self.training_metrics_dir(run), episode)
+
+  def evaluation_metrics_dir(self, run: int) -> str:
+    return self.ensure_dir("./outputs/%s/metrics/%s" % (self.name, run))
+
+  def evaluation_metrics_file(self, run: int, episode: int) -> str:
+    return "./%s/%s.csv" % (self.evaluation_metrics_dir(run), episode)
 
   def plots_dir(self, label: str, run: int) -> str:
     return self.ensure_dir("./outputs/%s/plots/%s/%s" % (self.name, label, run))
@@ -95,7 +109,7 @@ class Scenario:
   def route_file(self) -> str:
     return "./scenarios/%s/routes.rou.xml" % self.name
 
-  def new_sumo_environment(self) -> SumoEnvironment:
+  def new_sumo_environment(self, observation_fn: ObservationFunction, reward_fn: RewardFunction) -> SumoEnvironment:
     return SumoEnvironment(
       net_file=self.network_file(),
       route_file=self.route_file(),
@@ -104,5 +118,7 @@ class Scenario:
       min_green=self.config.sumo.min_green,
       delta_time=self.config.sumo.delta_time,
       sumo_seed=self.config.sumo.sumo_seed,
+      observation_fn=observation_fn,
+      reward_fn=reward_fn,
       fixed_ts=False,
     )

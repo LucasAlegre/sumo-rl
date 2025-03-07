@@ -47,7 +47,8 @@ class Agent(abc.ABC):
       """Learn from errors
       
       It should have cached its previous action and states and use them to understand what it has done.
-      Uses controlled entities to obtain rewards
+      Uses controlled entities to obtain rewards.
+      Subclasses which don't support learning should throw a TypeError
       """
       pass
 
@@ -68,3 +69,18 @@ class Agent(abc.ABC):
       Subclasses which don't support serialization/deserialization should throw a TypeError
       """
       pass
+
+    def can_be_serialized(self) -> bool:
+      """True if serialization/deserialization is supported
+      """
+      return False
+
+    def can_learn(self) -> bool:
+      """True if learning is supported
+      """
+      return False
+
+    def __repr__(self) -> str:
+      """String representation at runtime of agent (shouldn't contain implementation details or "memory"
+      """
+      return self.__class__.__name__

@@ -107,3 +107,16 @@ class QLAgent(Agent):
     """
     with open(input_filepath, mode="rb") as file:
       self.q_table = pickle.load(file)
+
+  def __repr__(self) -> str:
+    return "%s(%s)" % (self.__class__.__name__, list(self.controlled_entities.keys()))
+
+  def can_be_serialized(self) -> bool:
+    """True if serialization/deserialization is supported
+    """
+    return True
+
+  def can_learn(self) -> bool:
+    """True if learning is supported
+    """
+    return True

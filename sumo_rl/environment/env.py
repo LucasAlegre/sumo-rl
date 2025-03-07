@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple, Union
 
-from sumo_rl.environment.rewards import DiffWaitingTimeRewardFunction
 
 
 if "SUMO_HOME" in os.environ:
@@ -24,6 +23,7 @@ from pettingzoo.utils import agent_selector, wrappers
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .observations import DefaultObservationFunction, ObservationFunction
+from sumo_rl.environment.rewards import DiffWaitingTimeRewardFunction, RewardFunction
 from .traffic_signal import TrafficSignal
 
 
@@ -102,7 +102,7 @@ class SumoEnvironment(gym.Env):
         enforce_max_green: bool = False,
         single_agent: bool = False,
         observation_fn: ObservationFunction = DefaultObservationFunction(),
-        reward_fn: ObservationFunction = DiffWaitingTimeRewardFunction(),
+        reward_fn: RewardFunction = DiffWaitingTimeRewardFunction(),
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str, int] = "random",
