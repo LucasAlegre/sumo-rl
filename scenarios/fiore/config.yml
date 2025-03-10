@@ -2,7 +2,7 @@ sumo:
   seconds: 10000
   min_green: 5
   delta_time: 5
-  use_gui: false
+  use_gui: true
   sumo_seed: 170701
 agent:
   alpha: 0.1
@@ -12,7 +12,7 @@ agent:
   decay: 1
 training:
   runs: 1
-  episodes: 10
+  episodes: 1
 evaluation:
   runs: 1
-  episodes: 5
+  episodes: 1

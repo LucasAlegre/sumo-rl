@@ -2,8 +2,11 @@
 
 import os
 import sys
+import numpy
 from pathlib import Path
 from typing import Callable, List, Optional, Tuple, Union
+
+from sumo_rl.environment.datastore import Datastore
 
 
 
@@ -17,29 +20,13 @@ import numpy as np
 import pandas as pd
 import sumolib
 import traci
-from gymnasium.utils import EzPickle, seeding
-from pettingzoo import AECEnv
-from pettingzoo.utils import agent_selector, wrappers
-from pettingzoo.utils.conversions import parallel_wrapper_fn
 
-from .observations import DefaultObservationFunction, ObservationFunction
-from sumo_rl.environment.rewards import DiffWaitingTimeRewardFunction, RewardFunction
+import sumo_rl.observations
+import sumo_rl.rewards
 from .traffic_signal import TrafficSignal
 
 
 LIBSUMO = "LIBSUMO_AS_TRACI" in os.environ
-
-
-def env(**kwargs):
-    """Instantiate a PettingoZoo environment."""
-    env = SumoEnvironmentPZ(**kwargs)
-    env = wrappers.AssertOutOfBoundsWrapper(env)
-    env = wrappers.OrderEnforcingWrapper(env)
-    return env
-
-
-parallel_env = parallel_wrapper_fn(env)
-
 
 class SumoEnvironment(gym.Env):
     """SUMO Environment for Traffic Signal Control.
@@ -101,8 +88,8 @@ class SumoEnvironment(gym.Env):
         max_green: int = 50,
         enforce_max_green: bool = False,
         single_agent: bool = False,
-        observation_fn: ObservationFunction = DefaultObservationFunction(),
-        reward_fn: RewardFunction = DiffWaitingTimeRewardFunction(),
+        observation_fn: sumo_rl.observations.ObservationFunction = sumo_rl.observations.DefaultObservationFunction(),
+        reward_fn: sumo_rl.rewards.RewardFunction = sumo_rl.rewards.AverageSpeedRewardFunction(),
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str, int] = "random",
@@ -165,18 +152,20 @@ class SumoEnvironment(gym.Env):
         self.sumo = conn
         # conn.close()
 
-        self.vehicles = dict()
         self.reward_range = (-float("inf"), float("inf"))
         self.episode = 0
-        self.metrics = []
         self.out_csv_name = out_csv_name
-        #self.observations = {ts: None for ts in self.ts_ids}
+
+        # USIAMOLE
+        assert len(self.ts_ids) == len(self.traffic_signals)
+
+        self.datastore = Datastore()
+        self.datastore.lanes = {lane_ID:{'ms': self.sumo.lane.getMaxSpeed(lane_ID)} for ts_id in self.traffic_signals for lane_ID in self.sumo.trafficlight.getControlledLanes(ts_id)}
+        self.observations = {ts_id:[] for ts_id in self.traffic_signals}
         self.rewards = {ts: None for ts in self.ts_ids}
+        self.metrics = self.empty_metrics()
 
     def _build_traffic_signals(self, conn):
-        # if not isinstance(self.reward_fn, dict):
-        #     self.reward_fn = {ts: self.reward_fn for ts in self.ts_ids}
-
         self.traffic_signals = {
             ts: TrafficSignal(
                 self,
@@ -246,22 +235,77 @@ class SumoEnvironment(gym.Env):
         self.close()
         self.save_csv(self.out_csv_name, self.episode)
         self.episode += 1
-        self.metrics = []
+        self.metrics = self.empty_metrics()
 
         if seed is not None:
             self.sumo_seed = seed
         self._start_simulation()
 
-        # self._build_traffic_signals(self.sumo)
         for ts_id in self.traffic_signals:
           self.traffic_signals[ts_id].reset(self.begin_time)
 
-        self.vehicles = dict()
         self.num_arrived_vehicles = 0
         self.num_departed_vehicles = 0
         self.num_teleported_vehicles = 0
 
         return self.sumo
+
+    def gather_data_from_sumo(self):
+      vehicles = set({})
+      for lane_ID in self.datastore.lanes.keys():
+        self.datastore.lanes[lane_ID]['lsvn'] = self.sumo.lane.getLastStepVehicleNumber(lane_ID)
+        self.datastore.lanes[lane_ID]['lsvl'] = self.sumo.lane.getLastStepLength(lane_ID)
+        self.datastore.lanes[lane_ID]['lshn'] = self.sumo.lane.getLastStepHaltingNumber(lane_ID)
+        self.datastore.lanes[lane_ID]['lsms'] = self.sumo.lane.getLastStepMeanSpeed(lane_ID)
+        self.datastore.lanes[lane_ID]['lso'] = self.sumo.lane.getLastStepOccupancy(lane_ID)
+        self.datastore.lanes[lane_ID]['vehs'] = set(self.sumo.lane.getLastStepVehicleIDs(lane_ID))
+        vehicles |= self.datastore.lanes[lane_ID]['vehs']
+      self.datastore.vehicles = {
+        vehicle_ID: {
+          's': self.sumo.vehicle.getSpeed(vehicle_ID),
+          'wt': self.sumo.vehicle.getWaitingTime(vehicle_ID),
+          'awt': self.sumo.vehicle.getAccumulatedWaitingTime(vehicle_ID),
+        }
+        for vehicle_ID in vehicles
+      }
+      for lane_ID in self.datastore.lanes.keys():
+        awts = [self.datastore.vehicles[vehicle_ID]['awt'] for vehicle_ID in self.datastore.lanes[lane_ID]['vehs']]
+        self.datastore.lanes[lane_ID]['tawt'] = numpy.sum(awts)
+        self.datastore.lanes[lane_ID]['mawt'] = numpy.mean(awts)
+
+    def compute_observations(self):
+      for ts_ID, ts in self.traffic_signals.items():
+        self.observations[ts_ID] = self.observation_fn(self.datastore, ts)
+
+    def compute_rewards(self):
+      for ts_ID, ts in self.traffic_signals.items():
+        self.rewards[ts_ID] = self.reward_fn(self.datastore, ts)
+
+    def empty_metrics(self) -> dict:
+      return {
+        "step": [],
+        "total_running": [],
+        "total_backlogged": [],
+        "total_stopped": [],
+        "total_arrived": [],
+        "total_departed": [],
+        "total_teleported": [],
+        "total_waiting_time": [],
+        "mean_waiting_time": [],
+        "mean_speed": [],
+      }
+
+    def compute_metrics(self):
+      self.metrics["step"].append(self.sim_step)
+      self.metrics["total_running"].append(len(self.datastore.vehicles))
+      self.metrics["total_backlogged"].append(len(self.sumo.simulation.getPendingVehicles()))
+      self.metrics["total_stopped"].append(numpy.sum([self.datastore.vehicles[vehicle_ID]['s'] < 0.1 for vehicle_ID in self.datastore.vehicles]))
+      self.metrics["total_arrived"].append(self.num_arrived_vehicles)
+      self.metrics["total_departed"].append(self.num_departed_vehicles)
+      self.metrics["total_teleported"].append(self.num_teleported_vehicles)
+      self.metrics["total_waiting_time"].append(numpy.sum([self.datastore.vehicles[vehicle_ID]['wt'] for vehicle_ID in self.datastore.vehicles]))
+      self.metrics["mean_waiting_time"].append(numpy.mean([self.datastore.vehicles[vehicle_ID]['wt'] for vehicle_ID in self.datastore.vehicles]))
+      self.metrics["mean_speed"].append(numpy.mean([self.datastore.vehicles[vehicle_ID]['s'] for vehicle_ID in self.datastore.vehicles]))
 
     @property
     def sim_step(self) -> float:
@@ -271,32 +315,18 @@ class SumoEnvironment(gym.Env):
     def done(self) -> bool:
       return self.sim_step >= self.sim_max_time
 
-    def step(self, action: Union[dict, int]):
+    def step(self, action: dict):
         """Apply the action(s) and then step the simulation for delta_time seconds.
 
         Args:
             action (Union[dict, int]): action(s) to be applied to the environment.
             If single_agent is True, action is an int, otherwise it expects a dict with keys corresponding to traffic signal ids.
         """
-        # No action, follow fixed TL defined in self.phases
-        if self.fixed_ts or action is None or action == {}:
-            for _ in range(self.delta_time):
-                self._sumo_step()
-        else:
-            self._apply_actions(action)
-            self._run_steps()
-
-        # observations = self._compute_observations()
-        # rewards = self._compute_rewards()
-        # dones = self._compute_dones()
-        # terminated = False  # there are no 'terminal' states in this environment
-        # truncated = dones["__all__"]  # episode ends when sim_step >= max_steps
-        # info = self._compute_info()
-
-        # if self.single_agent:
-        #     return observations[self.ts_ids[0]], rewards[self.ts_ids[0]], terminated, truncated, info
-        # else:
-        #     return observations, rewards, dones, info
+        self._apply_actions(action)
+        for _ in range(self.delta_time):
+          self._sumo_step()
+          for ts in self.ts_ids:
+              self.traffic_signals[ts].update()
 
     def _run_steps(self):
         time_to_act = False
@@ -314,91 +344,9 @@ class SumoEnvironment(gym.Env):
             actions: If single-agent, actions is an int between 0 and self.num_green_phases (next green phase)
                      If multiagent, actions is a dict {ts_id : greenPhase}
         """
-        if self.single_agent:
-            if self.traffic_signals[self.ts_ids[0]].time_to_act:
-                self.traffic_signals[self.ts_ids[0]].set_next_phase(actions)
-        else:
-            for ts, action in actions.items():
-                if self.traffic_signals[ts].time_to_act:
-                    self.traffic_signals[ts].set_next_phase(action)
-
-    def _compute_dones(self):
-        dones = {ts_id: False for ts_id in self.ts_ids}
-        dones["__all__"] = self.sim_step >= self.sim_max_time
-        return dones
-
-    def compute_info(self):
-        info = {"step": self.sim_step}
-        if self.add_system_info:
-            info.update(self._get_system_info())
-        if self.add_per_agent_info:
-            info.update(self._get_per_agent_info())
-        self.metrics.append(info.copy())
-        return info
-
-    #def _compute_observations(self):
-    #    self.observations.update(
-    #        {
-    #            ts: self.observation_fn(self.traffic_signals[ts])
-    #            for ts in self.ts_ids
-    #            if self.traffic_signals[ts].time_to_act or self.fixed_ts
-    #        }
-    #    )
-    #    return {
-    #        ts: self.observations[ts].copy()
-    #        for ts in self.observations.keys()
-    #        if self.traffic_signals[ts].time_to_act or self.fixed_ts
-    #    }
-
-    def _compute_rewards(self):
-        self.rewards.update(
-            {
-                ts: self.traffic_signals[ts].compute_reward()
-                for ts in self.ts_ids
-                if self.traffic_signals[ts].time_to_act or self.fixed_ts
-            }
-        )
-        return {ts: self.rewards[ts] for ts in self.rewards.keys() if self.traffic_signals[ts].time_to_act or self.fixed_ts}
-
-    @property
-    def observation_space(self):
-        """Return the observation space of a traffic signal.
-
-        Only used in case of single-agent environment.
-        """
-        return self.observation_fn.observation_space(self.traffic_signals[self.ts_ids[0]])
-
-    @property
-    def action_space(self):
-        """Return the action space of a traffic signal.
-
-        Only used in case of single-agent environment.
-        """
-        return self.traffic_signals[self.ts_ids[0]].action_space
-
-    @property
-    def reward_space(self):
-        """Return the reward space of a traffic signal.
-
-        Only used in case of single-agent environment.
-        """
-        return self.traffic_signals[self.ts_ids[0]].reward_space
-
-    @property
-    def reward_dim(self):
-        """Return the reward dimension of a traffic signal.
-
-        Only used in case of single-agent environment.
-        """
-        return self.traffic_signals[self.ts_ids[0]].reward_dim
-
-    def observation_spaces(self, ts_id: str):
-        """Return the observation space of a traffic signal."""
-        return self.traffic_signals[ts_id].observation_space
-
-    def action_spaces(self, ts_id: str) -> gym.spaces.Discrete:
-        """Return the action space of a traffic signal."""
-        return self.traffic_signals[ts_id].action_space
+        for ts, action in actions.items():
+            if self.traffic_signals[ts].time_to_act:
+                self.traffic_signals[ts].set_next_phase(action)
 
     def _sumo_step(self):
         self.sumo.simulationStep()
@@ -423,7 +371,7 @@ class SumoEnvironment(gym.Env):
             "system_total_waiting_time": sum(waiting_times),
             "system_mean_waiting_time": 0.0 if len(vehicles) == 0 else np.mean(waiting_times),
             "system_mean_speed": 0.0 if len(vehicles) == 0 else np.mean(speeds),
-        }
+      }
 
     def _get_per_agent_info(self):
         stopped = [self.traffic_signals[ts].get_total_queued() for ts in self.ts_ids]
@@ -459,21 +407,6 @@ class SumoEnvironment(gym.Env):
         """Close the environment and stop the SUMO simulation."""
         self.close()
 
-    def render(self):
-        """Render the environment.
-
-        If render_mode is "human", the environment will be rendered in a GUI window using pyvirtualdisplay.
-        """
-        if self.render_mode == "human":
-            return  # sumo-gui will already be rendering the frame
-        elif self.render_mode == "rgb_array":
-            # img = self.sumo.gui.screenshot(traci.gui.DEFAULT_VIEW,
-            #                          f"temp/img{self.sim_step}.jpg",
-            #                          width=self.virtual_display[0],
-            #                          height=self.virtual_display[1])
-            img = self.disp.grab()
-            return np.array(img)
-
     def save_csv(self, out_csv_name, episode):
         """Save metrics of the simulation to a .csv file.
 
@@ -485,134 +418,3 @@ class SumoEnvironment(gym.Env):
             df = pd.DataFrame(self.metrics)
             Path(Path(out_csv_name).parent).mkdir(parents=True, exist_ok=True)
             df.to_csv(out_csv_name + f"_conn{self.label}_ep{episode}" + ".csv", index=False)
-
-    # Below functions are for discrete state space
-    # TODO: DEPRECATED
-    # def encode(self, state, ts_id):
-    #     """Encode the state of the traffic signal into a hashable object."""
-    #     phase = int(np.where(state[: self.traffic_signals[ts_id].num_green_phases] == 1)[0])
-    #     min_green = state[self.traffic_signals[ts_id].num_green_phases]
-    #     density_queue = [self._discretize_density(d) for d in state[self.traffic_signals[ts_id].num_green_phases + 1 :]]
-    #     # tuples are hashable and can be used as key in python dictionary
-    #     return tuple([phase, min_green] + density_queue)
-
-    # def _discretize_density(self, density):
-    #     return min(int(density * 10), 9)
-
-
-class SumoEnvironmentPZ(AECEnv, EzPickle):
-    """A wrapper for the SUMO environment that implements the AECEnv interface from PettingZoo.
-
-    For more information, see https://pettingzoo.farama.org/api/aec/.
-
-    The arguments are the same as for :py:class:`sumo_rl.environment.env.SumoEnvironment`.
-    """
-
-    metadata = {"render.modes": ["human", "rgb_array"], "name": "sumo_rl_v0", "is_parallelizable": True}
-
-    def __init__(self, **kwargs):
-        """Initialize the environment."""
-        EzPickle.__init__(self, **kwargs)
-        self._kwargs = kwargs
-        raise TypeError("SumoEnvironmentPZ is not ready")
-
-        self.seed()
-        self.env = SumoEnvironment(**self._kwargs)
-        self.render_mode = self.env.render_mode
-
-        self.agents = self.env.ts_ids
-        self.possible_agents = self.env.ts_ids
-        self._agent_selector = agent_selector(self.agents)
-        self.agent_selection = self._agent_selector.reset()
-        # spaces
-        self.action_spaces = {a: self.env.action_spaces(a) for a in self.agents}
-        self.observation_spaces = {a: self.env.observation_spaces(a) for a in self.agents}
-
-        # dicts
-        self.rewards = {a: 0 for a in self.agents}
-        self.terminations = {a: False for a in self.agents}
-        self.truncations = {a: False for a in self.agents}
-        self.infos = {a: {} for a in self.agents}
-
-    def seed(self, seed=None):
-        """Set the seed for the environment."""
-        self.randomizer, seed = seeding.np_random(seed)
-
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
-        """Reset the environment."""
-        self.env.reset(seed=seed, options=options)
-        self.agents = self.possible_agents[:]
-        self.agent_selection = self._agent_selector.reset()
-        self.rewards = {agent: 0 for agent in self.agents}
-        self._cumulative_rewards = {agent: 0 for agent in self.agents}
-        self.terminations = {a: False for a in self.agents}
-        self.truncations = {a: False for a in self.agents}
-        self.compute_info()
-
-    def compute_info(self):
-        """Compute the info for the current step."""
-        self.infos = {a: {} for a in self.agents}
-        infos = self.env._compute_info()
-        for a in self.agents:
-            for k, v in infos.items():
-                if k.startswith(a) or k.startswith("system"):
-                    self.infos[a][k] = v
-
-    def observation_space(self, agent):
-        """Return the observation space for the agent."""
-        return self.observation_spaces[agent]
-
-    def action_space(self, agent):
-        """Return the action space for the agent."""
-        return self.action_spaces[agent]
-
-    def observe(self, agent):
-        """Return the observation for the agent."""
-        obs = self.env.observations[agent].copy()
-        return obs
-
-    def close(self):
-        """Close the environment and stop the SUMO simulation."""
-        self.env.close()
-
-    def render(self):
-        """Render the environment."""
-        return self.env.render()
-
-    def save_csv(self, out_csv_name, episode):
-        """Save metrics of the simulation to a .csv file."""
-        self.env.save_csv(out_csv_name, episode)
-
-    def step(self, action):
-        """Step the environment."""
-        if self.truncations[self.agent_selection] or self.terminations[self.agent_selection]:
-            return self._was_dead_step(action)
-        agent = self.agent_selection
-        if not self.action_spaces[agent].contains(action):
-            raise Exception(
-                "Action for agent {} must be in Discrete({})."
-                "It is currently {}".format(agent, self.action_spaces[agent].n, action)
-            )
-
-        if not self.env.fixed_ts:
-            self.env._apply_actions({agent: action})
-
-        if self._agent_selector.is_last():
-            if not self.env.fixed_ts:
-                self.env._run_steps()
-            else:
-                for _ in range(self.env.delta_time):
-                    self.env._sumo_step()
-
-            self.env._compute_observations()
-            self.rewards = self.env._compute_rewards()
-            self.compute_info()
-        else:
-            self._clear_rewards()
-
-        done = self.env._compute_dones()["__all__"]
-        self.truncations = {a: done for a in self.agents}
-
-        self.agent_selection = self._agent_selector.next()
-        self._cumulative_rewards[agent] = 0
-        self._accumulate_rewards()

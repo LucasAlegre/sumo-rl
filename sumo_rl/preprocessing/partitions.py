@@ -1,6 +1,6 @@
 import sumo_rl.environment.env
 import sumo_rl.environment.traffic_signal
-import sumo_rl.environment.observations
+import sumo_rl.observations
 import sumo_rl.environment.traffic_signal
 
 class Partition:
@@ -43,7 +43,7 @@ class ActionStateSizePartition(Partition):
 class ActionStateSpacePartition(Partition):
   """Shape is measured as size of observation space and size of action space"""
   @staticmethod
-  def Hash(observation_fn: sumo_rl.environment.observations.ObservationFunction, traffic_signal: sumo_rl.environment.traffic_signal.TrafficSignal) -> str:
+  def Hash(observation_fn: sumo_rl.observations.ObservationFunction, traffic_signal: sumo_rl.environment.traffic_signal.TrafficSignal) -> str:
     state_space_hash  = observation_fn.hash(traffic_signal)
     action_space_hash = str(traffic_signal.num_green_phases)
     return "SS%s-%sSS" % (state_space_hash, action_space_hash)

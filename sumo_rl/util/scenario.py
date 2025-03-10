@@ -2,11 +2,9 @@ import os
 import pickle
 import yaml
 
-from sumo_rl import SumoEnvironment
-from sumo_rl.agents import QLAgent
-from sumo_rl.environment.observations import ObservationFunction
-from sumo_rl.environment.rewards import RewardFunction
-from sumo_rl.exploration import EpsilonGreedy
+from sumo_rl.environment.env import SumoEnvironment
+from sumo_rl.observations.observation_function import ObservationFunction
+from sumo_rl.rewards.reward_function import RewardFunction
 
 class SumoConfig:
   def __init__(self, data: dict):

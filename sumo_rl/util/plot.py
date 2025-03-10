@@ -152,11 +152,11 @@ class Preprocessor:
   @staticmethod
   def InitialSubset(datastore: Datastore) -> list[Plot]:
     plots = []
-    plots.append(Plot(datastore, "system_total_running", lambda df: list(df['system_total_running']), True, True))
-    plots.append(Plot(datastore, "system_total_stopped", lambda df: list(df['system_total_stopped']), True, True))
-    plots.append(Plot(datastore, "system_total_waiting_time", lambda df: list(df['system_total_waiting_time']), True, True))
-    plots.append(Plot(datastore, "system_mean_waiting_time", lambda df: list(df['system_mean_waiting_time']), True, True))
-    plots.append(Plot(datastore, "vehicles_number", lambda df: list(df['system_total_waiting_time'] / df['system_mean_waiting_time']), True, True))
+    plots.append(Plot(datastore, "total_running", lambda df: list(df['total_running']), True, True))
+    plots.append(Plot(datastore, "total_stopped", lambda df: list(df['total_stopped']), True, True))
+    plots.append(Plot(datastore, "total_waiting_time", lambda df: list(df['total_waiting_time']), True, True))
+    plots.append(Plot(datastore, "mean_waiting_time", lambda df: list(df['mean_waiting_time']), True, True))
+    plots.append(Plot(datastore, "vehicles_number", lambda df: list(df['total_waiting_time'] / df['mean_waiting_time']), True, True))
     return plots
 
   @staticmethod

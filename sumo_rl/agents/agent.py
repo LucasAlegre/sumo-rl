@@ -1,8 +1,6 @@
 """Abstract Agent class."""
 
 import abc
-from sumo_rl.environment.observations import ObservationFunction
-from sumo_rl.environment.rewards import RewardFunction
 
 class Agent(abc.ABC):
     """Abstract Agent class.

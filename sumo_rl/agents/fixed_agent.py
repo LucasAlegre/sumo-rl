@@ -1,10 +1,6 @@
 """Fixed Agent class."""
 
-import pickle
 from sumo_rl.agents.agent import Agent
-from sumo_rl.environment.observations import ObservationFunction
-from sumo_rl.environment.rewards import RewardFunction
-from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
 from sumo_rl.environment.traffic_signal import TrafficSignal
 
 class FixedAgent(Agent):

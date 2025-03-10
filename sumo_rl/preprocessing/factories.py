@@ -2,8 +2,8 @@
 import abc
 import os
 from sumo_rl.environment.env import SumoEnvironment
-from sumo_rl.environment.observations import ObservationFunction
-from sumo_rl.environment.rewards import RewardFunction
+from sumo_rl.observations import ObservationFunction
+from sumo_rl.rewards import RewardFunction
 from sumo_rl.environment.traffic_signal import TrafficSignal
 from sumo_rl.agents.agent import Agent
 from sumo_rl.agents.ql_agent import QLAgent

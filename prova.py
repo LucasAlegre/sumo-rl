@@ -85,64 +85,18 @@ if __name__ == "__main__":
       for episode in range(scenario.config.training.episodes):
         print("Training :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
         conn = env.reset()
-        for agent in agents:
-          agent.reset(conn)
-        
         while not env.done():
-          actions = {}
-          for agent in agents:
-            agent.observe()
-          for agent in agents:
-            actions.update(agent.act())
-          env.step(action=actions)
-          env.compute_info() # This is also a bottleneck
-          for agent in agents:
-            if agent.can_learn():
-              agent.learn()
+          print(env.sim_step, end="\r")
+          env.gather_data_from_sumo()
+          env.compute_observations()
+          env.compute_rewards()
+          env.compute_metrics()
+          env.step(action={})
 
         # Serialize Metrics
         path = scenario.training_metrics_file(run, episode)
         pandas.DataFrame(env.metrics).to_csv(path, index=False)
-        # Serialize Agents
-        for agent in agents:
-          if agent.can_be_serialized():
-            path = scenario.agents_file(run, episode, agent.id)
-            agent.serialize(path)
 
         env.sumo_seed += 1
         print("Training :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
-      # Serialize Agents
-      for agent in agents:
-        if agent.can_be_serialized():
-          path = scenario.agents_file(run, None, agent.id)
-          agent.serialize(path)
-    # Serialize Agents
-    for agent in agents:
-      if agent.can_be_serialized():
-        path = scenario.agents_file(None, None, agent.id)
-        agent.serialize(path)
-
-    # Evaluation
-    for run in range(scenario.config.evaluation.runs):
-      for episode in range(scenario.config.evaluation.episodes):
-        print("Evaluation :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
-        conn = env.reset()
-        for agent in agents:
-          agent.reset(conn)
-        
-        while not env.done():
-          actions = {}
-          for agent in agents:
-            agent.observe()
-          for agent in agents:
-            actions.update(agent.act())
-          env.step(action=actions)
-          env.compute_info()
-
-        # Serialize Metrics
-        path = scenario.evaluation_metrics_file(run, episode)
-        pandas.DataFrame(env.metrics).to_csv(path, index=False)
-
-        env.sumo_seed += 1
-        print("Evaluation :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
   env.close()
