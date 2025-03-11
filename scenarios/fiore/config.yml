@@ -2,7 +2,7 @@ sumo:
   seconds: 10000
   min_green: 5
   delta_time: 5
-  use_gui: true
+  use_gui: false
   sumo_seed: 170701
 agent:
   alpha: 0.1

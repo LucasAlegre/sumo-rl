@@ -118,3 +118,4 @@ settings.json
 outputs
 __pycache__
 env
+*.pickle

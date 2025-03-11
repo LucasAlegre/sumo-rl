@@ -242,6 +242,7 @@ class SumoEnvironment(gym.Env):
         self._start_simulation()
 
         for ts_id in self.traffic_signals:
+          self.traffic_signals[ts_id].sumo = self.sumo
           self.traffic_signals[ts_id].reset(self.begin_time)
 
         self.num_arrived_vehicles = 0

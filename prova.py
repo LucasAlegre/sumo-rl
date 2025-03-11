@@ -8,6 +8,7 @@ import sumo_rl.preprocessing.partitions
 import sumo_rl.observations
 import sumo_rl.rewards
 import sumo_rl.agents
+import sumo_rl.environment.env
 
 if "SUMO_HOME" in os.environ:
   tools = os.path.join(os.environ["SUMO_HOME"], "tools")
@@ -57,6 +58,78 @@ def reward_fn_by_option(cli_args) -> sumo_rl.rewards.RewardFunction:
     return sumo_rl.rewards.PressureRewardFunction()
   raise ValueError(val)
 
+def perform_training(scenario: sumo_rl.util.scenario.Scenario, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
+    for run in range(scenario.config.training.runs):
+      for episode in range(scenario.config.training.episodes):
+        print("Training :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
+        env.reset()
+        for agent in agents:
+          agent.reset()
+        env.gather_data_from_sumo()
+        env.compute_observations()
+        env.compute_rewards()
+        env.compute_metrics()
+        for agent in agents:
+          if agent.can_observe():
+            agent.observe(env.observations)
+        while not env.done():
+          actions = {}
+          print(env.sim_step, end="\r")
+          for agent in agents:
+            actions.update(agent.act())
+          env.step(action=actions)
+          env.gather_data_from_sumo()
+          env.compute_observations()
+          env.compute_rewards()
+          env.compute_metrics()
+          for agent in agents:
+            if agent.can_observe():
+              agent.observe(env.observations)
+            if agent.can_learn():
+              agent.learn(env.rewards)
+
+        # Serialize Metrics
+        path = scenario.training_metrics_file(run, episode)
+        pandas.DataFrame(env.metrics).to_csv(path, index=False)
+
+        env.sumo_seed += 1
+        print("Training :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
+
+def perform_evaluation(scenario: sumo_rl.util.scenario.Scenario, agents: list[sumo_rl.agents.Agent], env: sumo_rl.environment.env.SumoEnvironment):
+    for run in range(scenario.config.evaluation.runs):
+      for episode in range(scenario.config.evaluation.episodes):
+        print("Evaluation :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
+        env.reset()
+        for agent in agents:
+          agent.reset()
+        env.gather_data_from_sumo()
+        env.compute_observations()
+        # env.compute_rewards()
+        env.compute_metrics()
+        for agent in agents:
+          if agent.can_observe():
+            agent.observe(env.observations)
+        while not env.done():
+          actions = {}
+          print(env.sim_step, end="\r")
+          for agent in agents:
+            actions.update(agent.act())
+          env.step(action=actions)
+          env.gather_data_from_sumo()
+          env.compute_observations()
+          # env.compute_rewards()
+          env.compute_metrics()
+          for agent in agents:
+            if agent.can_observe():
+              agent.observe(env.observations)
+
+        # Serialize Metrics
+        path = scenario.evaluation_metrics_file(run, episode)
+        pandas.DataFrame(env.metrics).to_csv(path, index=False)
+
+        env.sumo_seed += 1
+        print("Evaluation :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
+
 if __name__ == "__main__":
   cli = argparse.ArgumentParser(sys.argv[0])
   sumo_rl.util.scenario.Scenario.add_scenario_selection(cli)
@@ -79,24 +152,7 @@ if __name__ == "__main__":
   agents: list[sumo_rl.agents.Agent] = agent_factory.agent_by_assignments(agents_partition.data)
 
   if not cli_args.pretend:
-    # Training
     env.sumo_seed = scenario.config.sumo.sumo_seed
-    for run in range(scenario.config.training.runs):
-      for episode in range(scenario.config.training.episodes):
-        print("Training :: Run(%s)/Episode(%s) :: Starting" % (run, episode))
-        conn = env.reset()
-        while not env.done():
-          print(env.sim_step, end="\r")
-          env.gather_data_from_sumo()
-          env.compute_observations()
-          env.compute_rewards()
-          env.compute_metrics()
-          env.step(action={})
-
-        # Serialize Metrics
-        path = scenario.training_metrics_file(run, episode)
-        pandas.DataFrame(env.metrics).to_csv(path, index=False)
-
-        env.sumo_seed += 1
-        print("Training :: Run(%s)/Episode(%s) :: Ended" % (run, episode))
+    perform_training(scenario, agents, env)
+    perform_evaluation(scenario, agents, env)
   env.close()

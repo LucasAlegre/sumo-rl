@@ -1,6 +1,7 @@
 """Abstract Agent class."""
 
 import abc
+import typing
 
 class Agent(abc.ABC):
     """Abstract Agent class.
@@ -13,22 +14,23 @@ class Agent(abc.ABC):
       self.id: str = id
 
     @abc.abstractmethod
-    def reset(self, conn) -> None:
+    def reset(self) -> None:
       """Resets the agent's view of simulation
       """
       pass
 
     @abc.abstractmethod
-    def hard_reset(self, conn) -> None:
+    def hard_reset(self) -> None:
       """Resets the agent's view of simulation and its memory
       """
       pass
 
     @abc.abstractmethod
-    def observe(self) -> None:
+    def observe(self, observations: dict[str, typing.Any]) -> None:
       """Feedback of simulation
 
-      Uses controlled entities to compute observations
+      Provides observations of controlled entities.
+      Subclasses which don't support learning should throw a TypeError
       """
       pass
 
@@ -41,11 +43,11 @@ class Agent(abc.ABC):
       pass
 
     @abc.abstractmethod
-    def learn(self) -> None:
+    def learn(self, rewards: dict[str, typing.Any]) -> None:
       """Learn from errors
       
       It should have cached its previous action and states and use them to understand what it has done.
-      Uses controlled entities to obtain rewards.
+      Provides rewards of controlled entities.
       Subclasses which don't support learning should throw a TypeError
       """
       pass
@@ -75,6 +77,11 @@ class Agent(abc.ABC):
 
     def can_learn(self) -> bool:
       """True if learning is supported
+      """
+      return False
+
+    def can_observe(self) -> bool:
+      """True if observing is supported
       """
       return False
 

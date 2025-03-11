@@ -6,6 +6,7 @@ from sumo_rl.observations import ObservationFunction
 from sumo_rl.rewards import RewardFunction
 from sumo_rl.exploration.epsilon_greedy import EpsilonGreedy
 from sumo_rl.environment.traffic_signal import TrafficSignal
+import typing
 
 class QLAgent(Agent):
   """Q-learning Agent class."""
@@ -28,9 +29,8 @@ class QLAgent(Agent):
     self.action_space = action_space
     self.q_table = {}
 
-    initial_states = self.compute_states()
-    self.previous_states = initial_states
-    self.current_states = initial_states
+    self.previous_states = {}
+    self.current_states = {}
     self.previous_actions = {}
     self.current_actions = {}
 
@@ -38,55 +38,35 @@ class QLAgent(Agent):
     self.gamma = gamma
     self.exploration = exploration_strategy
 
-  def compute_states(self) -> dict:
-    next_states = {}
-    for ID in self.controlled_entities:
-      controlled_entity = self.controlled_entities[ID]
-      next_state = 0 # TODO self.observation_fn(controlled_entity)
-      next_states[ID] = next_state
-      if next_state not in self.q_table:
-        self.q_table[next_state] = [0 for _ in range(self.action_space.n)]
-    return next_states
-
-  def compute_rewards(self) -> dict[str, float]:
-    rewards = {}
-    for ID in self.controlled_entities:
-      reward = self.reward_fn(self.controlled_entities[ID])
-      rewards[ID] = reward
-    return rewards
-
-  def reset(self, conn):
-    for ID in self.controlled_entities:
-      self.controlled_entities[ID].sumo = conn
-    next_states = self.compute_states()
-    self.previous_states = next_states
-    self.current_states = next_states
+  def reset(self):
+    self.previous_states = {}
+    self.current_states = {}
     self.previous_actions = {}
     self.current_actions = {}
 
-  def hard_reset(self, conn):
+  def hard_reset(self):
     self.q_table = {}
-    self.reset(conn)
+    self.reset()
 
-  def observe(self):
-    next_states = self.compute_states()
+  def observe(self, observations: dict[str, typing.Any]):
     self.previous_states = self.current_states
-    self.current_states = next_states
+    self.current_states = {ID: observations[ID] for ID in self.controlled_entities.keys()}
+    for ID in self.controlled_entities.keys():
+      if self.current_states[ID] not in self.q_table:
+        self.q_table[self.current_states[ID]] = [0 for _ in range(self.action_space.n)]
 
   def act(self) -> dict[str, int]:
     """Choose action based on Q-table."""
     actions = {}
-    for ID in self.controlled_entities:
+    for ID in self.controlled_entities.keys():
       state = self.current_states[ID]
       action = self.exploration.choose(self.q_table, state, self.action_space)
       actions[ID] = action
     self.previous_actions = actions
     return actions
 
-  def learn(self):
+  def learn(self, rewards: dict[str, typing.Any]):
     """Update Q-table with new experience."""
-    rewards = self.compute_rewards()
-
     for ID in self.controlled_entities.keys():
       previous_state = self.previous_states[ID]
       current_state = self.current_states[ID]
@@ -118,5 +98,10 @@ class QLAgent(Agent):
 
   def can_learn(self) -> bool:
     """True if learning is supported
+    """
+    return True
+
+  def can_observe(self) -> bool:
+    """True if observing is supported
     """
     return True
