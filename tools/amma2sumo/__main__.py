@@ -12,6 +12,7 @@ import os
 import json
 import shapefile
 import matplotlib.pyplot
+from sumo_rl.models.sumo import TAZ, Flow, Routes, Additions
 
 class Cache:
   def __init__(self):
@@ -199,70 +200,6 @@ class SHPReader:
 
     return pandas.DataFrame(records)
 
-class TAZ:
-  def __init__(self, id: str, shape: list[Point], edges: list[str]) -> None:
-    self.id = id
-    self.shape = shape
-    self.edges = edges
-
-  def to_xml(self, indent: int = 0) -> str:
-    lines = [
-        "  " * indent + '<taz id="%s" shape="%s" color="blue" edges="%s">' % (
-          self.id,
-          " ".join([point.to_xml() for point in self.shape] + [self.shape[0].to_xml()]),
-          " ".join(self.edges)
-        ),
-        "  " * indent + '</taz>'
-    ]
-    return "\n".join(lines)
-
-class Flow:
-  def __init__(self, id, begin, end, fromTaz, toTaz, vehsPerHour) -> None:
-    self.id = id
-    self.begin = begin
-    self.fromTaz = fromTaz
-    self.toTaz = toTaz
-    self.end = end
-    self.vehsPerHour = vehsPerHour
-    pass
-
-  def to_xml(self, indent: int = 0) -> str:
-    return '<flow id="%s" begin="%s" fromTaz="%s" toTaz="%s" end="%s" vehsPerHour="%s"/>' % (
-      self.id, self.begin, self.fromTaz, self.toTaz, self.end, self.vehsPerHour
-    )
-
-class Additions:
-  def __init__(self, tazs: list[TAZ]) -> None:
-    self.tazs = tazs
-
-  def to_xml(self, indent: int = 0) -> str:
-    lines = [
-      "  " * indent + '<?xml version="1.0" encoding="UTF-8"?>',
-      "  " * indent + '<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">'
-    ]
-    for taz in self.tazs:
-      lines.append(taz.to_xml(indent + 1))
-    lines += [
-      "  " * indent + '</additional>'
-    ]
-    return "\n".join(lines)
-
-class Routes:
-  def __init__(self, flows: list[Flow]) -> None:
-    self.flows = flows
-
-  def to_xml(self, indent: int = 0) -> str:
-    lines = [
-      "  " * indent + '<?xml version="1.0" encoding="UTF-8"?>',
-      "  " * indent + '<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">'
-    ]
-    for flow in self.flows:
-      lines.append(flow.to_xml(indent + 1))
-    lines += [
-      "  " * indent + '</routes>'
-    ]
-    return "\n".join(lines)
-
 def compute_box(shape: tuple[float, float, float, float]) -> tuple[Point, Point, Point, Point]:
   Ax, Ay, Cx, Cy = shape
   assert Ax < Cx
@@ -438,7 +375,7 @@ def transform(timer: Timer, od_matrix_dfs: list[pandas.DataFrame], zones_df: pan
       if orig_ID in zones_index and dest_ID in zones_index:
         flows.append(Flow('F' + str(flow_idx), 0, 3600, orig_ID, dest_ID, row['veq_priv']))
         flow_idx += 1
-    routes = Routes(flows)
+    routes = Routes([], [], flows)
     od_matrix_idx += 1
     timer.round("Built od_index %s" % od_matrix_idx)
     with open("routes.%s.rou.xml" % od_matrix_idx, "w") as file:
