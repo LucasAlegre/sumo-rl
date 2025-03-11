@@ -271,7 +271,8 @@ if __name__ == "__main__":
 
   network: Network = translate_network(json_network)
   routes: Routes = translate_routes(json_routes, network)
-  simulation: Simulation = Simulation(network, routes)
+  additions = Additions([])
+  simulation: Simulation = Simulation(network, routes, additions)
 
   if not os.path.exists(cli_args.output):
     os.makedirs(cli_args.output)
