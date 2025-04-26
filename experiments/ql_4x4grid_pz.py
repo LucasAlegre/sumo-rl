@@ -25,8 +25,8 @@ if __name__ == "__main__":
     runs = 1
 
     env = sumo_rl.env(
-        net_file="sumo_rl/nets/4x4-Lucas/4x4.net.xml",
-        route_file="sumo_rl/nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
+        net_file="../sumo_rl/nets/4x4-Lucas/4x4.net.xml",
+        route_file="../sumo_rl/nets/4x4-Lucas/4x4c1c2c1c2.rou.xml",
         use_gui=False,
         min_green=8,
         delta_time=5,

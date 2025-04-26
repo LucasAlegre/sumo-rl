@@ -18,7 +18,7 @@ from sumo_rl import cologne8
 def run(use_gui=False, episodes=50):
     fixed_tl = False
 
-    env = cologne8(out_csv_name="outputs/cologne8/test", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
+    env = cologne8(out_csv_name="../outputs/cologne8/test", use_gui=use_gui, yellow_time=2, fixed_ts=fixed_tl)
     env.reset()
 
     agents = {

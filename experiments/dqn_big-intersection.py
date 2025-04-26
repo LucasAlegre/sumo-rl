@@ -17,10 +17,10 @@ from sumo_rl import SumoEnvironment
 
 
 env = SumoEnvironment(
-    net_file="sumo_rl/nets/big-intersection/big-intersection.net.xml",
+    net_file="../sumo_rl/nets/big-intersection/big-intersection.net.xml",
     single_agent=True,
-    route_file="sumo_rl/nets/big-intersection/routes.rou.xml",
-    out_csv_name="outputs/big-intersection/dqn",
+    route_file="../sumo_rl/nets/big-intersection/routes.rou.xml",
+    out_csv_name="../outputs/big-intersection/dqn",
     use_gui=True,
     num_seconds=5400,
     yellow_time=4,
