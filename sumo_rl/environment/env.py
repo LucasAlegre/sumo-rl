@@ -19,12 +19,15 @@ import traci
 from gymnasium.utils import EzPickle, seeding
 from pettingzoo import AECEnv
 from pettingzoo.utils import wrappers
+
+
 try:
     # pettingzoo 1.25+
     from pettingzoo.utils import AgentSelector
 except ImportError:
     # pettingzoo 1.24 or earlier
     from pettingzoo.utils import agent_selector as AgentSelector
+
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .observations import DefaultObservationFunction, ObservationFunction
