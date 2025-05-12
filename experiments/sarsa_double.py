@@ -21,9 +21,9 @@ def run(use_gui=True, runs=1):
     out_csv = "outputs/double/sarsa-double"
 
     env = SumoEnvironment(
-        net_file="sumo_rl/nets/double/network.net.xml",
+        net_file="../sumo_rl/nets/double/network.net.xml",
         single_agent=False,
-        route_file="sumo_rl/nets/double/flow.rou.xml",
+        route_file="../sumo_rl/nets/double/flow.rou.xml",
         out_csv_name=out_csv,
         use_gui=use_gui,
         num_seconds=86400,
