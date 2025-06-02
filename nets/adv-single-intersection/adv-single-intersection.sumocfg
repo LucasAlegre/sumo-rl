@@ -1,0 +1,14 @@
+<configuration>
+    <input>
+        <net-file value="adv-single-intersection.net.xml"/>
+        <route-files value="adv-single-intersection.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="100000"/>
+    </time>
+</configuration>
+
+
+
+
