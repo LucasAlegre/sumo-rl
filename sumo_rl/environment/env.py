@@ -18,7 +18,16 @@ import sumolib
 import traci
 from gymnasium.utils import EzPickle, seeding
 from pettingzoo import AECEnv
-from pettingzoo.utils import agent_selector, wrappers
+from pettingzoo.utils import wrappers
+
+
+try:
+    # pettingzoo 1.25+
+    from pettingzoo.utils import AgentSelector
+except ImportError:
+    # pettingzoo 1.24 or earlier
+    from pettingzoo.utils import agent_selector as AgentSelector
+
 from pettingzoo.utils.conversions import parallel_wrapper_fn
 
 from .observations import DefaultObservationFunction, ObservationFunction
@@ -521,7 +530,7 @@ class SumoEnvironmentPZ(AECEnv, EzPickle):
 
         self.agents = self.env.ts_ids
         self.possible_agents = self.env.ts_ids
-        self._agent_selector = agent_selector(self.agents)
+        self._agent_selector = AgentSelector(self.agents)
         self.agent_selection = self._agent_selector.reset()
         # spaces
         self.action_spaces = {a: self.env.action_spaces(a) for a in self.agents}
