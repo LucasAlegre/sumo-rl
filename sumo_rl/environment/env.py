@@ -101,7 +101,7 @@ class SumoEnvironment(gym.Env):
         single_agent: bool = False,
         reward_fn: Union[str, Callable, dict, List] = "diff-waiting-time",
         reward_weights: Optional[List[float]] = None,
-        observation_class: ObservationFunction = DefaultObservationFunction,
+        observation_class: type[ObservationFunction] = DefaultObservationFunction,
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str, int] = "random",
