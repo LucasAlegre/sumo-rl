@@ -78,6 +78,7 @@ class SumoEnvironment(gym.Env):
         add_system_info (bool): If true, it computes system metrics (total queue, total waiting time, average speed) in the info dictionary.
         add_per_agent_info (bool): If true, it computes per-agent (per-traffic signal) metrics (average accumulated waiting time, average queue) in the info dictionary.
         sumo_seed (int/string): Random seed for sumo. If 'random' it uses a randomly chosen seed.
+        ts_ids (Optional[List[str]]): List of traffic light IDs to be controlled by SUMO-RL. If None, all traffic lights in the simulation are controlled.
         fixed_ts (bool): If true, it will follow the phase configuration in the route_file and ignore the actions given in the :meth:`step` method.
         sumo_warnings (bool): If true, it will print SUMO warnings.
         additional_sumo_cmd (str): Additional SUMO command line arguments.
@@ -114,6 +115,7 @@ class SumoEnvironment(gym.Env):
         add_system_info: bool = True,
         add_per_agent_info: bool = True,
         sumo_seed: Union[str, int] = "random",
+        ts_ids: Optional[List[str]] = None,
         fixed_ts: bool = False,
         sumo_warnings: bool = True,
         additional_sumo_cmd: Optional[str] = None,
@@ -166,7 +168,10 @@ class SumoEnvironment(gym.Env):
             traci.start([sumolib.checkBinary("sumo"), "-n", self._net], label="init_connection" + self.label)
             conn = traci.getConnection("init_connection" + self.label)
 
-        self.ts_ids = list(conn.trafficlight.getIDList())
+        if ts_ids is None:
+            self.ts_ids = list(conn.trafficlight.getIDList())
+        else:
+            self.ts_ids = ts_ids
         self.observation_class = observation_class
 
         self._build_traffic_signals(conn)
