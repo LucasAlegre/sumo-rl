@@ -153,7 +153,7 @@ class SumoEnvironment(gym.Env):
         self.reward_weights = reward_weights
         self.sumo_seed = sumo_seed
         if isinstance(self.sumo_seed, int):
-            self.sumo_seed &= 0x7FFFFFFF
+            self.sumo_seed &= 0x7FFFFFFF  # Ensure 32 bit non-negative seed
         self.fixed_ts = fixed_ts
         self.sumo_warnings = sumo_warnings
         self.additional_sumo_cmd = additional_sumo_cmd
@@ -267,7 +267,7 @@ class SumoEnvironment(gym.Env):
         self.metrics = []
 
         if seed is not None:
-            self.sumo_seed = seed & 0x7FFFFFFF
+            self.sumo_seed = seed & 0x7FFFFFFF  # Ensure 32 bit non-negative seed
         self._start_simulation()
 
         self._build_traffic_signals(self.sumo)
