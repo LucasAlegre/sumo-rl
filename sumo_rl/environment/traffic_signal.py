@@ -226,6 +226,9 @@ class TrafficSignal:
     def _queue_reward(self):
         return -self.get_total_queued()
 
+    def _co2_reward(self):
+        return -self.get_total_co2()
+
     def _diff_waiting_time_reward(self):
         ts_wait = sum(self.get_accumulated_waiting_time_per_lane()) / 100.0
         reward = self.last_ts_waiting_time - ts_wait
@@ -319,6 +322,10 @@ class TrafficSignal:
         """Returns the total number of vehicles halting in the intersection."""
         return sum(self.sumo.lane.getLastStepHaltingNumber(lane) for lane in self.lanes)
 
+    def get_total_co2(self) -> float:
+        """Returns the total CO2 emissions (mg/s) of the vehicles in the incoming lanes of the intersection."""
+        return sum(self.sumo.lane.getCO2Emission(lane) for lane in self.lanes)
+
     def _get_veh_list(self):
         veh_list = []
         for lane in self.lanes:
@@ -342,4 +349,5 @@ class TrafficSignal:
         "average-speed": _average_speed_reward,
         "queue": _queue_reward,
         "pressure": _pressure_reward,
+        "co2": _co2_reward,
     }
