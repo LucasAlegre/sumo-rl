@@ -345,6 +345,12 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_total_co2">
+<span class="sig-name descname"><span class="pre">get_total_co2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_total_co2" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the total CO2 emissions (mg/s) of the vehicles in the incoming lanes of the intersection.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="sumo_rl.environment.traffic_signal.TrafficSignal.get_total_queued">
 <span class="sig-name descname"><span class="pre">get_total_queued</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_total_queued" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the total number of vehicles halting in the intersection.</p>
@@ -454,6 +460,7 @@ The default reward function is ‘diff-waiting-time’. You can change the rewar
 <li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_lanes_queue"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.get_lanes_queue()</span></code></a></li>
 <li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_out_lanes_density"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.get_out_lanes_density()</span></code></a></li>
 <li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_pressure"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.get_pressure()</span></code></a></li>
+<li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_total_co2"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.get_total_co2()</span></code></a></li>
 <li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.get_total_queued"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.get_total_queued()</span></code></a></li>
 <li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.register_reward_fn"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.register_reward_fn()</span></code></a></li>
 <li><a class="reference internal" href="#sumo_rl.environment.traffic_signal.TrafficSignal.set_next_phase"><code class="docutils literal notranslate"><span class="pre">TrafficSignal.set_next_phase()</span></code></a></li>
